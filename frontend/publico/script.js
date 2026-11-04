@@ -15,9 +15,9 @@ const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
    THEME
    ============================================================ */
 const Theme = (() => {
-  const key = 'dafix-theme';
+  const key = 'dafix_theme';
   const html = document.documentElement;
-  let current = localStorage.getItem(key) || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  let current = localStorage.getItem(key) || localStorage.getItem('dafix-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
   function apply(t) {
     current = t;
@@ -211,7 +211,9 @@ function renderStars(rating) {
    ============================================================ */
 function avatarHTML(initials, color, size = 'md', withDot = false, available = false) {
   const dot = withDot ? `<span class="status-dot status-dot--${available ? 'on' : 'off'}"></span>` : '';
-  return `<div class="avatar avatar--${size}" style="background:${color}">${initials}${dot}</div>`;
+  const tones = ['#203b30', '#72523f', '#536e5c', '#875b4a', '#626848'];
+  const index = [...String(color || initials)].reduce((sum, char) => sum + char.charCodeAt(0), 0) % tones.length;
+  return `<div class="avatar avatar--${size}" style="background:${tones[index]}">${initials}${dot}</div>`;
 }
 
 /* ============================================================
@@ -532,7 +534,7 @@ async function initHome() {
   if (catGrid && data.categorias) {
     catGrid.innerHTML = data.categorias.map((c, i) => `
       <a href="servicos.html?cat=${encodeURIComponent(c.id)}" class="cat-card reveal reveal-d${Math.min(i + 1, 6)}" aria-label="${c.nome} — ${c.profissionais} profissionais">
-        <div class="cat-icon-wrap" style="background:${c.bg}">${c.icone}</div>
+        <div class="cat-icon-wrap" style="background:var(--primary-soft)" aria-hidden="true">${c.icone}</div>
         <p class="cat-name">${c.nome}</p>
         <p class="cat-count"><strong>${c.profissionais}</strong> profissionais</p>
       </a>`).join('');

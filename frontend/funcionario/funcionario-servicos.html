@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Marido de Aluguel — Gestão de Serviços do profissional." />
-<title>Gestão de Serviços — Marido de Aluguel</title>
+<meta name="theme-color" content="#203b30" />
+<meta name="description" content="Dafix — Gestão de Serviços do profissional." />
+<title>Gestão de Serviços — Dafix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="funcionario-dashboard.css" />
 </head>
 <body data-theme="light" data-page="servicos">
@@ -14,7 +15,7 @@
   <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
     <div class="sidebar__brand">
       <img src="/assets/logo.png" alt="DaFix" class="brand__logo" width="40" height="40">
-      <div class="brand__text"><span class="brand__title">Marido</span><span class="brand__subtitle">de Aluguel · Pro</span></div>
+      <div class="brand__text"><span class="brand__title">Dafix</span><span class="brand__subtitle">Área profissional</span></div>
       <button class="sidebar__collapse" id="sidebarCollapse" aria-label="Recolher menu" type="button"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
     <nav class="sidebar__nav" aria-label="Navegação principal">
@@ -32,7 +33,7 @@
         <li><a href="#" class="nav__item nav__item--danger" data-action="open-logout"><span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10 17l-5-5 5-5M5 12h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nav__text">Sair</span></a></li>
       </ul>
     </nav>
-    <div class="sidebar__promo"><div class="promo__icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 14.8 7.1 17.2 8 11.7l-4-3.9L9.5 7 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><p class="promo__title">Plano Pro Ativo</p><p class="promo__text">Destaque seus serviços e receba até 3x mais pedidos.</p><button class="promo__btn" type="button" data-action="open-benefits">Ver benefícios</button></div>
+    <div class="sidebar__promo"><div class="promo__icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 14.8 7.1 17.2 8 11.7l-4-3.9L9.5 7 12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><p class="promo__title">Plano Pro Ativo</p><p class="promo__text">Organize seus serviços e acompanhe seus pedidos.</p><button class="promo__btn" type="button" data-action="open-benefits">Ver benefícios</button></div>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
@@ -61,7 +62,7 @@
         </div>
       </section>
 
-      <div class="metrics" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <div class="metrics metrics--compact">
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--blue"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3h18v18H3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="metric__delta">+3</span></div><p class="metric__label">Total de serviços</p><p class="metric__value">12</p></article>
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--green"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="metric__delta">96%</span></div><p class="metric__label">Ativos</p><p class="metric__value">10</p></article>
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--amber"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="metric__delta">~1h</span></div><p class="metric__label">Tempo médio</p><p class="metric__value">1h<span class="metric__unit">20min</span></p></article>
@@ -81,7 +82,7 @@
       <div class="services-grid" id="servicesGrid"></div>
     </main>
 
-    <footer class="app-foot"><p>© <span id="year"></span> Marido de Aluguel · Plataforma para profissionais</p><ul><li><a href="../suporte/index.html">Central de ajuda</a></li><li><a href="#" data-action="open-terms">Termos</a></li><li><a href="#" data-action="open-privacy">Privacidade</a></li></ul></footer>
+    <footer class="app-foot"><p>© <span id="year"></span> Dafix · Plataforma para profissionais</p><ul><li><a href="../suporte/index.html">Central de ajuda</a></li><li><a href="#" data-action="open-terms">Termos</a></li><li><a href="#" data-action="open-privacy">Privacidade</a></li></ul></footer>
   </div>
 </div>
 

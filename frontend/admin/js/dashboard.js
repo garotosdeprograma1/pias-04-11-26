@@ -5,15 +5,15 @@
 
 // ── Data ──────────────────────────────────────────
 const KPIS = [
-  { label:'Total Usuários',   val:2480,   prefix:'',     suffix:'',   delta:+12.4, color:'#2563EB', bg:'rgba(37,99,235,.1)',  emoji:'👥', tip:'Usuários cadastrados na plataforma' },
-  { label:'Clientes Ativos',  val:1940,   prefix:'',     suffix:'',   delta:+8.2,  color:'#06B6D4', bg:'rgba(6,182,212,.1)',  emoji:'🧑', tip:'Clientes com atividade nos últimos 90 dias' },
-  { label:'Funcionários',     val:312,    prefix:'',     suffix:'',   delta:+4.1,  color:'#8B5CF6', bg:'rgba(139,92,246,.1)', emoji:'🔧', tip:'Profissionais ativos na plataforma' },
-  { label:'Agendados',        val:184,    prefix:'',     suffix:'',   delta:+21.3, color:'#F59E0B', bg:'rgba(245,158,11,.1)', emoji:'📅', tip:'Serviços aguardando execução' },
-  { label:'Concluídos',       val:1273,   prefix:'',     suffix:'',   delta:+15.7, color:'#10B981', bg:'rgba(16,185,129,.1)', emoji:'✅', tip:'Serviços finalizados com sucesso' },
-  { label:'Cancelamentos',    val:87,     prefix:'',     suffix:'',   delta:-6.3,  color:'#EF4444', bg:'rgba(239,68,68,.1)',  emoji:'❌', tip:'Serviços cancelados no período' },
-  { label:'Receita Mensal',   val:128450, prefix:'R$\u00a0', suffix:'', delta:+18.9, color:'#2563EB', bg:'rgba(37,99,235,.1)',  emoji:'💰', tip:'Receita total do mês atual' },
-  { label:'Lucro Mensal',     val:54180,  prefix:'R$\u00a0', suffix:'', delta:+22.1, color:'#10B981', bg:'rgba(16,185,129,.1)', emoji:'📈', tip:'Lucro líquido do mês atual' },
-  { label:'Avaliação Média',  val:4.87,   prefix:'',     suffix:' ★', delta:+0.2,  color:'#F59E0B', bg:'rgba(245,158,11,.1)', emoji:'⭐', tip:'Média geral de avaliações dos clientes' },
+  { label:'Total Usuários',   val:2480,   prefix:'',     suffix:'',   delta:+12.4, color:'#3f7054', bg:'rgba(63,112,84,.1)', tip:'Usuários cadastrados na plataforma' },
+  { label:'Clientes Ativos',  val:1940,   prefix:'',     suffix:'',   delta:+8.2,  color:'#8c8861', bg:'rgba(140,136,97,.1)', tip:'Clientes com atividade nos últimos 90 dias' },
+  { label:'Funcionários',     val:312,    prefix:'',     suffix:'',   delta:+4.1,  color:'#9a7560', bg:'rgba(154,117,96,.1)', tip:'Profissionais ativos na plataforma' },
+  { label:'Agendados',        val:184,    prefix:'',     suffix:'',   delta:+21.3, color:'#aa7d3e', bg:'rgba(170,125,62,.1)', tip:'Serviços aguardando execução' },
+  { label:'Concluídos',       val:1273,   prefix:'',     suffix:'',   delta:+15.7, color:'#5a8265', bg:'rgba(90,130,101,.1)', tip:'Serviços finalizados com sucesso' },
+  { label:'Cancelamentos',    val:87,     prefix:'',     suffix:'',   delta:-6.3,  color:'#b95d43', bg:'rgba(185,93,67,.1)', tip:'Serviços cancelados no período' },
+  { label:'Receita Mensal',   val:128450, prefix:'R$\u00a0', suffix:'', delta:+18.9, color:'#3f7054', bg:'rgba(63,112,84,.1)', tip:'Receita total do mês atual' },
+  { label:'Lucro Mensal',     val:54180,  prefix:'R$\u00a0', suffix:'', delta:+22.1, color:'#5a8265', bg:'rgba(90,130,101,.1)', tip:'Lucro líquido do mês atual' },
+  { label:'Avaliação Média',  val:4.87,   prefix:'',     suffix:' ★', delta:+0.2,  color:'#aa7d3e', bg:'rgba(170,125,62,.1)', tip:'Média geral de avaliações dos clientes' },
 ];
 
 const LINE_DATA = {
@@ -30,12 +30,12 @@ const LINE_DATA = {
 };
 
 const DONUT_DATA = [
-  { label:'Elétrica',    val:32, color:'#2563EB' },
-  { label:'Hidráulica',  val:21, color:'#06B6D4' },
-  { label:'Pintura',     val:18, color:'#10B981' },
-  { label:'Montagem',    val:14, color:'#F59E0B' },
-  { label:'Instalações', val:10, color:'#8B5CF6' },
-  { label:'Outros',      val:5,  color:'#94A3B8' },
+  { label:'Elétrica',    val:32, color:'#3f7054' },
+  { label:'Hidráulica',  val:21, color:'#8c8861' },
+  { label:'Pintura',     val:18, color:'#5a8265' },
+  { label:'Montagem',    val:14, color:'#aa7d3e' },
+  { label:'Instalações', val:10, color:'#9a7560' },
+  { label:'Outros',      val:5,  color:'#89938c' },
 ];
 
 const BAR_DATA = {
@@ -56,12 +56,12 @@ const SERVICES = [
 ];
 
 const FEED = [
-  { ico:'👤', bg:'rgba(37,99,235,.12)',  color:'#2563EB', title:'Novo usuário cadastrado',  desc:'João Paulo Santos criou conta',   time:'há 2 min'  },
-  { ico:'✅', bg:'rgba(16,185,129,.12)', color:'#10B981', title:'Serviço #892 concluído',   desc:'Elétrica finalizada por Carlos M.',time:'há 15 min' },
-  { ico:'⭐', bg:'rgba(245,158,11,.12)', color:'#F59E0B', title:'Avaliação 5★ recebida',    desc:'Ana Oliveira avaliou Carlos M.',  time:'há 28 min' },
-  { ico:'💰', bg:'rgba(16,185,129,.12)', color:'#10B981', title:'Pagamento aprovado',       desc:'R$ 350,00 confirmado via PIX',    time:'há 45 min' },
-  { ico:'🛠', bg:'rgba(139,92,246,.12)', color:'#8B5CF6', title:'Novo serviço agendado',    desc:'Pintura marcada para 19/06',      time:'há 1h'     },
-  { ico:'👤', bg:'rgba(6,182,212,.12)',  color:'#06B6D4', title:'Funcionário cadastrado',   desc:'Felipe Rodrigues entrou na plataforma', time:'há 2h' },
+  { bg:'rgba(63,112,84,.12)',  color:'#3f7054', title:'Novo usuário cadastrado',  desc:'João Paulo Santos criou conta',   time:'há 2 min'  },
+  { bg:'rgba(90,130,101,.12)', color:'#5a8265', title:'Serviço #892 concluído',   desc:'Elétrica finalizada por Carlos M.',time:'há 15 min' },
+  { bg:'rgba(170,125,62,.12)', color:'#aa7d3e', title:'Avaliação 5★ recebida',    desc:'Ana Oliveira avaliou Carlos M.',  time:'há 28 min' },
+  { bg:'rgba(90,130,101,.12)', color:'#5a8265', title:'Pagamento aprovado',       desc:'R$ 350,00 confirmado via PIX',    time:'há 45 min' },
+  { bg:'rgba(154,117,96,.12)', color:'#9a7560', title:'Novo serviço agendado',    desc:'Pintura marcada para 19/06',      time:'há 1h'     },
+  { bg:'rgba(140,136,97,.12)',  color:'#8c8861', title:'Funcionário cadastrado',   desc:'Felipe Rodrigues entrou na plataforma', time:'há 2h' },
 ];
 
 const STATUS = {
@@ -94,12 +94,12 @@ function drawGrid(ctx, pad, cW, cH, total, max, months, tc, gc) {
     ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke();
     ctx.setLineDash([]);
     const v = max * (1 - i / 4);
-    ctx.fillStyle = tc; ctx.font = '10.5px Inter,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillStyle = tc; ctx.font = '10.5px "Plus Jakarta Sans",sans-serif'; ctx.textAlign = 'right';
     ctx.fillText(v >= 1000 ? 'R$' + (v / 1000).toFixed(0) + 'k' : v, pad.l - 8, y + 4);
   }
   for (let i = 0; i < total; i++) {
     const x = pad.l + (cW / (total - 1)) * i;
-    ctx.fillStyle = tc; ctx.font = '10.5px Inter,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = tc; ctx.font = '10.5px "Plus Jakarta Sans",sans-serif'; ctx.textAlign = 'center';
     ctx.fillText(months[i], x, pad.t + cH + 20);
   }
 }
@@ -112,9 +112,9 @@ function renderLine(year = '2026') {
   const tc = textColor(), gc = gridColor();
   const d = LINE_DATA[year];
   const series = [
-    { data: d.receita, color: '#2563EB', label: 'Receita' },
-    { data: d.gastos,  color: '#EF4444', label: 'Gastos' },
-    { data: d.lucro,   color: '#10B981', label: 'Lucro' },
+    { data: d.receita, color: '#3f7054', label: 'Receita' },
+    { data: d.gastos,  color: '#b95d43', label: 'Gastos' },
+    { data: d.lucro,   color: '#5a8265', label: 'Lucro' },
   ];
   const n   = d.receita.filter(v => v > 0).length;
   const max = Math.max(...d.receita.slice(0, n));
@@ -196,10 +196,10 @@ function renderDonut() {
 
   // center
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = isDark() ? '#F1F5F9' : '#0F172A';
-  ctx.font = 'bold 18px Inter,sans-serif';
+  ctx.fillStyle = isDark() ? '#f3f2ed' : '#202a24';
+  ctx.font = 'bold 18px "Plus Jakarta Sans",sans-serif';
   ctx.fillText('1.273', cx, cy - 8);
-  ctx.font = '11px Inter,sans-serif'; ctx.fillStyle = textColor();
+  ctx.font = '11px "Plus Jakarta Sans",sans-serif'; ctx.fillStyle = textColor();
   ctx.fillText('serviços', cx, cy + 10);
 
   // Legend
@@ -228,7 +228,7 @@ function renderBar() {
     const y = pad.t + (cH / 4) * i;
     ctx.beginPath(); ctx.strokeStyle = gc; ctx.lineWidth = 1; ctx.setLineDash([4, 5]);
     ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cW, y); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = tc; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillStyle = tc; ctx.font = '10px "Plus Jakarta Sans",sans-serif'; ctx.textAlign = 'right';
     ctx.fillText(Math.round(max * (1 - i / 4)), pad.l - 5, y + 4);
   }
 
@@ -245,23 +245,23 @@ function renderBar() {
       else { ctx.moveTo(x + 3, y); ctx.lineTo(x + bW - 3, y); ctx.quadraticCurveTo(x + bW, y, x + bW, y + 3); ctx.lineTo(x + bW, y + bH); ctx.lineTo(x, y + bH); ctx.lineTo(x, y + 3); ctx.quadraticCurveTo(x, y, x + 3, y); }
       ctx.fill();
     };
-    drawBar(BAR_DATA.clientes[i],     gx - bW - 2, '#2563EB', '#1D4ED880');
-    drawBar(BAR_DATA.funcionarios[i], gx + 2,      '#10B981', '#05966980');
-    ctx.fillStyle = tc; ctx.font = '10px Inter,sans-serif'; ctx.textAlign = 'center';
+    drawBar(BAR_DATA.clientes[i],     gx - bW - 2, '#3f7054', '#2c4a3c80');
+    drawBar(BAR_DATA.funcionarios[i], gx + 2,      '#5a8265', '#3f654a80');
+    ctx.fillStyle = tc; ctx.font = '10px "Plus Jakarta Sans",sans-serif'; ctx.textAlign = 'center';
     ctx.fillText(m, gx, H - 10);
   });
 
   document.getElementById('barLegend').innerHTML = `
-    <div class="legend-item"><div class="legend-dot" style="background:#2563EB"></div>Novos Clientes</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#10B981"></div>Novos Profissionais</div>`;
+    <div class="legend-item"><div class="legend-dot" style="background:#3f7054"></div>Novos Clientes</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5a8265"></div>Novos Profissionais</div>`;
 }
 
 // ── KPIs ──────────────────────────────────────────
 function renderKPIs() {
-  document.getElementById('kpiGrid').innerHTML = KPIS.map(k => `
+  document.getElementById('kpiGrid').innerHTML = KPIS.map((k, index) => `
     <div class="kpi" style="--kpi-accent:${k.color};--kpi-bg:${k.bg}" data-tip="${k.tip}">
       <div class="kpi__top">
-        <div class="kpi__icon" style="font-size:18px">${k.emoji}</div>
+        <div class="kpi__icon" aria-hidden="true">${String(index + 1).padStart(2, '0')}</div>
         <div class="kpi__delta ${k.delta >= 0 ? 'up' : 'down'}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">${k.delta >= 0 ? '<polyline points="18 15 12 9 6 15"/>' : '<polyline points="6 9 12 15 18 9"/>'}</svg>
           ${Math.abs(k.delta)}%
@@ -294,9 +294,9 @@ function renderTable() {
 
 // ── Feed ───────────────────────────────────────────
 function renderFeed() {
-  document.getElementById('feedList').innerHTML = FEED.map(f => `
+  document.getElementById('feedList').innerHTML = FEED.map((f, index) => `
     <div class="feed-item">
-      <div class="feed-ico" style="background:${f.bg};font-size:14px">${f.ico}</div>
+      <div class="feed-ico" aria-hidden="true" style="background:var(--surface-2);color:var(--text-2);font-family:var(--mono);font-size:11px">${String(index + 1).padStart(2, '0')}</div>
       <div class="feed-body">
         <div class="feed-title">${f.title}</div>
         <div class="feed-desc">${f.desc}</div>

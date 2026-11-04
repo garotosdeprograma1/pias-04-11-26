@@ -54,6 +54,49 @@ function servirArquivo(res, caminhoRelativo) {
 var servidor = http.createServer(function (req, res) {
   var caminho = req.url.split('?')[0];
 
+  // ---- autenticar cliente ou funcionario no SQLite ----
+  if (req.method === 'POST' && caminho === '/api/login') {
+    var textoLogin = '';
+
+    req.on('data', function (pedaco) {
+      textoLogin += pedaco;
+    });
+
+    req.on('end', function () {
+      var credenciais;
+      try {
+        credenciais = JSON.parse(textoLogin);
+      } catch (erro) {
+        return responderJson(res, 400, { erro: 'Dados invalidos.' });
+      }
+
+      if (!credenciais ||
+          (credenciais.perfil !== 'cliente' && credenciais.perfil !== 'funcionario') ||
+          typeof credenciais.email !== 'string' || !credenciais.email.trim() ||
+          typeof credenciais.senha !== 'string' || !credenciais.senha) {
+        return responderJson(res, 400, { erro: 'Perfil, e-mail e senha sao obrigatorios.' });
+      }
+
+      // A tabela vem apenas dos dois perfis permitidos; valores usam parametros.
+      var tabelaLogin = credenciais.perfil === 'cliente' ? 'cliente' : 'funcionario';
+      var sqlLogin = 'SELECT id, nome, email, telefone FROM ' + tabelaLogin +
+                    ' WHERE LOWER(TRIM(email)) = ? AND senha = ? LIMIT 1';
+      var valoresLogin = [credenciais.email.trim().toLowerCase(), credenciais.senha];
+
+      db.get(sqlLogin, valoresLogin, function (erro, usuario) {
+        if (erro) {
+          return responderJson(res, 500, { erro: 'Nao foi possivel verificar o acesso. Tente novamente.' });
+        }
+        if (!usuario) {
+          return responderJson(res, 401, { erro: 'E-mail ou senha invalidos para este perfil.' });
+        }
+        responderJson(res, 200, { usuario: usuario, perfil: credenciais.perfil });
+      });
+    });
+
+    return;
+  }
+
   // =================================================================
   // API: cliente
   // =================================================================

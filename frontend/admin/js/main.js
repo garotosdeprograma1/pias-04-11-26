@@ -4,10 +4,20 @@
 (function () {
   'use strict';
 
+  // ── Encerrar sessão ────────────────────────────────
+  document.querySelectorAll('.nav-link--danger[href="../index.html"], [data-action="logout"]').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      try { localStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
+      try { sessionStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
+      window.location.replace('../index.html');
+    });
+  });
+
   // ── Theme ──────────────────────────────────────────
   const html = document.documentElement;
-  const THEME_KEY = 'dafix-theme';
-  html.setAttribute('data-theme', localStorage.getItem(THEME_KEY) || 'light');
+  const THEME_KEY = 'dafix_theme';
+  html.setAttribute('data-theme', localStorage.getItem(THEME_KEY) || localStorage.getItem('dafix-theme') || 'light');
 
   document.querySelectorAll('.theme-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -94,7 +104,7 @@
   window.closeOverlay = id => document.getElementById(id)?.classList.remove('open');
   window.openOverlay  = id => document.getElementById(id)?.classList.add('open');
   window.isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
-  window.textColor = () => isDark() ? '#94A3B8' : '#64748B';
-  window.gridColor = () => isDark() ? '#1E293B' : '#E2E8F0';
-  window.surfaceColor = () => isDark() ? '#0F172A' : '#ffffff';
+  window.textColor = () => getComputedStyle(html).getPropertyValue('--text-2').trim();
+  window.gridColor = () => getComputedStyle(html).getPropertyValue('--border').trim();
+  window.surfaceColor = () => getComputedStyle(html).getPropertyValue('--surface').trim();
 })();

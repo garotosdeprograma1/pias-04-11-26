@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#203b30" />
   <meta name="description" content="Área do Cliente — gerencie seus pedidos, serviços e perfil." />
   <title>DaFix — Área do Cliente</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/cliente/stylecli.css">
 </head>
 <body>
@@ -40,6 +41,10 @@
             <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
             <span class="nav__text" data-i18n="nav.services">Serviços</span>
           </button>
+          <a href="../index.html" class="nav__item nav__item--logout" data-action="logout" data-testid="sidebar-logout">
+            <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h10"/></svg></span>
+            <span class="nav__text" data-i18n="nav.logout">Sair da conta</span>
+          </a>
         </div>
       </nav>
 
@@ -101,6 +106,9 @@
           </div>
 
           <button class="avatar avatar--sm js-avatar topbar__avatar" id="topbar-avatar" data-testid="topbar-avatar" aria-label="Abrir perfil"><span class="avatar__initials"></span><span class="avatar__status"></span></button>
+          <button class="icon-btn topbar__logout" type="button" data-action="logout" data-testid="header-logout" aria-label="Sair da conta" title="Sair da conta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h10"/></svg>
+          </button>
         </div>
       </header>
 

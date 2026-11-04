@@ -10,13 +10,13 @@
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
   const ready = (fn) => document.readyState !== "loading" ? fn() : document.addEventListener("DOMContentLoaded", fn);
 
-  const STORAGE_THEME = "dafix.theme";
+  const STORAGE_THEME = "dafix_theme";
 
   /* ====== TEMA ====== */
   function initTheme() {
     const root = document.documentElement;
     const btn = $("#themeToggle");
-    const saved = localStorage.getItem(STORAGE_THEME);
+    const saved = localStorage.getItem(STORAGE_THEME) || localStorage.getItem("dafix.theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = saved || (prefersDark ? "dark" : "light");
     btn && btn.addEventListener("click", () => {

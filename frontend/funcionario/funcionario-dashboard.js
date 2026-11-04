@@ -12,7 +12,7 @@
     const PAGE = document.body.dataset.page || "dashboard";
   
     const STORAGE = {
-      THEME: "mda.pro.theme",
+      THEME: "dafix_theme",
       PROFILE: "mda.pro.profile",
       SIDEBAR: "mda.pro.sidebar",
       SETTINGS: "mda.pro.settings"
@@ -41,7 +41,7 @@
     function initTheme() {
       const root = document.body;
       const toggle = $("#themeToggle");
-      const saved = localStorage.getItem(STORAGE.THEME);
+      const saved = localStorage.getItem(STORAGE.THEME) || localStorage.getItem("mda.pro.theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       root.setAttribute("data-theme", saved || (prefersDark ? "dark" : "light"));
       if (!toggle) return;
@@ -478,9 +478,10 @@
     function initLogout() {
       const btn = $("#confirmLogout"); if (!btn) return;
       btn.addEventListener("click", () => {
-        closeModal("logoutModal");
-        showToast({ title: "Sessão encerrada", message: "Redirecionando para o login...", type: "info" });
-        setTimeout(() => { showToast({ title: "Demo", message: "Em produção, você seria redirecionado para a tela de login.", type: "warning", duration: 4500 }); }, 1400);
+        btn.disabled = true;
+        try { localStorage.removeItem("dafix_session"); } catch { /* armazenamento indisponível */ }
+        try { sessionStorage.removeItem("dafix_session"); } catch { /* armazenamento indisponível */ }
+        window.location.replace("../index.html");
       });
     }
   

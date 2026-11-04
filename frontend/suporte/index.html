@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2563eb" />
+  <meta name="theme-color" content="#203b30" />
   <title>Central de Ajuda — Dafix</title>
   <meta name="description" content="Central de Ajuda Dafix. Encontre respostas rápidas, tutoriais e entre em contato com o suporte." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="suporte.css" />
 </head>
 <body>
@@ -86,7 +86,7 @@
         </div>
         <div class="cat-grid" role="list">
           <a class="cat-card" href="#faq-section" data-filter-cat="conta" role="listitem" tabindex="0">
-            <span class="cat-card__icon cat-card__icon--blue" aria-hidden="true">
+            <span class="cat-card__icon cat-card__icon--brand" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </span>
             <h3>Conta e Acesso</h3>
@@ -168,7 +168,7 @@
             </button>
             <div class="faq-item__body" role="region" aria-label="Resposta">
               <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--blue">Conta e Acesso</span>
+                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
                 <p>Para redefinir sua senha, siga os passos abaixo:</p>
                 <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
                   <li>Acesse a tela de login e clique em <strong>"Esqueci minha senha"</strong>.</li>
@@ -188,7 +188,7 @@
             </button>
             <div class="faq-item__body" role="region" aria-label="Resposta">
               <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--blue">Conta e Acesso</span>
+                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
                 <p>A verificação em duas etapas adiciona uma camada extra de segurança. Para ativá-la:</p>
                 <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
                   <li>Acesse <strong>Configurações → Segurança</strong> na sua conta.</li>
@@ -208,7 +208,7 @@
             </button>
             <div class="faq-item__body" role="region" aria-label="Resposta">
               <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--blue">Conta e Acesso</span>
+                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
                 <p>Para alterar informações de contato, vá em <strong>Configurações → Perfil</strong>. Clique no campo desejado, insira o novo dado e confirme via código de verificação enviado para o contato <em>atual</em>.</p>
                 <p style="margin-top:10px;">Por segurança, alterações de e-mail exigem confirmação em ambos os endereços (antigo e novo).</p>
               </div>
@@ -361,7 +361,7 @@
             <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <h3>Nenhuma pergunta encontrada</h3>
-          <p>Tente outros termos ou <a href="contato.html" style="color:var(--blue-600)">abra um ticket</a> para atendimento personalizado.</p>
+          <p>Tente outros termos ou <a href="contato.html" style="color:var(--brand-600)">abra um ticket</a> para atendimento personalizado.</p>
         </div>
       </section>
 
@@ -378,7 +378,7 @@
         <div class="contact-grid">
 
           <div class="contact-card">
-            <span class="contact-card__icon cat-card__icon--blue">
+            <span class="contact-card__icon cat-card__icon--brand">
               <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
             </span>
             <h3>Chat ao vivo</h3>
@@ -471,7 +471,7 @@
     // faqSearch focus ring
     var faqSearchEl = document.getElementById("faqSearch");
     if (faqSearchEl) {
-      faqSearchEl.addEventListener("focus", function() { faqSearchEl.style.borderColor = "var(--blue-500)"; faqSearchEl.style.boxShadow = "0 0 0 4px var(--ring)"; });
+      faqSearchEl.addEventListener("focus", function() { faqSearchEl.style.borderColor = "var(--brand-500)"; faqSearchEl.style.boxShadow = "0 0 0 4px var(--ring)"; });
       faqSearchEl.addEventListener("blur",  function() { faqSearchEl.style.borderColor = ""; faqSearchEl.style.boxShadow = ""; });
     }
   </script>

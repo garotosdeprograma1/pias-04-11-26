@@ -10,25 +10,25 @@
     };
 
     const COLUMNS = [
-      { key: "pending", label: "Aguardando", color: "#F59E0B" },
-      { key: "progress", label: "Em andamento", color: "#3B82F6" },
-      { key: "scheduled", label: "Agendado", color: "#8B5CF6" },
-      { key: "completed", label: "Concluído", color: "#10B981" }
+      { key: "pending", label: "Aguardando", color: "#9b7635" },
+      { key: "progress", label: "Em andamento", color: "#203b30" },
+      { key: "scheduled", label: "Agendado", color: "#b95d43" },
+      { key: "completed", label: "Concluído", color: "#2f704b" }
     ];
 
     const DEFAULT_ORDERS = [
-      { id: "#2398", title: "Instalação de chuveiro", client: "Mariana Costa", initials: "MC", color: "#3B82F6", price: 480, status: "progress", date: "Hoje, 14:00", address: "Rua das Flores, 128 · Vila Mariana", phone: "(11) 98765-4321", desc: "Cliente precisa instalar chuveiro elétrico 220V no banheiro social." },
-      { id: "#2399", title: "Conserto de tomada", client: "Pedro Henrique", initials: "PH", color: "#8B5CF6", price: 180, status: "pending", date: "Aguardando aceite", address: "Av. Paulista, 900 · Bela Vista", phone: "(11) 97654-3210", desc: "Tomada da sala apresenta faíscas ao conectar aparelhos." },
-      { id: "#2400", title: "Pintura de quarto", client: "Beatriz Alves", initials: "BA", color: "#F43F5E", price: 620, status: "pending", date: "Aguardando aceite", address: "Rua Harmonia, 45 · Pinheiros", phone: "(11) 96543-2109", desc: "Quarto de 12m², tinta acrílica branca já comprada pela cliente." },
-      { id: "#2401", title: "Vazamento na pia", client: "Roberto Dias", initials: "RD", color: "#14B8A6", price: 220, status: "pending", date: "Aguardando aceite", address: "Rua dos Pinheiros, 310 · Pinheiros", phone: "(11) 95432-1098", desc: "Vazamento embaixo da pia da cozinha, possível troca de vedante." },
-      { id: "#2402", title: "Manutenção elétrica", client: "Cond. Verde Vida", initials: "VV", color: "#10B981", price: 720, status: "scheduled", date: "15/Mar, 08:30", address: "Condomínio Verde Vida · Bloco B", phone: "(11) 94321-0987", desc: "Manutenção preventiva no quadro elétrico do condomínio." },
-      { id: "#2403", title: "Montagem de móveis", client: "Tatiana Borges", initials: "TB", color: "#F59E0B", price: 320, status: "scheduled", date: "13/Mar, 09:00", address: "Rua Augusta, 512 · Consolação", phone: "(11) 93210-9876", desc: "Montagem de guarda-roupa e estante de escritório." },
-      { id: "#2404", title: "Troca de chuveiro", client: "Lucas Martins", initials: "LM", color: "#3B82F6", price: 280, status: "scheduled", date: "16/Mar, 11:00", address: "Rua Vergueiro, 2100 · Vila Mariana", phone: "(11) 92109-8765", desc: "Substituição de chuveiro antigo por modelo Lorenzetti." },
-      { id: "#2396", title: "Reparo hidráulico", client: "João Pereira", initials: "JP", color: "#10B981", price: 540, status: "progress", date: "Hoje, 10:30", address: "Rua Domingos de Morais, 88 · Vila Mariana", phone: "(11) 91098-7654", desc: "Reparo de vazamento no registro do banheiro." },
-      { id: "#2397", title: "Conserto elétrico", client: "Rafael Lima", initials: "RL", color: "#8B5CF6", price: 260, status: "completed", date: "Ontem, 16:20", rating: 5, ratingNote: "Ótimo profissional, rápido e organizado!", address: "Rua da Consolação, 1500 · Consolação", phone: "(11) 90987-6543", desc: "Troca de disjuntor e revisão de fiação." },
-      { id: "#2395", title: "Reparo de torneira", client: "Sofía Mendes", initials: "SM", color: "#F43F5E", price: 140, status: "completed", date: "Ontem, 14:00", rating: 4, ratingNote: "Muito bom, resolveu o problema rapidinho.", address: "Rua Haddock Lobo, 72 · Cerqueira César", phone: "(11) 89876-5432", desc: "Torneira da cozinha com gotejamento constante." },
-      { id: "#2394", title: "Instalação de lustres", client: "André Souza", initials: "AS", color: "#14B8A6", price: 380, status: "completed", date: "Há 2 dias", rating: 5, ratingNote: "Perfeito! Muito cuidadoso com os acabamentos.", address: "Rua Bela Cintra, 400 · Jardins", phone: "(11) 88765-4321", desc: "Instalação de 3 lustres na sala e corredor." },
-      { id: "#2393", title: "Pintura de fachada", client: "Helena Castro", initials: "HC", color: "#F59E0B", price: 1240, status: "completed", date: "Há 3 dias", rating: 4, ratingNote: "Excelente trabalho, recomendo muito.", address: "Rua Estados Unidos, 1200 · Jardins", phone: "(11) 87654-3210", desc: "Pintura externa de fachada residencial, 2 andares." }
+      { id: "#2398", title: "Instalação de chuveiro", client: "Mariana Costa", initials: "MC", color: "#203b30", price: 480, status: "progress", date: "Hoje, 14:00", address: "Rua das Flores, 128 · Vila Mariana", phone: "(11) 98765-4321", desc: "Cliente precisa instalar chuveiro elétrico 220V no banheiro social." },
+      { id: "#2399", title: "Conserto de tomada", client: "Pedro Henrique", initials: "PH", color: "#b95d43", price: 180, status: "pending", date: "Aguardando aceite", address: "Av. Paulista, 900 · Bela Vista", phone: "(11) 97654-3210", desc: "Tomada da sala apresenta faíscas ao conectar aparelhos." },
+      { id: "#2400", title: "Pintura de quarto", client: "Beatriz Alves", initials: "BA", color: "#a06658", price: 620, status: "pending", date: "Aguardando aceite", address: "Rua Harmonia, 45 · Pinheiros", phone: "(11) 96543-2109", desc: "Quarto de 12m², tinta acrílica branca já comprada pela cliente." },
+      { id: "#2401", title: "Vazamento na pia", client: "Roberto Dias", initials: "RD", color: "#607866", price: 220, status: "pending", date: "Aguardando aceite", address: "Rua dos Pinheiros, 310 · Pinheiros", phone: "(11) 95432-1098", desc: "Vazamento embaixo da pia da cozinha, possível troca de vedante." },
+      { id: "#2402", title: "Manutenção elétrica", client: "Cond. Verde Vida", initials: "VV", color: "#2f704b", price: 720, status: "scheduled", date: "15/Mar, 08:30", address: "Condomínio Verde Vida · Bloco B", phone: "(11) 94321-0987", desc: "Manutenção preventiva no quadro elétrico do condomínio." },
+      { id: "#2403", title: "Montagem de móveis", client: "Tatiana Borges", initials: "TB", color: "#9b7635", price: 320, status: "scheduled", date: "13/Mar, 09:00", address: "Rua Augusta, 512 · Consolação", phone: "(11) 93210-9876", desc: "Montagem de guarda-roupa e estante de escritório." },
+      { id: "#2404", title: "Troca de chuveiro", client: "Lucas Martins", initials: "LM", color: "#203b30", price: 280, status: "scheduled", date: "16/Mar, 11:00", address: "Rua Vergueiro, 2100 · Vila Mariana", phone: "(11) 92109-8765", desc: "Substituição de chuveiro antigo por modelo Lorenzetti." },
+      { id: "#2396", title: "Reparo hidráulico", client: "João Pereira", initials: "JP", color: "#2f704b", price: 540, status: "progress", date: "Hoje, 10:30", address: "Rua Domingos de Morais, 88 · Vila Mariana", phone: "(11) 91098-7654", desc: "Reparo de vazamento no registro do banheiro." },
+      { id: "#2397", title: "Conserto elétrico", client: "Rafael Lima", initials: "RL", color: "#b95d43", price: 260, status: "completed", date: "Ontem, 16:20", rating: 5, ratingNote: "Ótimo profissional, rápido e organizado!", address: "Rua da Consolação, 1500 · Consolação", phone: "(11) 90987-6543", desc: "Troca de disjuntor e revisão de fiação." },
+      { id: "#2395", title: "Reparo de torneira", client: "Sofía Mendes", initials: "SM", color: "#a06658", price: 140, status: "completed", date: "Ontem, 14:00", rating: 4, ratingNote: "Muito bom, resolveu o problema rapidinho.", address: "Rua Haddock Lobo, 72 · Cerqueira César", phone: "(11) 89876-5432", desc: "Torneira da cozinha com gotejamento constante." },
+      { id: "#2394", title: "Instalação de lustres", client: "André Souza", initials: "AS", color: "#607866", price: 380, status: "completed", date: "Há 2 dias", rating: 5, ratingNote: "Perfeito! Muito cuidadoso com os acabamentos.", address: "Rua Bela Cintra, 400 · Jardins", phone: "(11) 88765-4321", desc: "Instalação de 3 lustres na sala e corredor." },
+      { id: "#2393", title: "Pintura de fachada", client: "Helena Castro", initials: "HC", color: "#9b7635", price: 1240, status: "completed", date: "Há 3 dias", rating: 4, ratingNote: "Excelente trabalho, recomendo muito.", address: "Rua Estados Unidos, 1200 · Jardins", phone: "(11) 87654-3210", desc: "Pintura externa de fachada residencial, 2 andares." }
     ];
 
     let ORDERS = [];
@@ -36,7 +36,10 @@
     function loadOrders() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-        if (Array.isArray(saved) && saved.length) return saved;
+        if (Array.isArray(saved) && saved.length) {
+          const legacyColors = { "#3B82F6": "#203b30", "#8B5CF6": "#b95d43", "#F43F5E": "#a06658", "#14B8A6": "#607866", "#10B981": "#2f704b", "#F59E0B": "#9b7635" };
+          return saved.map(order => ({ ...order, color: legacyColors[String(order.color).toUpperCase()] || order.color }));
+        }
       } catch { /* ignore */ }
       return DEFAULT_ORDERS.map(o => ({ ...o }));
     }

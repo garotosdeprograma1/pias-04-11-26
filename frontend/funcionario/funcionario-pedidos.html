@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Marido de Aluguel — Gestão de Pedidos." />
-<title>Gestão de Pedidos — Marido de Aluguel</title>
+<meta name="theme-color" content="#203b30" />
+<meta name="description" content="Dafix — Gestão de Pedidos." />
+<title>Gestão de Pedidos — Dafix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="funcionario-dashboard.css" />
 </head>
 <body data-theme="light" data-page="pedidos">
@@ -14,7 +15,7 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar__brand">
       <img src="/assets/logo.png" alt="DaFix" class="brand__logo" width="40" height="40">
-      <div class="brand__text"><span class="brand__title">Marido</span><span class="brand__subtitle">de Aluguel · Pro</span></div>
+      <div class="brand__text"><span class="brand__title">Dafix</span><span class="brand__subtitle">Área profissional</span></div>
       <button class="sidebar__collapse" id="sidebarCollapse" aria-label="Recolher"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
     <nav class="sidebar__nav">
@@ -57,7 +58,7 @@
         </div>
       </section>
 
-      <div class="metrics" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+      <div class="metrics metrics--compact">
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--amber"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span><span class="metric__delta">+5</span></div><p class="metric__label">Aguardando</p><p class="metric__value">3</p></article>
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--blue"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2-2 2.4-2.4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span><span class="metric__delta">+2</span></div><p class="metric__label">Em andamento</p><p class="metric__value">2</p></article>
         <article class="metric"><div class="metric__top"><span class="metric__icon metric__icon--green"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="metric__delta">+18</span></div><p class="metric__label">Concluídos no mês</p><p class="metric__value">42</p></article>
@@ -76,7 +77,7 @@
       <div class="kanban" id="kanban"></div>
     </main>
 
-    <footer class="app-foot"><p>© <span id="year"></span> Marido de Aluguel · Plataforma para profissionais</p><ul><li><a href="../suporte/index.html">Central de ajuda</a></li><li><a href="#" data-action="open-terms">Termos</a></li><li><a href="#" data-action="open-privacy">Privacidade</a></li></ul></footer>
+    <footer class="app-foot"><p>© <span id="year"></span> Dafix · Plataforma para profissionais</p><ul><li><a href="../suporte/index.html">Central de ajuda</a></li><li><a href="#" data-action="open-terms">Termos</a></li><li><a href="#" data-action="open-privacy">Privacidade</a></li></ul></footer>
   </div>
 </div>
 
@@ -97,7 +98,7 @@
     </header>
     <div class="modal__body">
       <div class="order-detail__head">
-        <span class="avatar avatar--lg" id="orderDetailAvatar" style="--bg:#3B82F6"><span class="avatar__initials">MC</span></span>
+        <span class="avatar avatar--lg" id="orderDetailAvatar" style="--bg:#42634e"><span class="avatar__initials">MC</span></span>
         <div>
           <p class="order-detail__title" id="orderDetailTitle"></p>
           <p class="order-detail__client" id="orderDetailClient"></p>

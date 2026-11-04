@@ -6,27 +6,27 @@
 const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 const KPIS = [
-  {label:'Receita Total',        val:548900,  prefix:'R$\u00a0',suffix:'',   delta:'+22%',up:true, color:'#2563EB',bg:'rgba(37,99,235,.1)', emoji:'💰'},
-  {label:'Lucro Total',          val:229180,  prefix:'R$\u00a0',suffix:'',   delta:'+18%',up:true, color:'#10B981',bg:'rgba(16,185,129,.1)',emoji:'📈'},
-  {label:'Clientes Ativos',      val:1940,    prefix:'',        suffix:'',   delta:'+8%', up:true, color:'#06B6D4',bg:'rgba(6,182,212,.1)', emoji:'👥'},
-  {label:'Ticket Médio',         val:384.5,   prefix:'R$\u00a0',suffix:'',   delta:'+5%', up:true, color:'#8B5CF6',bg:'rgba(139,92,246,.1)',emoji:'🎫'},
-  {label:'Taxa de Conversão',    val:74.3,    prefix:'',        suffix:'%',  delta:'+3%', up:true, color:'#F59E0B',bg:'rgba(245,158,11,.1)',emoji:'🎯'},
-  {label:'Avaliação Média',      val:4.87,    prefix:'',        suffix:' ★', delta:'+0.2',up:true, color:'#F59E0B',bg:'rgba(245,158,11,.1)',emoji:'⭐'},
-  {label:'Profissionais Ativos', val:312,     prefix:'',        suffix:'',   delta:'+4%', up:true, color:'#8B5CF6',bg:'rgba(139,92,246,.1)',emoji:'🔧'},
-  {label:'Serviços Concluídos',  val:1273,    prefix:'',        suffix:'',   delta:'+16%',up:true, color:'#10B981',bg:'rgba(16,185,129,.1)',emoji:'✅'},
+  {label:'Receita Total',        val:548900,  prefix:'R$\u00a0',suffix:'',   delta:'+22%',up:true, color:'#3f7054',bg:'rgba(63,112,84,.1)'},
+  {label:'Lucro Total',          val:229180,  prefix:'R$\u00a0',suffix:'',   delta:'+18%',up:true, color:'#5a8265',bg:'rgba(90,130,101,.1)'},
+  {label:'Clientes Ativos',      val:1940,    prefix:'',        suffix:'',   delta:'+8%', up:true, color:'#8c8861',bg:'rgba(140,136,97,.1)'},
+  {label:'Ticket Médio',         val:384.5,   prefix:'R$\u00a0',suffix:'',   delta:'+5%', up:true, color:'#9a7560',bg:'rgba(154,117,96,.1)'},
+  {label:'Taxa de Conversão',    val:74.3,    prefix:'',        suffix:'%',  delta:'+3%', up:true, color:'#aa7d3e',bg:'rgba(170,125,62,.1)'},
+  {label:'Avaliação Média',      val:4.87,    prefix:'',        suffix:' ★', delta:'+0.2',up:true, color:'#aa7d3e',bg:'rgba(170,125,62,.1)'},
+  {label:'Profissionais Ativos', val:312,     prefix:'',        suffix:'',   delta:'+4%', up:true, color:'#9a7560',bg:'rgba(154,117,96,.1)'},
+  {label:'Serviços Concluídos',  val:1273,    prefix:'',        suffix:'',   delta:'+16%',up:true, color:'#5a8265',bg:'rgba(90,130,101,.1)'},
 ];
 
 const REV_2026  = [64000,72000,85000,91000,108000,128450];
 const ANNUAL    = {2024:890000, 2025:1120000, 2026:548900};
 const CATS = [
-  {label:'Elétrica',    val:387,color:'#2563EB'},{label:'Hidráulica',  val:251,color:'#06B6D4'},
-  {label:'Pintura',     val:218,color:'#10B981'},{label:'Montagem',    val:176,color:'#F59E0B'},
-  {label:'Instalações', val:132,color:'#8B5CF6'},{label:'Outros',      val:109,color:'#94A3B8'},
+  {label:'Elétrica',    val:387,color:'#3f7054'},{label:'Hidráulica',  val:251,color:'#8c8861'},
+  {label:'Pintura',     val:218,color:'#5a8265'},{label:'Montagem',    val:176,color:'#aa7d3e'},
+  {label:'Instalações', val:132,color:'#9a7560'},{label:'Outros',      val:109,color:'#89938c'},
 ];
 const HOURS = [
-  {label:'06–09h',val: 84,color:'#94A3B8'},{label:'09–12h',val:312,color:'#2563EB'},
-  {label:'12–15h',val:198,color:'#06B6D4'},{label:'15–18h',val:276,color:'#10B981'},
-  {label:'18–21h',val:143,color:'#F59E0B'},{label:'21–24h',val: 52,color:'#94A3B8'},
+  {label:'06–09h',val: 84,color:'#89938c'},{label:'09–12h',val:312,color:'#3f7054'},
+  {label:'12–15h',val:198,color:'#8c8861'},{label:'15–18h',val:276,color:'#5a8265'},
+  {label:'18–21h',val:143,color:'#aa7d3e'},{label:'21–24h',val: 52,color:'#89938c'},
 ];
 const RANKING = [
   {name:'Pedro Carvalho',   srv:203,rev:78240,rating:4.7,sat:96},
@@ -66,11 +66,11 @@ function renderRev() {
     ctx.beginPath();ctx.strokeStyle=gc;ctx.lineWidth=1;ctx.setLineDash([4,5]);
     ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.setLineDash([]);
     const v=max*(1-i/4);
-    ctx.fillStyle=tc;ctx.font='10.5px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillStyle=tc;ctx.font='10.5px "Plus Jakarta Sans",sans-serif';ctx.textAlign='right';
     ctx.fillText('R$'+(v/1000).toFixed(0)+'k',pad.l-8,y+4);
   }
   MONTHS.slice(0,n).forEach((m,i)=>{
-    ctx.fillStyle=tc;ctx.font='10.5px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillStyle=tc;ctx.font='10.5px "Plus Jakarta Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText(m,pad.l+i*sx,H-8);
   });
 
@@ -79,11 +79,11 @@ function renderRev() {
   REV_2026.forEach((v,i)=>{ const x=pad.l+i*sx,y=pad.t+cH-(v/max)*cH; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.lineTo(pad.l+(n-1)*sx,pad.t+cH);ctx.lineTo(pad.l,pad.t+cH);ctx.closePath();
   const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);
-  g.addColorStop(0,'rgba(37,99,235,.2)');g.addColorStop(1,'rgba(37,99,235,.0)');
+  g.addColorStop(0,'rgba(63,112,84,.2)');g.addColorStop(1,'rgba(63,112,84,.0)');
   ctx.fillStyle=g;ctx.fill();
 
   // line
-  ctx.beginPath();ctx.strokeStyle='#2563EB';ctx.lineWidth=2.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#3f7054';ctx.lineWidth=2.5;ctx.lineJoin='round';
   REV_2026.forEach((v,i)=>{ const x=pad.l+i*sx,y=pad.t+cH-(v/max)*cH; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.stroke();
 
@@ -91,9 +91,9 @@ function renderRev() {
   REV_2026.forEach((v,i)=>{
     const x=pad.l+i*sx,y=pad.t+cH-(v/max)*cH;
     ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
-    ctx.fillStyle='#2563EB';ctx.fill();
+    ctx.fillStyle='#3f7054';ctx.fill();
     ctx.strokeStyle=surfaceColor();ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=tc;ctx.font='bold 10px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillStyle=tc;ctx.font='bold 10px "Plus Jakarta Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText('R$'+(v/1000).toFixed(0)+'k',x,y-12);
   });
 }
@@ -107,7 +107,7 @@ function renderAnn() {
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const years=['2024','2025','2026'];
   const max=1250000;
-  const colors=['#CBD5E1','#60A5FA','#2563EB'];
+  const colors=['#bcc6bd','#94b49c','#3f7054'];
   const bW=cW/years.length*0.55;
 
   for(let i=0;i<=4;i++){
@@ -115,7 +115,7 @@ function renderAnn() {
     ctx.beginPath();ctx.strokeStyle=gc;ctx.lineWidth=1;ctx.setLineDash([4,5]);
     ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.setLineDash([]);
     const v=max*(1-i/4);
-    ctx.fillStyle=tc;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillStyle=tc;ctx.font='10px "Plus Jakarta Sans",sans-serif';ctx.textAlign='right';
     ctx.fillText('R$'+(v/1000).toFixed(0)+'k',pad.l-6,y+4);
   }
 
@@ -129,9 +129,9 @@ function renderAnn() {
     if(ctx.roundRect) ctx.roundRect(x,pad.t+cH-bH,bW,bH,[4,4,0,0]);
     else ctx.rect(x,pad.t+cH-bH,bW,bH);
     ctx.fill();
-    ctx.fillStyle=tc;ctx.font='11px Inter,sans-serif';ctx.textAlign='center';
+    ctx.fillStyle=tc;ctx.font='11px "Plus Jakarta Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText(yr,x+bW/2,H-8);
-    if(bH>24){ctx.fillStyle='#fff';ctx.font='bold 10px Inter,sans-serif';ctx.fillText('R$'+(v/1000).toFixed(0)+'k',x+bW/2,pad.t+cH-bH+16);}
+    if(bH>24){ctx.fillStyle='#fff';ctx.font='bold 10px "Plus Jakarta Sans",sans-serif';ctx.fillText('R$'+(v/1000).toFixed(0)+'k',x+bW/2,pad.t+cH-bH+16);}
   });
 }
 
@@ -156,9 +156,9 @@ function renderCat() {
     ctx.fillStyle=g;
     if(ctx.roundRect) ctx.beginPath(),ctx.roundRect(pad.l,y,w,bH,[3]),ctx.fill();
     else ctx.fillRect(pad.l,y,w,bH);
-    ctx.fillStyle=tc;ctx.font='11.5px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillStyle=tc;ctx.font='11.5px "Plus Jakarta Sans",sans-serif';ctx.textAlign='right';
     ctx.fillText(d.label,pad.l-8,y+bH/2+4);
-    ctx.fillStyle=d.color;ctx.font='bold 11px Inter,sans-serif';ctx.textAlign='left';
+    ctx.fillStyle=d.color;ctx.font='bold 11px "Plus Jakarta Sans",sans-serif';ctx.textAlign='left';
     ctx.fillText(d.val,pad.l+cW+6,y+bH/2+4);
   });
 }
@@ -177,7 +177,7 @@ function renderHr() {
     const y=pad.t+(cH/4)*i;
     ctx.beginPath();ctx.strokeStyle=gc;ctx.lineWidth=1;ctx.setLineDash([4,5]);
     ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle=tc;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
+    ctx.fillStyle=tc;ctx.font='10px "Plus Jakarta Sans",sans-serif';ctx.textAlign='right';
     ctx.fillText(Math.round(max*(1-i/4)),pad.l-5,y+4);
   }
 
@@ -185,7 +185,7 @@ function renderHr() {
     const bH=(d.val/max)*cH;
     const x=pad.l+(cW/n)*i+(cW/n-bW)/2;
     const isMax=d.val===max;
-    const c=isMax?'#2563EB':d.color;
+    const c=isMax?'#3f7054':d.color;
     const g=ctx.createLinearGradient(0,pad.t+cH-bH,0,pad.t+cH);
     g.addColorStop(0,c);g.addColorStop(1,c+'50');
     ctx.fillStyle=g;
@@ -193,19 +193,19 @@ function renderHr() {
     if(ctx.roundRect) ctx.roundRect(x,pad.t+cH-bH,bW,bH,[3,3,0,0]);
     else ctx.rect(x,pad.t+cH-bH,bW,bH);
     ctx.fill();
-    if(isMax){ctx.fillStyle='rgba(37,99,235,.1)';ctx.fillRect(x-2,pad.t,bW+4,cH);}
-    ctx.fillStyle=tc;ctx.font='10px Inter,sans-serif';ctx.textAlign='center';
+    if(isMax){ctx.fillStyle='rgba(63,112,84,.1)';ctx.fillRect(x-2,pad.t,bW+4,cH);}
+    ctx.fillStyle=tc;ctx.font='10px "Plus Jakarta Sans",sans-serif';ctx.textAlign='center';
     ctx.fillText(d.label,x+bW/2,H-8);
-    if(bH>18){ctx.fillStyle='#fff';ctx.font='bold 10px Inter,sans-serif';ctx.fillText(d.val,x+bW/2,pad.t+cH-bH+14);}
+    if(bH>18){ctx.fillStyle='#fff';ctx.font='bold 10px "Plus Jakarta Sans",sans-serif';ctx.fillText(d.val,x+bW/2,pad.t+cH-bH+14);}
   });
 }
 
 // ── KPIs ──────────────────────────────────────────
 function renderKpis() {
-  document.getElementById('repKpis').innerHTML = KPIS.map(k=>`
+  document.getElementById('repKpis').innerHTML = KPIS.map((k, index)=>`
     <div class="kpi" style="--kpi-accent:${k.color};--kpi-bg:${k.bg}">
       <div class="kpi__top">
-        <div class="kpi__icon" style="font-size:18px">${k.emoji}</div>
+        <div class="kpi__icon" aria-hidden="true">${String(index + 1).padStart(2, '0')}</div>
         <div class="kpi__delta ${k.up?'up':'down'}">${k.delta}</div>
       </div>
       <div class="kpi__value">
@@ -219,9 +219,9 @@ function renderKpis() {
 // ── Ranking ────────────────────────────────────────
 function renderRanking() {
   const RANK_STYLE = [
-    'background:#FEF3C7;color:#D97706',
-    'background:#F1F5F9;color:#475569',
-    'background:#FEE2E2;color:#B45309',
+    'background:#f8eedb;color:#8c672c',
+    'background:#f3f2ed;color:#67736b',
+    'background:#f5e8e3;color:#9f4b34',
     'background:var(--surface-2);color:var(--text-3)',
     'background:var(--surface-2);color:var(--text-3)',
   ];
@@ -251,7 +251,7 @@ function renderRatings() {
       <div style="width:20px;text-align:right;font-size:12px;font-weight:700;color:var(--text-2)">${r.s}</div>
       <div style="font-size:14px;color:var(--warning)">★</div>
       <div style="flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden">
-        <div style="height:100%;width:${r.p}%;background:linear-gradient(90deg,#F59E0B,#FBBF24);border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
+        <div style="height:100%;width:${r.p}%;background:var(--warning);border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
       </div>
       <div style="width:36px;font-size:11.5px;color:var(--text-3);font-weight:500;text-align:right">${r.n}</div>
     </div>`).join('');

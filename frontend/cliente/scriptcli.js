@@ -36,6 +36,7 @@
        'nav.account': 'Minha Conta',
        'nav.orders': 'Pedidos',
        'nav.services': 'Serviços',
+       'nav.logout': 'Sair da conta',
        'sidebar.plan': 'Cliente Premium',
        'promo.title': 'Indique e ganhe',
        'promo.text': 'Convide amigos e ganhe R$ 30 de desconto no próximo serviço.',
@@ -237,6 +238,7 @@
        'nav.account': 'My Account',
        'nav.orders': 'Orders',
        'nav.services': 'Services',
+       'nav.logout': 'Sign out',
        'sidebar.plan': 'Premium Client',
        'promo.title': 'Refer & earn',
        'promo.text': 'Invite friends and get R$ 30 off your next service.',
@@ -457,14 +459,14 @@
      chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
    };
    
-   // Presets de avatar (gradientes)
+   // Presets de avatar na paleta da marca
    const AVATAR_PRESETS = {
-     g1: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-     g2: 'linear-gradient(135deg, #f97316, #f43f5e)',
-     g3: 'linear-gradient(135deg, #10b981, #14b8a6)',
-     g4: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-     g5: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-     g6: 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+     g1: '#203b30',
+     g2: '#b95d43',
+     g3: '#3f6550',
+     g4: '#80644c',
+     g5: '#9b7635',
+     g6: '#596f60',
    };
    
    const DEFAULT_USER = {
@@ -582,7 +584,7 @@
    
    const state = {
      lang: storage.get('sh_lang', 'pt'),
-     theme: storage.get('sh_theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+     theme: localStorage.getItem('dafix_theme') || storage.get('sh_theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
      user: storage.get('sh_user', DEFAULT_USER),
      orders: storage.get('sh_orders', DEFAULT_ORDERS),
      favorites: storage.get('sh_favorites', ['svc-3', 'svc-7']),
@@ -629,6 +631,7 @@
      toggle() {
        state.theme = state.theme === 'light' ? 'dark' : 'light';
        storage.set('sh_theme', state.theme);
+       localStorage.setItem('dafix_theme', state.theme);
        Theme.apply();
      },
      init() {
@@ -693,7 +696,13 @@
      openSidebar() { $('#app-shell').classList.add('is-mobile-open'); },
      closeSidebar() { $('#app-shell').classList.remove('is-mobile-open'); },
      init() {
-       $$('.nav__item').forEach((btn) => btn.addEventListener('click', () => Navigation.go(btn.dataset.view)));
+       $$('.nav__item[data-view]').forEach((btn) => btn.addEventListener('click', () => Navigation.go(btn.dataset.view)));
+       $$('[data-action="logout"]').forEach((btn) => btn.addEventListener('click', (event) => {
+         event.preventDefault();
+         try { localStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
+         try { sessionStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
+         window.location.replace('../index.html');
+       }));
        $('#menu-btn').addEventListener('click', Navigation.openSidebar);
        $('#sidebar-overlay').addEventListener('click', Navigation.closeSidebar);
        $('#topbar-avatar').addEventListener('click', () => { Navigation.go('account'); Tabs.goAccount('profile'); });
@@ -1697,4 +1706,3 @@
      Language.init();
      Language.rerenderAll();
    });
-   

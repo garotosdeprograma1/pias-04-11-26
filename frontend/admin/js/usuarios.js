@@ -3,7 +3,7 @@
    ===================================================== */
 'use strict';
 
-const AV_COLORS = ['#2563EB','#10B981','#F59E0B','#EF4444','#8B5CF6','#06B6D4','#EC4899','#F97316'];
+const AV_COLORS = ['#3f7054','#5a8265','#aa7d3e','#b95d43','#9a7560','#8c8861','#9c604e','#a96a43'];
 const initials = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const avColor  = n => AV_COLORS[n.charCodeAt(0) % AV_COLORS.length];
 
@@ -32,14 +32,14 @@ function renderKpis() {
   const tots = DB.length, clients = DB.filter(u=>u.type==='cliente').length;
   const pros  = DB.filter(u=>u.type==='funcionario').length, active = DB.filter(u=>u.status==='ativo').length;
   const defs = [
-    {label:'Total',         val:tots,   color:'#2563EB', bg:'rgba(37,99,235,.1)',  emoji:'👥'},
-    {label:'Clientes',      val:clients,color:'#06B6D4', bg:'rgba(6,182,212,.1)',  emoji:'🧑'},
-    {label:'Profissionais', val:pros,   color:'#8B5CF6', bg:'rgba(139,92,246,.1)', emoji:'🔧'},
-    {label:'Ativos',        val:active, color:'#10B981', bg:'rgba(16,185,129,.1)', emoji:'✅'},
+    {label:'Total',         val:tots,   color:'#3f7054', bg:'rgba(63,112,84,.1)'},
+    {label:'Clientes',      val:clients,color:'#8c8861', bg:'rgba(140,136,97,.1)'},
+    {label:'Profissionais', val:pros,   color:'#9a7560', bg:'rgba(154,117,96,.1)'},
+    {label:'Ativos',        val:active, color:'#5a8265', bg:'rgba(90,130,101,.1)'},
   ];
-  document.getElementById('userKpis').innerHTML = defs.map(d=>`
+  document.getElementById('userKpis').innerHTML = defs.map((d, index)=>`
     <div class="kpi" style="--kpi-accent:${d.color};--kpi-bg:${d.bg};padding:16px">
-      <div class="kpi__top"><div class="kpi__icon" style="font-size:18px">${d.emoji}</div></div>
+      <div class="kpi__top"><div class="kpi__icon" aria-hidden="true">${String(index + 1).padStart(2, '0')}</div></div>
       <div class="kpi__value" style="font-size:22px">${d.val}</div>
       <div class="kpi__label">${d.label}</div>
     </div>`).join('');

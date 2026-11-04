@@ -2,7 +2,7 @@
    Dafix — Auth logic (Vanilla ES6+)
    - i18n (PT/EN), theme toggle, tabs, profile segmented control
    - real-time validation, masks, password strength
-   - JSON-driven simulated auth + localStorage persistence
+   - API authentication + localStorage session preferences
    - forgot-password modal, toasts, micro-interactions
    ============================================================ */
    (() => {
@@ -83,7 +83,10 @@
         "toast.welcome.title": "Login realizado",
         "toast.created.title": "Cadastro concluído",
         "toast.error.title": "Não foi possível continuar",
-        "toast.sent.title": "E-mail enviado"
+        "toast.sent.title": "E-mail enviado",
+        "request.error": "Não foi possível concluir a solicitação. Tente novamente.",
+        "request.offline": "Não foi possível conectar ao servidor. Tente novamente.",
+        "session.error": "Não foi possível salvar o acesso neste navegador. Verifique as permissões de armazenamento."
       },
       en: {
         "brand.name": "Dafix",
@@ -158,7 +161,10 @@
         "toast.welcome.title": "Signed in",
         "toast.created.title": "Registration complete",
         "toast.error.title": "Couldn't continue",
-        "toast.sent.title": "Email sent"
+        "toast.sent.title": "Email sent",
+        "request.error": "The request could not be completed. Please try again.",
+        "request.offline": "Could not connect to the server. Please try again.",
+        "session.error": "Could not save your sign-in in this browser. Check its storage permissions."
       }
     };
   
@@ -184,20 +190,22 @@
         DATA = { config: { sistema: "Dafix" }, clientes: [], funcionarios: [], mensagens: { pt: {}, en: {} } };
       }
     }
-    const STORE_KEY = "dafix_users";
-    function getStored() {
-      try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { clientes: [], funcionarios: [] }; }
-      catch { return { clientes: [], funcionarios: [] }; }
-    }
-    function persist(group, user) {
-      const s = getStored();
-      s[group] = s[group] || [];
-      s[group].push(user);
-      localStorage.setItem(STORE_KEY, JSON.stringify(s));
-    }
-    function allUsers(group) {
-      const seed = (DATA && DATA[group]) || [];
-      return seed.concat(getStored()[group] || []);
+    async function postJson(url, body) {
+      let response;
+      try {
+        response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } catch {
+        throw new Error(t("request.offline"));
+      }
+      let data;
+      try { data = await response.json(); }
+      catch { throw new Error(t("request.error")); }
+      if (!response.ok) throw new Error(data.erro || t("request.error"));
+      return data;
     }
     function msg(key, vars = {}) {
       const m = (DATA && DATA.mensagens && DATA.mensagens[state.lang]) || {};
@@ -334,6 +342,8 @@
         case "cpf":
           if (!val) return { ok: false, msg: t("v.required") };
           return validCPF(val) ? { ok: true } : { ok: false, msg: t("v.cpf") };
+        case "login-password":
+          return input.value ? { ok: true } : { ok: false, msg: t("v.required") };
         case "password":
           if (!val) return { ok: false, msg: t("v.required") };
           return val.length >= 8 ? { ok: true } : { ok: false, msg: t("v.password") };
@@ -482,9 +492,10 @@ const ROUTES = {
   admin:       "/admin/dashboard.html",           // opcional
 };
 
-function handleLogin() {
+async function handleLogin() {
   const form = $("#panel-login");
   const btn  = $("[data-submit]", form);
+  if (btn.disabled) return;
 
   if (!validateForm(form)) {
     toast("error", t("toast.error.title"), msg("formErro"));
@@ -493,67 +504,81 @@ function handleLogin() {
 
   const email = $("#login-email").value.trim().toLowerCase();
   const pw    = $("#login-password").value;
-  const group = state.profile === "cliente" ? "clientes" : "funcionarios";
+  const perfil = state.profile;
+  const remember = $("#remember").checked;
+  let redirecting = false;
+  btn.classList.add("is-loading");
+  btn.disabled = true;
+  try {
+    const result = await postJson("/api/login", { perfil, email, senha: pw });
+    const found = result.usuario;
+    if (!found || result.perfil !== perfil) throw new Error(t("request.error"));
 
-  withLoading(btn, () => {
-    const list  = allUsers(group);
-    const found = list.find((u) => (u.email || "").toLowerCase() === email);
+    try {
+      if (remember) localStorage.setItem("dafix_last_email", email);
+      else localStorage.removeItem("dafix_last_email");
+      localStorage.setItem("dafix_session", JSON.stringify({
+        id: found.id,
+        nome: found.nome,
+        email: found.email,
+        perfil,
+        loginAt: Date.now(),
+      }));
+    } catch {
+      throw new Error(t("session.error"));
+    }
 
-    if (!found)       { toast("error", t("toast.error.title"), msg("loginPerfilErro")); return; }
-    if (found.senha !== pw) { toast("error", t("toast.error.title"), msg("loginErro")); return; }
-
-    /* 1) Lembrar e-mail */
-    if ($("#remember").checked) localStorage.setItem("dafix_last_email", email);
-    else localStorage.removeItem("dafix_last_email");
-
-    /* 2) Guardar sessão para os dashboards lerem quem entrou */
-    localStorage.setItem("dafix_session", JSON.stringify({
-      nome:   found.nome,
-      email:  found.email,
-      perfil: state.profile,
-      loginAt: Date.now(),
-    }));
-
-    /* 3) Sucesso */
     toast("success", t("toast.welcome.title"), msg("loginSucesso", { nome: found.nome }));
-
-    /* 4) Redirecionar (dá ~900ms para o toast aparecer) */
-    const destino = ROUTES[state.profile] || "/";
+    const destino = ROUTES[perfil];
+    redirecting = true;
     setTimeout(() => { window.location.href = destino; }, 900);
-  });
+  } catch (error) {
+    toast("error", t("toast.error.title"), error.message);
+  } finally {
+    if (!redirecting) {
+      btn.classList.remove("is-loading");
+      btn.disabled = false;
+    }
+  }
 }
   
-    function handleSignup() {
+    async function handleSignup() {
       const form = $("#panel-signup");
       const btn = $("[data-submit]", form);
+      if (btn.disabled) return;
       if (!validateForm(form)) { toast("error", t("toast.error.title"), msg("formErro")); return; }
       const email = $("#su-email").value.trim().toLowerCase();
-      const group = state.profile === "cliente" ? "clientes" : "funcionarios";
-      withLoading(btn, () => {
-        if (allUsers(group).some((u) => (u.email || "").toLowerCase() === email)) {
-          toast("error", t("toast.error.title"), msg("cadastroEmailExiste"));
-          return;
-        }
-        const user = {
-          nome: $("#su-name").value.trim(),
-          email,
-          telefone: $("#su-phone").value.trim(),
-          cpf: $("#su-cpf").value.trim(),
-          senha: $("#su-password").value,
-        };
-        if (group === "funcionarios") {
-          user.especialidade = $("#su-spec").value.trim();
-          user.area = $("#su-area").value.trim();
-        }
-        persist(group, user);
+      const perfil = state.profile;
+      const group = perfil === "cliente" ? "clientes" : "funcionarios";
+      const user = {
+        nome: $("#su-name").value.trim(),
+        email,
+        telefone: $("#su-phone").value.trim(),
+        cpf: $("#su-cpf").value.trim(),
+        senha: $("#su-password").value,
+      };
+      if (group === "funcionarios") {
+        user.especialidade = $("#su-spec").value.trim();
+        user.area = $("#su-area").value.trim();
+      }
+      btn.classList.add("is-loading");
+      btn.disabled = true;
+      try {
+        await postJson("/api/" + group, user);
         toast("success", t("toast.created.title"), msg("cadastroSucesso", { nome: user.nome }));
         form.reset();
         $$(".field", form).forEach((f) => f.classList.remove("is-valid", "is-invalid"));
         $("[data-strength]", form).hidden = true;
         $("#terms").closest(".check").classList.remove("is-invalid");
+        setProfile(perfil);
         setTab("login");
         $("#login-email").value = email;
-      });
+      } catch (error) {
+        toast("error", t("toast.error.title"), error.message);
+      } finally {
+        btn.classList.remove("is-loading");
+        btn.disabled = false;
+      }
     }
   
     /* ----------------- Modal (forgot password) ----------------- */
@@ -685,4 +710,3 @@ function handleLogin() {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
     else init();
   })();
-  

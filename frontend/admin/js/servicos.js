@@ -12,8 +12,8 @@ const SMAP = {
 };
 
 const CAT_COLOR = {
-  'Elétrica':'#2563EB','Hidráulica':'#06B6D4','Pintura':'#10B981',
-  'Montagem':'#F59E0B','Instalações':'#8B5CF6','Outros':'#94A3B8',
+  'Elétrica':'#3f7054','Hidráulica':'#8c8861','Pintura':'#5a8265',
+  'Montagem':'#aa7d3e','Instalações':'#9a7560','Outros':'#89938c',
 };
 
 let DB = [
@@ -39,14 +39,14 @@ function renderKpis() {
   DB.forEach(s => { if(c[s.status]!==undefined) c[s.status]++; });
   const receita = DB.filter(s=>s.status==='concluido').reduce((t,s)=>t+s.val,0);
   const defs = [
-    {label:'Agendados',    val:c.agendado,  color:'#F59E0B',bg:'rgba(245,158,11,.1)', emoji:'📅'},
-    {label:'Em Andamento', val:c.andamento, color:'#06B6D4',bg:'rgba(6,182,212,.1)',  emoji:'⚙️'},
-    {label:'Concluídos',   val:c.concluido, color:'#10B981',bg:'rgba(16,185,129,.1)', emoji:'✅'},
-    {label:'Cancelados',   val:c.cancelado, color:'#EF4444',bg:'rgba(239,68,68,.1)',  emoji:'❌'},
+    {label:'Agendados',    val:c.agendado,  color:'#aa7d3e',bg:'rgba(170,125,62,.1)'},
+    {label:'Em Andamento', val:c.andamento, color:'#8c8861',bg:'rgba(140,136,97,.1)'},
+    {label:'Concluídos',   val:c.concluido, color:'#5a8265',bg:'rgba(90,130,101,.1)'},
+    {label:'Cancelados',   val:c.cancelado, color:'#b95d43',bg:'rgba(185,93,67,.1)'},
   ];
-  document.getElementById('srvKpis').innerHTML = defs.map(d=>`
+  document.getElementById('srvKpis').innerHTML = defs.map((d, index)=>`
     <div class="kpi" style="--kpi-accent:${d.color};--kpi-bg:${d.bg};padding:18px">
-      <div class="kpi__top"><div class="kpi__icon" style="font-size:18px">${d.emoji}</div></div>
+      <div class="kpi__top"><div class="kpi__icon" aria-hidden="true">${String(index + 1).padStart(2, '0')}</div></div>
       <div class="kpi__value" style="font-size:24px;color:${d.color}">${d.val}</div>
       <div class="kpi__label">${d.label}</div>
     </div>`).join('');
@@ -65,7 +65,7 @@ function renderTable() {
 
   tbody.innerHTML = rows.map(sv=>{
     const [cls,lbl] = SMAP[sv.status]||['bg-neutral',sv.status];
-    const cc = CAT_COLOR[sv.cat]||'#94A3B8';
+    const cc = CAT_COLOR[sv.cat]||'#89938c';
     return `<tr>
       <td><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--primary)">${sv.id}</span></td>
       <td style="font-weight:600">${sv.client}</td>
@@ -164,7 +164,7 @@ window.saveSrv = () => {
 
 window.viewSrv = id => {
   const s=DB.find(s=>s.id===id); if(!s) return;
-  const [cls,lbl]=SMAP[s.status]||[]; const cc=CAT_COLOR[s.cat]||'#94A3B8';
+  const [cls,lbl]=SMAP[s.status]||[]; const cc=CAT_COLOR[s.cat]||'#89938c';
   const tl = [
     {text:'Serviço solicitado pelo cliente',time:new Date(s.date+'T07:20').toLocaleString('pt-BR')},
     {text:`Profissional alocado: ${s.pro}`,time:new Date(s.date+'T07:35').toLocaleString('pt-BR')},
