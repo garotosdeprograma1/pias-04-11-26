@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Usuários — Dafix Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+<div class="mob-overlay" id="mobOverlay"></div>
+<div class="admin-shell" id="shell">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__brand">
+    <img src="/assets/logo.png" alt="DaFix" class="sidebar__logo" width="36" height="36">
+    <div class="sidebar__brand-info">
+      <div class="sidebar__name">Dafix</div>
+      <div class="sidebar__tagline">Conectando clientes aos melhores profissionais</div>
+    </div>
+  </div>
+  <nav class="sidebar__nav">
+    <div class="nav-group">
+      <div class="nav-group__label">Principal</div>
+      <a href="dashboard.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-text">Dashboard</span></a>
+      <a href="usuarios.html" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/></svg><span class="nav-text">Usuários</span><span class="nav-badge">248</span></a>
+      <a href="servicos.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span class="nav-text">Serviços</span></a>
+      <a href="relatorios.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-text">Relatórios</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Sistema</div>
+      <a href="#" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span class="nav-text">Configurações</span></a>
+    </div>
+  </nav>
+  <div class="sidebar__footer">
+    <div class="sidebar__profile"><div class="sidebar__avatar">AD</div><div class="sidebar__profile-info"><div class="sidebar__profile-name">Admin Dafix</div><div class="sidebar__profile-role">Administrador</div></div></div>
+    <a href="../index.html" class="nav-link nav-link--danger" style="margin-top:4px"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="nav-text">Sair</span></a>
+  </div>
+</aside>
+
+<button class="sidebar-toggle" id="sidebarToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+
+<header class="admin-header">
+  <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div class="header__info">
+    <div class="header__title">Usuários</div>
+    <div class="header__crumb"><a href="dashboard.html">Dafix Admin</a><span class="crumb-sep">›</span><span>Usuários</span></div>
+  </div>
+  <div class="header__search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Buscar usuário…" id="searchInput" oninput="filterUsers()"/>
+  </div>
+  <div class="header__actions">
+    <button class="theme-btn"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8 8 0 0 1-9.7-11.6 1 1 0 0 0-1.2-1.31A10 10 0 1 0 22 14.05a1 1 0 0 0-.36-1.05Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+    <div class="header__profile"><div class="h-avatar">AD</div><div><div class="h-name">Admin Dafix</div><div class="h-role">Administrador</div></div></div>
+  </div>
+</header>
+
+<main class="admin-main">
+  <div class="page-head">
+    <div><h1>Usuários</h1><p>Gerencie clientes, profissionais e administradores</p></div>
+    <div class="page-head__actions">
+      <button class="btn btn--ghost btn--sm" onclick="exportUsers()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar
+      </button>
+      <button class="btn btn--primary btn--sm" onclick="openAdd()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Novo Usuário
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="kpi-grid" id="userKpis"></div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <input class="f-input" id="searchUser" placeholder="🔍  Nome, e-mail ou CPF…" oninput="filterUsers()" style="min-width:240px"/>
+    <select class="f-select" id="fType" onchange="filterUsers()">
+      <option value="">Todos os tipos</option>
+      <option value="cliente">Cliente</option>
+      <option value="funcionario">Funcionário</option>
+      <option value="admin">Admin</option>
+    </select>
+    <select class="f-select" id="fStatus" onchange="filterUsers()">
+      <option value="">Todos os status</option>
+      <option value="ativo">Ativo</option>
+      <option value="inativo">Inativo</option>
+      <option value="bloqueado">Bloqueado</option>
+    </select>
+    <button class="btn btn--ghost btn--sm" onclick="clearFilters()">Limpar</button>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th><input type="checkbox" id="selAll" onchange="toggleAll(this)" style="cursor:pointer"/></th>
+          <th>Usuário</th><th>Telefone</th><th>CPF</th><th>Tipo</th><th>Status</th>
+          <th>Cadastro</th><th>Último Acesso</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="userBody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-footer">
+      <div class="tbl-count" id="userCount"></div>
+      <div class="pagination" id="userPag"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- ══ ADD/EDIT MODAL ══ -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal__hd">
+      <div class="modal__title" id="addTitle">Novo Usuário</div>
+      <button class="modal__close" onclick="closeOverlay('addModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal__body">
+      <div class="form-grid">
+        <div class="fg fg--full"><label class="flabel">Nome Completo</label><input class="finput" id="fName" placeholder="Ex: João da Silva"/></div>
+        <div class="fg"><label class="flabel">E-mail</label><input class="finput" id="fEmail" type="email" placeholder="email@exemplo.com"/></div>
+        <div class="fg"><label class="flabel">Telefone</label><input class="finput" id="fPhone" placeholder="(11) 99999-9999"/></div>
+        <div class="fg"><label class="flabel">CPF</label><input class="finput" id="fCpf" placeholder="000.000.000-00"/></div>
+        <div class="fg"><label class="flabel">Nascimento</label><input class="finput" id="fBirth" type="date"/></div>
+        <div class="fg"><label class="flabel">Tipo</label><select class="fselect" id="fType2"><option value="cliente">Cliente</option><option value="funcionario">Funcionário</option><option value="admin">Admin</option></select></div>
+        <div class="fg"><label class="flabel">Status</label><select class="fselect" id="fStatus2"><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="bloqueado">Bloqueado</option></select></div>
+        <div class="fg"><label class="flabel">Senha</label><input class="finput" id="fPass" type="password" placeholder="Mín. 8 caracteres"/></div>
+        <div class="fg"><label class="flabel">Confirmar Senha</label><input class="finput" id="fPass2" type="password" placeholder="Repita a senha"/></div>
+        <div class="fg fg--full"><label class="flabel">Observações</label><textarea class="ftextarea" id="fObs" placeholder="Notas internas…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal__ft">
+      <button class="btn btn--ghost" onclick="closeOverlay('addModal')">Cancelar</button>
+      <button class="btn btn--primary" onclick="saveUser()">Salvar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW MODAL ══ -->
+<div class="overlay" id="viewModal">
+  <div class="modal modal--lg">
+    <div class="modal__hd">
+      <div class="modal__title">Perfil do Usuário</div>
+      <button class="modal__close" onclick="closeOverlay('viewModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal__body" id="viewBody"></div>
+    <div class="modal__ft"><button class="btn btn--ghost" onclick="closeOverlay('viewModal')">Fechar</button></div>
+  </div>
+</div>
+
+<!-- ══ DELETE MODAL ══ -->
+<div class="overlay" id="delModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal__hd"><div class="modal__title" style="color:var(--danger)">Excluir Usuário</div><button class="modal__close" onclick="closeOverlay('delModal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="modal__body">
+      <p style="color:var(--text-2);font-size:14px;line-height:1.6">Tem certeza que deseja excluir <strong id="delName"></strong>? Esta ação não poderá ser desfeita.</p>
+    </div>
+    <div class="modal__ft">
+      <button class="btn btn--ghost" onclick="closeOverlay('delModal')">Cancelar</button>
+      <button class="btn btn--danger" id="delConfirm">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts"></div>
+<script src="js/main.js"></script>
+<script src="js/usuarios.js"></script>
+</body>
+</html>

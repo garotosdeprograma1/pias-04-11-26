@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Relatórios — Dafix Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+<div class="mob-overlay" id="mobOverlay"></div>
+<div class="admin-shell" id="shell">
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__brand">
+    <img src="/assets/logo.png" alt="DaFix" class="sidebar__logo" width="36" height="36">
+    <div class="sidebar__brand-info">
+      <div class="sidebar__name">Dafix</div>
+      <div class="sidebar__tagline">Conectando clientes aos melhores profissionais</div>
+    </div>
+  </div>
+  <nav class="sidebar__nav">
+    <div class="nav-group">
+      <div class="nav-group__label">Principal</div>
+      <a href="dashboard.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-text">Dashboard</span></a>
+      <a href="usuarios.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/></svg><span class="nav-text">Usuários</span><span class="nav-badge">248</span></a>
+      <a href="servicos.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span class="nav-text">Serviços</span></a>
+      <a href="relatorios.html" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-text">Relatórios</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group__label">Sistema</div>
+      <a href="#" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span class="nav-text">Configurações</span></a>
+    </div>
+  </nav>
+  <div class="sidebar__footer">
+    <div class="sidebar__profile"><div class="sidebar__avatar">AD</div><div class="sidebar__profile-info"><div class="sidebar__profile-name">Admin Dafix</div><div class="sidebar__profile-role">Administrador</div></div></div>
+    <a href="../index.html" class="nav-link nav-link--danger" style="margin-top:4px"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="nav-text">Sair</span></a>
+  </div>
+</aside>
+
+<button class="sidebar-toggle" id="sidebarToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
+
+<header class="admin-header">
+  <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div class="header__info">
+    <div class="header__title">Relatórios & Analytics</div>
+    <div class="header__crumb"><a href="dashboard.html">Dafix Admin</a><span class="crumb-sep">›</span><span>Relatórios</span></div>
+  </div>
+  <div class="header__search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Buscar relatório…"/>
+  </div>
+  <div class="header__actions">
+    <button class="theme-btn"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8 8 0 0 1-9.7-11.6 1 1 0 0 0-1.2-1.31A10 10 0 1 0 22 14.05a1 1 0 0 0-.36-1.05Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+    <div class="header__profile"><div class="h-avatar">AD</div><div><div class="h-name">Admin Dafix</div><div class="h-role">Administrador</div></div></div>
+  </div>
+</header>
+
+<main class="admin-main">
+  <div class="page-head">
+    <div><h1>Relatórios & Analytics</h1><p>Métricas estratégicas para tomada de decisão — Junho 2026</p></div>
+    <div class="page-head__actions">
+      <button class="btn btn--ghost btn--sm" onclick="doExport('PDF')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF
+      </button>
+      <button class="btn btn--ghost btn--sm" onclick="doExport('Excel')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 9 6 6m0-6-6 6"/></svg>
+        Excel
+      </button>
+      <button class="btn btn--ghost btn--sm" onclick="doExport('CSV')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV
+      </button>
+      <button class="btn btn--primary btn--sm" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimir
+      </button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="repKpis"></div>
+
+  <!-- Charts row 1 -->
+  <div class="g2 mb22">
+    <div class="card card--p">
+      <div class="card__hd"><div><div class="card__title">Receita Mensal 2026</div><div class="card__sub">Evolução acumulada</div></div></div>
+      <div class="chart-box"><canvas id="revChart" style="height:240px;width:100%"></canvas></div>
+    </div>
+    <div class="card card--p">
+      <div class="card__hd"><div><div class="card__title">Receita Anual</div><div class="card__sub">Comparativo 2024–2026</div></div></div>
+      <div class="chart-box"><canvas id="annChart" style="height:240px;width:100%"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Charts row 2 -->
+  <div class="g2 mb22">
+    <div class="card card--p">
+      <div class="card__hd"><div><div class="card__title">Serviços por Categoria</div><div class="card__sub">Volume contratado</div></div></div>
+      <div class="chart-box"><canvas id="catChart" style="height:240px;width:100%"></canvas></div>
+    </div>
+    <div class="card card--p">
+      <div class="card__hd"><div><div class="card__title">Horários Mais Solicitados</div><div class="card__sub">Distribuição por turno</div></div></div>
+      <div class="chart-box"><canvas id="hrChart" style="height:240px;width:100%"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Ranking + Ratings -->
+  <div class="g3-1 mb22">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)">
+        <div><div class="card__title">Ranking de Profissionais</div><div class="card__sub">Top 5 por receita gerada</div></div>
+        <span class="badge bg-primary">Top 5</span>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl" id="rankTable"></table>
+      </div>
+    </div>
+    <div class="card card--p">
+      <div class="card__hd"><div class="card__title">Avaliação dos Clientes</div></div>
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:52px;font-weight:900;color:var(--primary);letter-spacing:-2px;font-family:var(--mono)">4.87</div>
+        <div style="font-size:24px;color:var(--warning);letter-spacing:2px">★★★★★</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:6px;font-weight:500">Baseado em 1.273 avaliações</div>
+      </div>
+      <div id="ratingBars"></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<div class="toasts"></div>
+<script src="js/main.js"></script>
+<script src="js/relatorios.js"></script>
+</body>
+</html>
