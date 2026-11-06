@@ -79,7 +79,9 @@ var servidor = http.createServer(function (req, res) {
 
       // A tabela vem apenas dos dois perfis permitidos; valores usam parametros.
       var tabelaLogin = credenciais.perfil === 'cliente' ? 'cliente' : 'funcionario';
-      var sqlLogin = 'SELECT id, nome, email, telefone FROM ' + tabelaLogin +
+      var camposLogin = 'id, nome, email, telefone' +
+                        (tabelaLogin === 'funcionario' ? ', especialidade' : '');
+      var sqlLogin = 'SELECT ' + camposLogin + ' FROM ' + tabelaLogin +
                     ' WHERE LOWER(TRIM(email)) = ? AND senha = ? LIMIT 1';
       var valoresLogin = [credenciais.email.trim().toLowerCase(), credenciais.senha];
 

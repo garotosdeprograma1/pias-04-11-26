@@ -517,13 +517,7 @@ async function handleLogin() {
     try {
       if (remember) localStorage.setItem("dafix_last_email", email);
       else localStorage.removeItem("dafix_last_email");
-      localStorage.setItem("dafix_session", JSON.stringify({
-        id: found.id,
-        nome: found.nome,
-        email: found.email,
-        perfil,
-        loginAt: Date.now(),
-      }));
+      window.DafixAccount.startSession(found, perfil);
     } catch {
       throw new Error(t("session.error"));
     }

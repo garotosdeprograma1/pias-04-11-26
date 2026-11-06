@@ -258,7 +258,8 @@ ul,ol{list-style:none}
 .center .grad-divider{margin:16px auto}
 
 /* ── GRID HELPERS ── */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.grid-2 > *,.diff-item > div,.diffs-metric > div{min-width:0;overflow-wrap:anywhere}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
@@ -662,6 +663,7 @@ ul,ol{list-style:none}
 
 /* Tablet portrait */
 @media(max-width:768px){
+  .grid-2{grid-template-columns:minmax(0,1fr)}
   .categories-grid{grid-template-columns:repeat(2,1fr)}
   .testimonials-grid{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:1fr 1fr}

@@ -25,6 +25,9 @@
 
    'use strict';
 
+   const account = window.DafixAccount;
+   const session = account.requireProfile('cliente');
+
    /* ============================================================
       1. I18N
       ============================================================ */
@@ -37,7 +40,7 @@
        'nav.orders': 'Pedidos',
        'nav.services': 'Serviços',
        'nav.logout': 'Sair da conta',
-       'sidebar.plan': 'Cliente Premium',
+       'sidebar.plan': 'Cliente',
        'promo.title': 'Indique e ganhe',
        'promo.text': 'Convide amigos e ganhe R$ 30 de desconto no próximo serviço.',
        'promo.btn': 'Convidar amigos',
@@ -88,13 +91,15 @@
        'profile.save': 'Salvar alterações',
        'profile.cancel': 'Cancelar',
        'profile.changePhoto': 'Alterar foto',
-       'profile.verified': 'Verificado',
-       'profile.memberSince': 'Cliente desde 2024',
+       'profile.verified': 'Conta conectada',
+       'profile.memberSince': 'Conta de cliente',
+       'profile.notProvided': 'Não informado',
+       'profile.localNotice': 'As alterações deste perfil ficam salvas neste navegador. Os dados de acesso continuam sendo os do cadastro.',
        'profile.ordersChip': '%s serviços contratados',
        'profile.security': 'Segurança da conta',
        'profile.lastAccess': 'Último acesso',
        'profile.twoFactor': 'Verificação em 2 etapas',
-       'profile.active': 'Ativa',
+       'profile.active': 'Não configurada',
        'profile.device': 'Dispositivo',
        'profile.deviceValue': 'Navegador Web',
        'err.nameRequired': 'Informe seu nome completo (mín. 3 letras).',
@@ -217,7 +222,8 @@
        'foot.help': 'Central de ajuda',
        'foot.terms': 'Termos',
        'foot.privacy': 'Privacidade',
-       'toast.profileSaved': 'Perfil atualizado com sucesso!',
+       'toast.profileSaved': 'Perfil salvo neste navegador.',
+       'toast.profileError': 'Não foi possível salvar o perfil. Tente novamente.',
        'toast.formError': 'Verifique os campos destacados.',
        'toast.favAdded': 'adicionado aos favoritos.',
        'toast.favRemoved': 'removido dos favoritos.',
@@ -239,7 +245,7 @@
        'nav.orders': 'Orders',
        'nav.services': 'Services',
        'nav.logout': 'Sign out',
-       'sidebar.plan': 'Premium Client',
+       'sidebar.plan': 'Client',
        'promo.title': 'Refer & earn',
        'promo.text': 'Invite friends and get R$ 30 off your next service.',
        'promo.btn': 'Invite friends',
@@ -290,13 +296,15 @@
        'profile.save': 'Save changes',
        'profile.cancel': 'Cancel',
        'profile.changePhoto': 'Change photo',
-       'profile.verified': 'Verified',
-       'profile.memberSince': 'Client since 2024',
+       'profile.verified': 'Signed in',
+       'profile.memberSince': 'Client account',
+       'profile.notProvided': 'Not provided',
+       'profile.localNotice': 'Profile changes are saved in this browser. Your sign-in details remain the ones from registration.',
        'profile.ordersChip': '%s services hired',
        'profile.security': 'Account security',
        'profile.lastAccess': 'Last access',
        'profile.twoFactor': 'Two-step verification',
-       'profile.active': 'Active',
+       'profile.active': 'Not configured',
        'profile.device': 'Device',
        'profile.deviceValue': 'Web Browser',
        'err.nameRequired': 'Enter your full name (min. 3 letters).',
@@ -419,7 +427,8 @@
        'foot.help': 'Help center',
        'foot.terms': 'Terms',
        'foot.privacy': 'Privacy',
-       'toast.profileSaved': 'Profile updated successfully!',
+       'toast.profileSaved': 'Profile saved in this browser.',
+       'toast.profileError': 'Could not save your profile. Please try again.',
        'toast.formError': 'Please check the highlighted fields.',
        'toast.favAdded': 'added to favorites.',
        'toast.favRemoved': 'removed from favorites.',
@@ -467,15 +476,6 @@
      g4: '#80644c',
      g5: '#9b7635',
      g6: '#596f60',
-   };
-   
-   const DEFAULT_USER = {
-     name: 'Carlos Andrade',
-     email: 'carlos.andrade@email.com',
-     phone: '(11) 98765-4321',
-     address: 'Rua das Acácias, 742 — Vila Madalena, São Paulo/SP',
-     avatar: 'https://images.pexels.com/photos/12311567/pexels-photo-12311567.jpeg?auto=compress&cs=tinysrgb&w=240',
-     prefs: { email: true, sms: false, news: true },
    };
    
    const SERVICES = [
@@ -573,19 +573,32 @@
    
    const storage = {
      get(key, fallback) {
-       try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); }
+       try { const v = localStorage.getItem(storage.key(key)); return v === null ? fallback : JSON.parse(v); }
        catch { return fallback; }
      },
      set(key, value) {
-       try { localStorage.setItem(key, JSON.stringify(value)); }
+       try { localStorage.setItem(storage.key(key), JSON.stringify(value)); }
        catch { /* quota excedida — ignora */ }
      },
+     raw(key, fallback) {
+       try { return localStorage.getItem(key) || fallback; }
+       catch { return fallback; }
+     },
+     key(key) {
+       return ['sh_lang', 'sh_theme'].includes(key) ? key : account.key(key);
+     },
    };
+
+   const profile = session ? account.loadProfile() : {};
    
    const state = {
      lang: storage.get('sh_lang', 'pt'),
-     theme: localStorage.getItem('dafix_theme') || storage.get('sh_theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
-     user: storage.get('sh_user', DEFAULT_USER),
+     theme: storage.raw('dafix_theme', storage.get('sh_theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')),
+     user: {
+       name: '', email: '', phone: '', address: '', avatar: null,
+       ...profile,
+       prefs: { email: false, sms: false, news: false, ...profile.prefs },
+     },
      orders: storage.get('sh_orders', DEFAULT_ORDERS),
      favorites: storage.get('sh_favorites', ['svc-3', 'svc-7']),
      reports: storage.get('sh_reports', []),
@@ -618,7 +631,7 @@
    };
    
    const serviceById = (id) => SERVICES.find((s) => s.id === id);
-   const initials = (name) => name.trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
+   const initials = (name) => String(name || '').trim().split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
    
    const STATUS_BADGE = { pending: 'badge--amber', in_progress: 'badge--blue', completed: 'badge--green', cancelled: 'badge--red' };
@@ -631,7 +644,7 @@
      toggle() {
        state.theme = state.theme === 'light' ? 'dark' : 'light';
        storage.set('sh_theme', state.theme);
-       localStorage.setItem('dafix_theme', state.theme);
+       try { localStorage.setItem('dafix_theme', state.theme); } catch { /* preferência opcional */ }
        Theme.apply();
      },
      init() {
@@ -743,12 +756,12 @@
      paint(el, value, name) {
        const ini = $('.avatar__initials', el);
        if (ini) ini.textContent = initials(name || state.user.name);
-       if (value && (value.startsWith('http') || value.startsWith('data:'))) {
+       if (typeof value === 'string' && (/^https?:\/\//.test(value) || /^data:image\/(png|jpeg|webp);base64,/.test(value))) {
          el.style.backgroundImage = `url("${value}")`;
          el.classList.add('has-photo');
        } else {
          el.style.backgroundImage = '';
-         el.style.background = AVATAR_PRESETS[(value || '').replace('preset:', '')] || AVATAR_PRESETS.g1;
+         el.style.background = AVATAR_PRESETS[(typeof value === 'string' ? value : '').replace('preset:', '')] || AVATAR_PRESETS.g1;
          el.classList.remove('has-photo');
        }
      },
@@ -845,9 +858,10 @@
      },
    
      render() {
-       $('#greeting-title').textContent = `${Overview.greeting()}, ${state.user.name.split(' ')[0]}!`;
+       const firstName = state.user.name.trim().split(/\s+/)[0];
+       $('#greeting-title').textContent = firstName ? `${Overview.greeting()}, ${firstName}!` : `${Overview.greeting()}!`;
        $('#hero-date').textContent = new Intl.DateTimeFormat(state.lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-       $('#sidebar-username').textContent = state.user.name;
+       $('#sidebar-username').textContent = state.user.name || t('profile.notProvided');
        $('#nav-orders-badge').textContent = state.orders.filter((o) => o.status === 'pending' || o.status === 'in_progress').length;
        Avatar.renderAll();
        Overview.renderStats();
@@ -918,6 +932,7 @@
       ============================================================ */
    const Profile = {
      editing: false,
+     saving: false,
      fields: ['name', 'email', 'phone', 'address'],
    
      fill() {
@@ -928,11 +943,13 @@
        $('#pref-email').checked = state.user.prefs.email;
        $('#pref-sms').checked = state.user.prefs.sms;
        $('#pref-news').checked = state.user.prefs.news;
-       $('#profile-display-name').textContent = state.user.name;
-       $('#profile-display-email').textContent = state.user.email;
+       Profile.fields.forEach((field) => { $(`#f-${field}`).placeholder = t('profile.notProvided'); });
+       $('#profile-display-name').textContent = state.user.name || t('profile.notProvided');
+       $('#profile-display-email').textContent = state.user.email || t('profile.notProvided');
        const hired = state.orders.filter((o) => o.status !== 'cancelled').length;
        $('#profile-orders-chip').textContent = t('profile.ordersChip').replace('%s', hired);
-       $('#last-access').textContent = fmtDate(new Date().toISOString(), true);
+       const accessDate = session && session.loginAt ? new Date(session.loginAt) : null;
+       $('#last-access').textContent = accessDate && !Number.isNaN(accessDate.getTime()) ? fmtDate(accessDate.toISOString(), true) : t('profile.notProvided');
      },
    
      setEditing(on) {
@@ -964,15 +981,16 @@
        let ok = true;
        if ($('#f-name').value.trim().replace(/\s/g, '').length < 3) { Profile.setError('name', t('err.nameRequired')); ok = false; }
        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('#f-email').value.trim())) { Profile.setError('email', t('err.emailInvalid')); ok = false; }
-       if ($('#f-phone').value.replace(/\D/g, '').length < 10) { Profile.setError('phone', t('err.phoneInvalid')); ok = false; }
-       if ($('#f-address').value.trim().length < 5) { Profile.setError('address', t('err.addressRequired')); ok = false; }
+       if ($('#f-phone').value.trim() && $('#f-phone').value.replace(/\D/g, '').length < 10) { Profile.setError('phone', t('err.phoneInvalid')); ok = false; }
+       if ($('#f-address').value.trim() && $('#f-address').value.trim().length < 5) { Profile.setError('address', t('err.addressRequired')); ok = false; }
        return ok;
      },
    
-     save(e) {
+     async save(e) {
        e.preventDefault();
+       if (Profile.saving) return;
        if (!Profile.validate()) { Toast.show(t('toast.formError'), 'error'); return; }
-       state.user = {
+       const updated = {
          ...state.user,
          name: $('#f-name').value.trim(),
          email: $('#f-email').value.trim(),
@@ -980,11 +998,24 @@
          address: $('#f-address').value.trim(),
          prefs: { email: $('#pref-email').checked, sms: $('#pref-sms').checked, news: $('#pref-news').checked },
        };
-       storage.set('sh_user', state.user);
-       Profile.setEditing(false);
-       Profile.fill();
-       Overview.render();
-       Toast.show(t('toast.profileSaved'), 'success');
+       Profile.saving = true;
+       const button = $('#save-profile-btn');
+       button.disabled = true;
+       button.classList.add('is-loading');
+       try {
+         await account.saveProfile(updated);
+         state.user = updated;
+         Profile.setEditing(false);
+         Profile.fill();
+         Overview.render();
+         Toast.show(t('toast.profileSaved'), 'success');
+       } catch {
+         Toast.show(t('toast.profileError'), 'error');
+       } finally {
+         Profile.saving = false;
+         button.disabled = false;
+         button.classList.remove('is-loading');
+       }
      },
    
      init() {
@@ -1069,20 +1100,24 @@
        Toast.show(t('toast.photoRemoved'));
      },
    
-     save() {
+     async save() {
        const btn = $('#photo-save-btn');
+       if (btn.disabled) return;
        btn.classList.add('is-loading');
        btn.disabled = true;
-       // Simula upload (futura API Python/SQL)
-       setTimeout(() => {
-         btn.classList.remove('is-loading');
-         btn.disabled = false;
-         state.user = { ...state.user, avatar: state.photoDraft };
-         storage.set('sh_user', state.user);
+       try {
+         const updated = { ...state.user, avatar: state.photoDraft };
+         await account.saveProfile(updated);
+         state.user = updated;
          Avatar.renderAll();
          Modals.close('photo-modal');
          Toast.show(t('toast.photoSaved'), 'success');
-       }, 700);
+       } catch {
+         Toast.show(t('toast.profileError'), 'error');
+       } finally {
+         btn.classList.remove('is-loading');
+         btn.disabled = false;
+       }
      },
    
      init() {
@@ -1613,10 +1648,10 @@
      },
    
      autoPrompt() {
-       if (sessionStorage.getItem('sh_rating_prompted')) return;
+       if (sessionStorage.getItem(account.key('sh_rating_prompted'))) return;
        const pending = state.orders.find((o) => o.status === 'completed' && !o.reviewed);
        if (pending) {
-         sessionStorage.setItem('sh_rating_prompted', '1');
+         sessionStorage.setItem(account.key('sh_rating_prompted'), '1');
          setTimeout(() => Rating.open(pending.id), 1400);
        }
      },
@@ -1691,6 +1726,7 @@
       18. INIT
       ============================================================ */
    document.addEventListener('DOMContentLoaded', () => {
+     if (!session) return;
      Theme.init();
      Navigation.init();
      Tabs.init();

@@ -10,12 +10,13 @@
     const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
     const onReady = (fn) => document.readyState !== "loading" ? fn() : document.addEventListener("DOMContentLoaded", fn);
     const PAGE = document.body.dataset.page || "dashboard";
+    const account = window.DafixAccount;
+    if (!account) return;
   
     const STORAGE = {
       THEME: "dafix_theme",
-      PROFILE: "mda.pro.profile",
-      SIDEBAR: "mda.pro.sidebar",
-      SETTINGS: "mda.pro.settings"
+      SIDEBAR: account.key("sidebar"),
+      SETTINGS: account.key("settings")
     };
   
     /* ====== TOASTS ====== */
@@ -31,7 +32,10 @@
       const toast = document.createElement("div");
       toast.className = `toast toast--${type}`;
       toast.setAttribute("role", "status");
-      toast.innerHTML = `<span class="toast__icon">${icons[type] || icons.success}</span><div class="toast__body"><p>${title || ""}</p>${message ? `<small>${message}</small>` : ""}</div>`;
+      toast.innerHTML = `<span class="toast__icon">${icons[type] || icons.success}</span><div class="toast__body"><p></p><small></small></div>`;
+      toast.querySelector("p").textContent = title || "";
+      toast.querySelector("small").textContent = message || "";
+      toast.querySelector("small").hidden = !message;
       wrap.appendChild(toast);
       setTimeout(() => { toast.classList.add("is-leaving"); toast.addEventListener("animationend", () => toast.remove(), { once: true }); }, duration);
     }
@@ -227,33 +231,61 @@
     }
   
     /* ====== PROFILE / EDIT MODAL ====== */
-    const DEFAULT_PROFILE = { name: "Carlos Ramos", specialty: "Eletricista · Encanador", phone: "(11) 98432-1057", city: "São Paulo · SP", bio: "Profissional com mais de 12 anos de experiência em manutenção residencial e predial. Atende com pontualidade, materiais de qualidade e garantia em todos os serviços executados. Especializado em instalações elétricas, hidráulica e pequenos reparos.", email: "carlos.ramos@maridopro.com", photo: null };
-    function loadProfile() { try { const saved = JSON.parse(localStorage.getItem(STORAGE.PROFILE) || "null"); return Object.assign({}, DEFAULT_PROFILE, saved || {}); } catch { return {...DEFAULT_PROFILE}; } }
-    function saveProfile(p) { localStorage.setItem(STORAGE.PROFILE, JSON.stringify(p)); }
-    function initialsFromName(name) { const parts = (name || "").trim().split(/\s+/); if (!parts[0]) return "--"; return ((parts[0][0]||"") + (parts.length>1 ? parts[parts.length-1][0]||"" : "")).toUpperCase(); }
+    function loadProfile() { return account.loadProfile(); }
+    function saveProfile(p) { return account.saveProfile(p); }
+    function initialsFromName(name) {
+      const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+      return parts.length ? (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() : "—";
+    }
     function applyProfileToUI(p) {
-      const init = initialsFromName(p.name);
-      ["#profileName","#profileRole","#profilePhone","#profileCity","#profileEmail","#profileBio"].forEach((sel,i)=>{
-        const el = $(sel); if (!el) return;
-        const vals = [p.name, p.specialty, p.phone, p.city, p.email, p.bio];
-        el.textContent = vals[i];
+      const initials = initialsFromName(p.name);
+      const fields = {
+        "#profileName, .user-menu__name, .user-card__name": p.name,
+        "#profileRole, .user-menu__role": p.specialty,
+        "#profilePhone": p.phone,
+        "#profileCity": p.city,
+        "#profileEmail, .user-card__meta": p.email,
+        "#profileBio": p.bio,
+        "#profileSpecialty": p.specialty
+      };
+      Object.entries(fields).forEach(([selector, value]) => {
+        $$(selector).forEach(element => { element.textContent = value || "Não informado"; });
       });
-      $$(".avatar__initials").forEach((el) => el.textContent = init);
-      const nameEl = $(".user-menu__name"); if (nameEl) nameEl.textContent = p.name;
-      const roleEl = $(".user-menu__role"); if (roleEl) roleEl.textContent = p.specialty;
-      const preview = $("#uploadPreview"); const xlAvatar = $(".avatar--xl");
-      if (preview) {
-        if (p.photo) { preview.style.backgroundImage = `url(${p.photo})`; const s = preview.querySelector("span"); if (s) s.style.display = "none"; preview.dataset.photo = p.photo; }
-        else { preview.style.backgroundImage = ""; const s = preview.querySelector("span"); if (s) s.style.display = ""; delete preview.dataset.photo; }
+      const greeting = $("#accountGreeting");
+      if (greeting) {
+        const hour = new Date().getHours();
+        const welcome = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
+        const firstName = (p.name || "").trim().split(/\s+/)[0];
+        greeting.textContent = firstName ? `${welcome}, ${firstName}` : welcome;
       }
-      if (xlAvatar) {
-        if (p.photo) { xlAvatar.style.backgroundImage = `url(${p.photo})`; const s = xlAvatar.querySelector(".avatar__initials"); if (s) s.style.display = "none"; }
-        else { xlAvatar.style.backgroundImage = ""; const s = xlAvatar.querySelector(".avatar__initials"); if (s) s.style.display = ""; }
+      $$(".avatar__initials").forEach(element => { element.textContent = initials; });
+      const photo = typeof p.photo === "string" && /^data:image\/(?:png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(p.photo) ? p.photo : "";
+      $$(".user-menu .avatar, .profile__id .avatar, #uploadPreview").forEach(avatar => {
+        avatar.style.backgroundImage = photo ? `url("${photo}")` : "";
+        avatar.style.backgroundSize = "cover";
+        avatar.style.backgroundPosition = "center";
+        const label = avatar.querySelector(".avatar__initials");
+        if (label) label.style.display = photo ? "none" : "";
+      });
+      const preview = $("#uploadPreview");
+      if (preview) {
+        if (photo) preview.dataset.photo = photo;
+        else delete preview.dataset.photo;
       }
     }
     function fillForm(p) {
       $("#fName") && ($("#fName").value = p.name || "");
-      $("#fSpec") && ($("#fSpec").value = p.specialty || "");
+      const specialty = $("#fSpec");
+      if (specialty) {
+        const oldCustom = specialty.querySelector("[data-account-specialty]");
+        if (oldCustom) oldCustom.remove();
+        if (p.specialty && !Array.from(specialty.options).some(option => option.value === p.specialty)) {
+          const option = new Option(p.specialty, p.specialty);
+          option.dataset.accountSpecialty = "";
+          specialty.add(option);
+        }
+        specialty.value = p.specialty || "";
+      }
       $("#fPhone") && ($("#fPhone").value = p.phone || "");
       $("#fCity") && ($("#fCity").value = p.city || "");
       $("#fBio") && ($("#fBio").value = p.bio || "");
@@ -272,13 +304,15 @@
       if ($("#fName").value.trim().length < 3) { setError("fName", "Informe seu nome completo (mín. 3 letras)."); ok=false; } else setError("fName", "");
       if (!$("#fSpec").value) { setError("fSpec", "Selecione uma especialidade."); ok=false; } else setError("fSpec", "");
       if (!validatePhone($("#fPhone").value)) { setError("fPhone", "Telefone inválido."); ok=false; } else setError("fPhone", "");
-      if ($("#fCity").value.trim().length < 2) { setError("fCity", "Informe a cidade."); ok=false; } else setError("fCity", "");
-      if ($("#fBio").value.trim().length < 20) { setError("fBio", "Descreva melhor seu trabalho (mín. 20 caracteres)."); ok=false; } else setError("fBio", "");
+      const city = $("#fCity").value.trim();
+      const bio = $("#fBio").value.trim();
+      if (city && city.length < 2) { setError("fCity", "Informe o nome da cidade ou deixe em branco."); ok=false; } else setError("fCity", "");
+      if (bio && bio.length < 20) { setError("fBio", "Escreva pelo menos 20 caracteres ou deixe em branco."); ok=false; } else setError("fBio", "");
       return ok;
     }
     function initEditModal() {
       if (!$("#editModal")) return;
-      $("#openEditModal") && $("#openEditModal").addEventListener("click", () => { fillForm(loadProfile()); openModal("editModal"); });
+      $("#openEditModal") && $("#openEditModal").addEventListener("click", () => { const profile = loadProfile(); applyProfileToUI(profile); fillForm(profile); openModal("editModal"); });
       const phoneInput = $("#fPhone");
       phoneInput && phoneInput.addEventListener("input", (e) => {
         let v = e.target.value.replace(/\D/g,"").slice(0,11);
@@ -293,7 +327,7 @@
       const upload = $("#uploadInput");
       upload && upload.addEventListener("change", (e) => {
         const file = e.target.files && e.target.files[0]; if (!file) return;
-        if (!file.type.startsWith("image/")) { showToast({ title: "Arquivo inválido", message: "Selecione uma imagem.", type: "error" }); return; }
+        if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) { showToast({ title: "Arquivo inválido", message: "Selecione uma imagem JPG, PNG ou WebP.", type: "error" }); return; }
         if (file.size > 4*1024*1024) { showToast({ title: "Arquivo muito grande", message: "Tamanho máximo: 4MB.", type: "error" }); return; }
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -316,8 +350,12 @@
         if (!validateProfileForm()) { showToast({ title: "Verifique os campos", message: "Há informações inválidas no formulário.", type: "warning" }); return; }
         const current = loadProfile();
         const updated = { ...current, name: $("#fName").value.trim(), specialty: $("#fSpec").value, phone: $("#fPhone").value.trim(), city: $("#fCity").value.trim(), bio: $("#fBio").value.trim(), photo: $("#uploadPreview").dataset.photo || null };
-        saveProfile(updated); applyProfileToUI(updated); closeModal("editModal");
-        showToast({ title: "Perfil atualizado", message: "Suas informações foram salvas com sucesso.", type: "success" });
+        try {
+          saveProfile(updated); applyProfileToUI(updated); closeModal("editModal");
+          showToast({ title: "Perfil atualizado", message: "Suas informações foram salvas para esta conta neste navegador.", type: "success" });
+        } catch {
+          showToast({ title: "Não foi possível salvar", message: "Verifique o espaço disponível no navegador ou tente uma foto menor.", type: "error" });
+        }
       });
     }
   
@@ -534,7 +572,9 @@
           case "open-logout": openModal("logoutModal"); break;
           case "open-add-service": openModal("addServiceModal"); break;
           case "open-benefits": openModal("benefitsModal"); break;
-          case "share-profile": openModal("shareModal"); break;
+          case "share-profile":
+            showToast({ title: "Compartilhamento de perfil", message: "O perfil público ainda não está disponível.", type: "info" });
+            break;
           case "open-payments":
             showToast({ title: "Pagamentos", message: "Saldo: R$ 1.240,00 · Próximo recebimento: 18/Mar.", type: "info", duration: 5000 });
             break;
@@ -672,6 +712,8 @@
   
     /* ====== INIT ====== */
     onReady(() => {
+      if (!account.requireProfile("funcionario")) return;
+      applyProfileToUI(loadProfile());
       initTheme();
       initSidebar();
       initDropdowns();
@@ -688,7 +730,6 @@
       initActionHandler();
       initShortcuts();
       initYear();
-      applyProfileToUI(loadProfile());
   
       // Page-specific renderers
       if (PAGE === "servicos" && typeof window._initServicesPage === "function") window._initServicesPage();

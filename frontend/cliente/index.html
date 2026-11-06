@@ -59,7 +59,7 @@
         <button class="avatar avatar--sm js-avatar" id="sidebar-avatar" aria-label="Perfil"><span class="avatar__initials"></span><span class="avatar__status"></span></button>
         <div class="sidebar__user-info">
           <strong id="sidebar-username">—</strong>
-          <span data-i18n="sidebar.plan">Cliente Premium</span>
+          <span data-i18n="sidebar.plan">Cliente</span>
         </div>
       </div>
     </aside>
@@ -197,11 +197,11 @@
                   <div>
                     <div class="profile__name">
                       <h3 id="profile-display-name">—</h3>
-                      <span class="chip chip--verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="profile.verified">Verificado</span></span>
+                      <span class="chip chip--verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span data-i18n="profile.verified">Conta conectada</span></span>
                     </div>
                     <p class="profile__role" id="profile-display-email">—</p>
                     <div class="chips profile__chips">
-                      <span class="chip chip--blue" data-i18n="profile.memberSince">Cliente desde 2024</span>
+                      <span class="chip chip--blue" data-i18n="profile.memberSince">Conta de cliente</span>
                       <span class="chip chip--green" id="profile-orders-chip">—</span>
                     </div>
                   </div>
@@ -222,6 +222,7 @@
                 <div class="profile__col">
                   <form id="profile-form" novalidate>
                     <h4 class="settings-group__title" data-i18n="profile.title">Dados pessoais</h4>
+                    <p class="info-card__text" data-i18n="profile.localNotice">As alterações deste perfil ficam salvas neste navegador. Os dados de acesso continuam sendo os do cadastro.</p>
                     <div class="form-grid">
                       <div class="field">
                         <label for="f-name" data-i18n="profile.fullName">Nome completo</label>
@@ -235,7 +236,7 @@
                       </div>
                       <div class="field">
                         <label for="f-phone" data-i18n="profile.phone">Telefone</label>
-                        <input type="tel" id="f-phone" name="phone" disabled data-testid="profile-phone-input" autocomplete="tel" placeholder="(11) 99999-0000" />
+                        <input type="tel" id="f-phone" name="phone" disabled data-testid="profile-phone-input" autocomplete="tel" placeholder="Não informado" />
                         <span class="field__error" id="err-phone" role="alert"></span>
                       </div>
                       <div class="field">
@@ -282,7 +283,7 @@
                     <h4 data-i18n="profile.security">Segurança da conta</h4>
                     <ul class="stat-list">
                       <li><span class="stat-list__label" data-i18n="profile.lastAccess">Último acesso</span><span class="stat-list__value" id="last-access">—</span></li>
-                      <li><span class="stat-list__label" data-i18n="profile.twoFactor">Verificação em 2 etapas</span><span class="chip chip--green" data-i18n="profile.active">Ativa</span></li>
+                      <li><span class="stat-list__label" data-i18n="profile.twoFactor">Verificação em 2 etapas</span><span class="chip chip--soft" data-i18n="profile.active">Não configurada</span></li>
                       <li><span class="stat-list__label" data-i18n="profile.device">Dispositivo</span><span class="stat-list__value" data-i18n="profile.deviceValue">Navegador Web</span></li>
                     </ul>
                   </div>
@@ -503,6 +504,7 @@
   <!-- ===================== TOASTS ===================== -->
   <div class="toasts" id="toast-container" aria-live="polite"></div>
 
+  <script src="/account-session.js"></script>
   <script src="/cliente/scriptcli.js" type="module"></script>
 </body>
 </html>
