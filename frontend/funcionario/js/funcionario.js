@@ -67,16 +67,33 @@
       const collapseBtn = $("#sidebarCollapse");
       if (!shell) return;
       if (localStorage.getItem(STORAGE.SIDEBAR) === "collapsed" && window.innerWidth > 1024) shell.classList.add("is-collapsed");
-      const openMobile = () => { shell.classList.add("is-mobile-open"); overlay && overlay.setAttribute("aria-hidden","false"); };
-      const closeMobile = () => { shell.classList.remove("is-mobile-open"); overlay && overlay.setAttribute("aria-hidden","true"); };
-      menuBtn && menuBtn.addEventListener("click", () => { shell.classList.contains("is-mobile-open") ? closeMobile() : openMobile(); });
-      overlay && overlay.addEventListener("click", closeMobile);
-      collapseBtn && collapseBtn.addEventListener("click", () => {
-        if (window.innerWidth <= 1024) { closeMobile(); return; }
+      const syncButton = () => {
+        if (!menuBtn) return;
+        const mobile = window.innerWidth <= 1024;
+        const expanded = mobile ? shell.classList.contains("is-mobile-open") : !shell.classList.contains("is-collapsed");
+        menuBtn.setAttribute("aria-controls", "sidebar");
+        menuBtn.setAttribute("aria-expanded", String(expanded));
+        menuBtn.setAttribute("aria-label", expanded ? "Recolher menu" : "Abrir menu");
+      };
+      const closeMobile = () => { shell.classList.remove("is-mobile-open"); overlay?.setAttribute("aria-hidden", "true"); syncButton(); };
+      const toggleDesktop = () => {
+        closeMobile();
         shell.classList.toggle("is-collapsed");
         localStorage.setItem(STORAGE.SIDEBAR, shell.classList.contains("is-collapsed") ? "collapsed" : "expanded");
+        syncButton();
+      };
+      menuBtn?.addEventListener("click", () => {
+        if (window.innerWidth > 1024) { toggleDesktop(); return; }
+        shell.classList.toggle("is-mobile-open");
+        overlay?.setAttribute("aria-hidden", String(!shell.classList.contains("is-mobile-open")));
+        syncButton();
       });
-      window.addEventListener("resize", () => { if (window.innerWidth > 1024) closeMobile(); });
+      overlay?.addEventListener("click", closeMobile);
+      collapseBtn?.addEventListener("click", () => window.innerWidth <= 1024 ? closeMobile() : toggleDesktop());
+      $("#sidebar")?.addEventListener("click", event => { if (event.target.closest("a, [data-action]")) closeMobile(); });
+      document.addEventListener("keydown", event => { if (event.key === "Escape" && shell.classList.contains("is-mobile-open")) { closeMobile(); menuBtn?.focus(); } });
+      window.addEventListener("resize", () => { if (window.innerWidth > 1024) closeMobile(); syncButton(); });
+      syncButton();
     }
 
     /* ====== DROPDOWNS ====== */

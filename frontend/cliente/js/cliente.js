@@ -621,8 +621,8 @@
        $('#topbar-title').textContent = t(`title.${state.view}`);
        $('#breadcrumb-page').textContent = t(`title.${state.view}`);
      },
-     openSidebar() { $('#app-shell').classList.add('is-mobile-open'); },
-     closeSidebar() { $('#app-shell').classList.remove('is-mobile-open'); },
+     openSidebar() { if (window.innerWidth > 1024) return; $('#app-shell').classList.add('is-mobile-open'); $('#menu-btn').setAttribute('aria-expanded', 'true'); },
+     closeSidebar() { $('#app-shell').classList.remove('is-mobile-open'); $('#menu-btn').setAttribute('aria-expanded', 'false'); },
      init() {
        $$('.nav__item[data-view]').forEach((btn) => btn.addEventListener('click', () => Navigation.go(btn.dataset.view)));
        $$('[data-action="logout"]').forEach((btn) => btn.addEventListener('click', (event) => {
@@ -632,6 +632,8 @@
          window.location.replace('../index.html');
        }));
        $('#menu-btn').addEventListener('click', Navigation.openSidebar);
+       window.addEventListener('resize', () => { if (window.innerWidth > 1024) Navigation.closeSidebar(); });
+       document.addEventListener('keydown', event => { if (event.key === 'Escape') Navigation.closeSidebar(); });
        $('#sidebar-overlay').addEventListener('click', Navigation.closeSidebar);
        $('#topbar-avatar').addEventListener('click', () => { Navigation.go('account'); Tabs.goAccount('profile'); });
        $('#sidebar-avatar').addEventListener('click', () => { Navigation.go('account'); Tabs.goAccount('profile'); });

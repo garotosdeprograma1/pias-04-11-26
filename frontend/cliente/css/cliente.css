@@ -780,3 +780,5 @@ ul, ol { list-style: none; }
   .hero h2 { font-size: 28px; }
   .topbar h1 { font-size: 22px; }
 }
+
+@media (min-width: 1025px) { .topbar .topbar__menu, .sidebar-overlay { display: none; } }

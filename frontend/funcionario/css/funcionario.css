@@ -911,3 +911,8 @@ ul, ol { list-style: none; }
 /* Keep long contact details inside the profile card. */
 .info-list li > div { min-width: 0; }
 .info-list__value { overflow-wrap: anywhere; }
+
+/* The backdrop belongs only to the mobile drawer. Dialogs stay above it. */
+.modal { z-index: 200; }
+@media (min-width: 1025px) { .sidebar-overlay { display: none; } }
+@media (max-width: 1024px) { .sidebar { z-index: 100; width: min(var(--sidebar-w), 84vw); } .sidebar-overlay { z-index: 90; } }
