@@ -5,20 +5,20 @@
 
    (function () {
     "use strict";
-  
+
     const $  = (sel, ctx = document) => ctx.querySelector(sel);
     const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
     const onReady = (fn) => document.readyState !== "loading" ? fn() : document.addEventListener("DOMContentLoaded", fn);
     const PAGE = document.body.dataset.page || "dashboard";
     const account = window.DafixAccount;
     if (!account) return;
-  
+
     const STORAGE = {
       THEME: "dafix_theme",
       SIDEBAR: account.key("sidebar"),
       SETTINGS: account.key("settings")
     };
-  
+
     /* ====== TOASTS ====== */
     function showToast({ title, message, type = "success", duration = 3800 }) {
       const wrap = $("#toasts");
@@ -40,7 +40,7 @@
       setTimeout(() => { toast.classList.add("is-leaving"); toast.addEventListener("animationend", () => toast.remove(), { once: true }); }, duration);
     }
     window._showToast = showToast;
-  
+
     /* ====== THEME ====== */
     function initTheme() {
       const root = document.body;
@@ -58,7 +58,7 @@
         const setDark = $("#setDark"); if (setDark) setDark.checked = (next === "dark");
       });
     }
-  
+
     /* ====== SIDEBAR ====== */
     function initSidebar() {
       const shell = $("#appShell");
@@ -78,7 +78,7 @@
       });
       window.addEventListener("resize", () => { if (window.innerWidth > 1024) closeMobile(); });
     }
-  
+
     /* ====== DROPDOWNS ====== */
     function initDropdowns() {
       const items = [{ btn: "#notifToggle", panel: "#notifPanel" }, { btn: "#userToggle", panel: "#userPanel" }];
@@ -101,7 +101,7 @@
       });
       document.addEventListener("click", (e) => { if (!e.target.closest(".notifications, .user-menu")) closeAll(null); });
       document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(null); });
-  
+
       // Click em itens de notificação
       $$(".notif-item").forEach((item) => {
         item.addEventListener("click", () => {
@@ -132,7 +132,7 @@
         });
       });
     }
-  
+
     /* ====== TABS ====== */
     function moveTabsIndicator(activeBtn) {
       const indicator = $("#tabsIndicator");
@@ -167,42 +167,7 @@
       requestAnimationFrame(() => moveTabsIndicator($(".tab.is-active")));
       window.addEventListener("resize", () => moveTabsIndicator($(".tab.is-active")));
     }
-  
-    /* ====== CHART ====== */
-    const CHART_DATA = {
-      "7d":  { labels: ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"], primary: [320,280,420,360,520,460,380], accent: [40,30,60,50,80,60,40], max: 700 },
-      "30d": { labels: ["S1","S2","S3","S4","S5","S6","S7"], primary: [1200,1450,1380,1600,1820,1520,1900], accent: [180,200,220,240,260,200,280], max: 2400 },
-      "90d": { labels: ["M1","M2","M3","M4","M5","M6","M7"], primary: [4200,4800,5100,5400,5800,6200,6800], accent: [600,700,720,800,880,900,1020], max: 8200 }
-    };
-    function renderChart(range = "7d") {
-      const bars = $("#chartBars"); const axis = $("#chartAxis");
-      if (!bars || !axis) return;
-      const data = CHART_DATA[range];
-      bars.innerHTML = ""; axis.innerHTML = "";
-      data.labels.forEach((label, i) => {
-        const total = data.primary[i] + data.accent[i];
-        const pPct = (data.primary[i] / data.max) * 100;
-        const aPct = (data.accent[i] / data.max) * 100;
-        const wrap = document.createElement("div");
-        wrap.className = "chart__bar";
-        wrap.innerHTML = `<span class="chart__tooltip">${label} · R$ ${total.toLocaleString("pt-BR")}</span><div class="chart__bar-accent" style="height:${aPct}%; animation-delay:${i*50+100}ms"></div><div class="chart__bar-primary" style="height:${pPct}%; animation-delay:${i*50}ms"></div>`;
-        bars.appendChild(wrap);
-        const lab = document.createElement("span"); lab.textContent = label; axis.appendChild(lab);
-      });
-    }
-    function initChart() {
-      if (!$("#chartBars")) return;
-      renderChart("7d");
-      $$(".segmented__btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          $$(".segmented__btn").forEach((b) => b.classList.remove("is-active"));
-          btn.classList.add("is-active");
-          renderChart(btn.dataset.range);
-          showToast({ title: "Período atualizado", message: `Exibindo dados de ${btn.dataset.range === "7d" ? "7 dias" : btn.dataset.range === "30d" ? "30 dias" : "90 dias"}.`, type: "info", duration: 2200 });
-        });
-      });
-    }
-  
+
     /* ====== MODALS GENÉRICOS ====== */
     function openModal(id) {
       const modal = $("#" + id); if (!modal) return;
@@ -229,7 +194,7 @@
         if (e.key === "Escape") { const open = $(".modal.is-open"); if (open) closeModal(open); }
       });
     }
-  
+
     /* ====== PROFILE / EDIT MODAL ====== */
     function loadProfile() { return account.loadProfile(); }
     function saveProfile(p) { return account.saveProfile(p); }
@@ -358,141 +323,7 @@
         }
       });
     }
-  
-    /* ====== ADD / EDIT SERVICE MODAL ====== */
-    const CAT_LABELS = {
-      eletrica: "Elétrica", hidraulica: "Hidráulica", montagem: "Montagem",
-      pintura: "Pintura", marcenaria: "Marcenaria", geral: "Geral"
-    };
 
-    function fillEditServiceForm(s) {
-      $("#eServiceId") && ($("#eServiceId").value = s.id);
-      $("#eName") && ($("#eName").value = s.name || "");
-      $("#eCat") && ($("#eCat").value = s.category || "");
-      $("#ePrice") && ($("#ePrice").value = s.price || "");
-      $("#eTime") && ($("#eTime").value = s.time || "");
-      $("#eWarranty") && ($("#eWarranty").value = s.warranty || "90 dias");
-      $("#eDesc") && ($("#eDesc").value = s.desc || "");
-      $("#eActive") && ($("#eActive").checked = s.active !== false);
-    }
-
-    function initAddServiceModal() {
-      const form = $("#addServiceForm");
-      if (!form) return;
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        let ok = true;
-        if ($("#sName").value.trim().length < 3) { setError("sName", "Informe o nome do serviço."); ok=false; } else setError("sName","");
-        if (!$("#sCat").value) { setError("sCat", "Selecione uma categoria."); ok=false; } else setError("sCat","");
-        if (!$("#sPrice").value || +$("#sPrice").value < 1) { setError("sPrice", "Informe um valor válido."); ok=false; } else setError("sPrice","");
-        if (!ok) return;
-        const category = $("#sCat").value;
-        const service = {
-          name: $("#sName").value.trim(),
-          category,
-          catLabel: CAT_LABELS[category] || category,
-          price: +$("#sPrice").value,
-          time: $("#sTime").value || "1h",
-          warranty: $("#sWarranty").value,
-          desc: $("#sDesc").value.trim(),
-          active: true
-        };
-        if (typeof window._addService === "function") {
-          window._addService(service);
-        } else {
-          const list = JSON.parse(localStorage.getItem("mda.pro.services") || "[]");
-          list.push({ id: Date.now(), ...service });
-          localStorage.setItem("mda.pro.services", JSON.stringify(list));
-        }
-        closeModal("addServiceModal"); form.reset();
-        showToast({ title: "Serviço adicionado", message: `${service.name} foi cadastrado com sucesso.`, type: "success" });
-        if (PAGE === "servicos" && typeof window._renderServices === "function") window._renderServices();
-      });
-    }
-
-    function initEditServiceModal() {
-      const form = $("#editServiceForm");
-      if (!form) return;
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        let ok = true;
-        if ($("#eName").value.trim().length < 3) { setError("eName", "Informe o nome do serviço."); ok=false; } else setError("eName","");
-        if (!$("#eCat").value) { setError("eCat", "Selecione uma categoria."); ok=false; } else setError("eCat","");
-        if (!$("#ePrice").value || +$("#ePrice").value < 1) { setError("ePrice", "Informe um valor válido."); ok=false; } else setError("ePrice","");
-        if (!ok) return;
-        const id = +$("#eServiceId").value;
-        const category = $("#eCat").value;
-        const updated = {
-          name: $("#eName").value.trim(),
-          category,
-          catLabel: CAT_LABELS[category] || category,
-          price: +$("#ePrice").value,
-          time: $("#eTime").value || "1h",
-          warranty: $("#eWarranty").value,
-          desc: $("#eDesc").value.trim(),
-          active: $("#eActive") ? $("#eActive").checked : true
-        };
-        if (typeof window._updateService === "function" && window._updateService(id, updated)) {
-          closeModal("editServiceModal");
-          showToast({ title: "Serviço atualizado", message: `${updated.name} foi salvo com sucesso.`, type: "success" });
-        }
-      });
-    }
-
-    function initOrderDetailModal() {
-      if (!$("#orderDetailModal")) return;
-
-      $("#orderAccept") && $("#orderAccept").addEventListener("click", () => {
-        const modal = $("#orderDetailModal");
-        const id = modal && modal.dataset.orderId;
-        if (!id || typeof window._updateOrderStatus !== "function") return;
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const dateStr = `${tomorrow.getDate()}/${String(tomorrow.getMonth() + 1).padStart(2, "0")}, 10:00`;
-        window._updateOrderStatus(id, "scheduled", { date: dateStr });
-        closeModal("orderDetailModal");
-        showToast({ title: "Pedido aceito!", message: "O cliente foi notificado e o serviço foi agendado.", type: "success" });
-      });
-
-      $("#orderReject") && $("#orderReject").addEventListener("click", () => {
-        const modal = $("#orderDetailModal");
-        const id = modal && modal.dataset.orderId;
-        if (!id || typeof window._updateOrderStatus !== "function") return;
-        window._updateOrderStatus(id, "rejected", { date: "Recusado" });
-        closeModal("orderDetailModal");
-        showToast({ title: "Pedido recusado", message: "O cliente foi informado sobre a recusa.", type: "warning" });
-      });
-
-      $("#orderStart") && $("#orderStart").addEventListener("click", () => {
-        const modal = $("#orderDetailModal");
-        const id = modal && modal.dataset.orderId;
-        if (!id || typeof window._updateOrderStatus !== "function") return;
-        const now = new Date();
-        const dateStr = `Hoje, ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-        window._updateOrderStatus(id, "progress", { date: dateStr });
-        closeModal("orderDetailModal");
-        showToast({ title: "Serviço iniciado", message: "O pedido está em andamento.", type: "success" });
-      });
-
-      $("#orderComplete") && $("#orderComplete").addEventListener("click", () => {
-        const modal = $("#orderDetailModal");
-        const id = modal && modal.dataset.orderId;
-        if (!id || typeof window._updateOrderStatus !== "function") return;
-        window._updateOrderStatus(id, "completed", { date: "Concluído agora" });
-        closeModal("orderDetailModal");
-        showToast({ title: "Pedido concluído!", message: "Parabéns! O serviço foi finalizado com sucesso.", type: "success" });
-      });
-
-      $("#orderCancel") && $("#orderCancel").addEventListener("click", () => {
-        const modal = $("#orderDetailModal");
-        const id = modal && modal.dataset.orderId;
-        if (!id || typeof window._updateOrderStatus !== "function") return;
-        window._updateOrderStatus(id, "rejected", { date: "Cancelado" });
-        closeModal("orderDetailModal");
-        showToast({ title: "Serviço cancelado", message: "O pedido foi cancelado e o cliente foi notificado.", type: "warning" });
-      });
-    }
-  
     /* ====== SETTINGS ====== */
     function loadSettings() { try { return Object.assign({ notifOrders: true, notifReviews: true, notifPromo: false, available: true }, JSON.parse(localStorage.getItem(STORAGE.SETTINGS) || "{}")); } catch { return { notifOrders: true, notifReviews: true, notifPromo: false, available: true }; } }
     function initSettings() {
@@ -511,7 +342,7 @@
         showToast({ title: "Preferências salvas", message: "Suas configurações foram atualizadas.", type: "success" });
       });
     }
-  
+
     /* ====== LOGOUT ====== */
     function initLogout() {
       const btn = $("#confirmLogout"); if (!btn) return;
@@ -522,7 +353,7 @@
         window.location.replace("../index.html");
       });
     }
-  
+
     /* ====== SHARE ====== */
     function initShare() {
       const copyBtn = $("#copyLink");
@@ -552,7 +383,7 @@
         });
       });
     }
-  
+
     /* ====== GLOBAL ACTION HANDLER ====== */
     function initActionHandler() {
       document.addEventListener("click", (e) => {
@@ -562,7 +393,7 @@
         // Não bloquear o link, apenas se for âncora vazia
         const isAnchor = trigger.tagName === "A";
         if (isAnchor && trigger.getAttribute("href") === "#") e.preventDefault();
-  
+
         switch (action) {
           case "open-profile-tab":
             if (PAGE === "dashboard") switchTab("profile");
@@ -570,13 +401,13 @@
             break;
           case "open-settings": openModal("settingsModal"); break;
           case "open-logout": openModal("logoutModal"); break;
-          case "open-add-service": openModal("addServiceModal"); break;
+
           case "open-benefits": openModal("benefitsModal"); break;
           case "share-profile":
             showToast({ title: "Compartilhamento de perfil", message: "O perfil público ainda não está disponível.", type: "info" });
             break;
           case "open-payments":
-            showToast({ title: "Pagamentos", message: "Saldo: R$ 1.240,00 · Próximo recebimento: 18/Mar.", type: "info", duration: 5000 });
+            showToast({ title: "Pagamentos", message: "Nenhum pagamento registrado.", type: "info", duration: 5000 });
             break;
           case "open-support":
             window.location.href = "../suporte/index.html";
@@ -601,43 +432,6 @@
           case "agenda-options":
             e.stopPropagation();
             showToast({ title: "Opções do agendamento", message: "Reagendar · Confirmar · Cancelar", type: "info" });
-            break;
-          case "edit-service":
-            e.stopPropagation();
-            const serviceCard = trigger.closest(".service-card");
-            if (!serviceCard) break;
-            const serviceId = +serviceCard.dataset.serviceId;
-            if (typeof window._getServiceById === "function") {
-              const service = window._getServiceById(serviceId);
-              if (service) {
-                fillEditServiceForm(service);
-                openModal("editServiceModal");
-              }
-            }
-            break;
-          case "delete-service":
-            e.stopPropagation();
-            const card = trigger.closest(".service-card");
-            if (!card) break;
-            const delId = +card.dataset.serviceId;
-            if (typeof window._deleteService === "function") {
-              window._deleteService(delId);
-            } else if (card) {
-              card.style.transition = "opacity .25s, transform .25s";
-              card.style.opacity = "0";
-              card.style.transform = "scale(.95)";
-              setTimeout(() => card.remove(), 250);
-            }
-            showToast({ title: "Serviço removido", message: "O serviço foi excluído do seu catálogo.", type: "warning" });
-            break;
-          case "open-order":
-          case "order-action":
-            e.stopPropagation();
-            const orderCard = trigger.closest(".order-card");
-            const orderId = trigger.dataset.orderId || (orderCard && orderCard.dataset.orderId);
-            if (orderId && typeof window._openOrderDetail === "function") {
-              window._openOrderDetail(orderId);
-            }
             break;
           case "calendar-prev":
           case "calendar-next":
@@ -671,7 +465,7 @@
             break;
         }
       });
-  
+
       // Filtros (chips)
       $$(".filter-chip").forEach((chip) => {
         chip.addEventListener("click", () => {
@@ -683,20 +477,20 @@
           if (typeof window._applyFilter === "function") window._applyFilter(filter);
         });
       });
-  
+
       // Search field handler
       const search = $("#globalSearch");
       search && search.addEventListener("input", (e) => {
         const term = e.target.value.toLowerCase();
         if (typeof window._applySearch === "function") window._applySearch(term);
       });
-  
+
       // Trata abertura via hash #profile
       if (window.location.hash === "#profile" && PAGE === "dashboard") {
         setTimeout(() => switchTab("profile"), 300);
       }
     }
-  
+
     /* ====== ATALHOS DE TECLADO ====== */
     function initShortcuts() {
       document.addEventListener("keydown", (e) => {
@@ -706,10 +500,10 @@
         if (e.altKey && e.key.toLowerCase() === "t") { e.preventDefault(); $("#themeToggle") && $("#themeToggle").click(); }
       });
     }
-  
+
     /* ====== YEAR ====== */
     function initYear() { const el = $("#year"); if (el) el.textContent = new Date().getFullYear(); }
-  
+
     /* ====== INIT ====== */
     onReady(() => {
       if (!account.requireProfile("funcionario")) return;
@@ -718,24 +512,23 @@
       initSidebar();
       initDropdowns();
       initTabs();
-      initChart();
+
       initModalsBase();
       initEditModal();
-      initAddServiceModal();
-      initEditServiceModal();
-      initOrderDetailModal();
+
+
+
       initSettings();
       initLogout();
       initShare();
       initActionHandler();
       initShortcuts();
       initYear();
-  
+
       // Page-specific renderers
       if (PAGE === "servicos" && typeof window._initServicesPage === "function") window._initServicesPage();
       if (PAGE === "pedidos"  && typeof window._initPedidosPage === "function") window._initPedidosPage();
       if (PAGE === "agenda"   && typeof window._initAgendaPage === "function") window._initAgendaPage();
     });
-  
+
   })();
-  

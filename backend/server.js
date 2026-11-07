@@ -15,6 +15,44 @@ function responderJson(res, status, conteudo) {
   res.end(JSON.stringify(conteudo));
 }
 
+
+    function validarCpf(cpf) {
+      cpf = (cpf || "").replace(/\D/g, "");
+      if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+      let sum = 0;
+      for (let i = 0; i < 9; i++) sum += parseInt(cpf[i]) * (10 - i);
+      let d1 = (sum * 10) % 11; if (d1 === 10) d1 = 0;
+      if (d1 !== parseInt(cpf[9])) return false;
+      sum = 0;
+      for (let i = 0; i < 10; i++) sum += parseInt(cpf[i]) * (11 - i);
+      let d2 = (sum * 10) % 11; if (d2 === 10) d2 = 0;
+      return d2 === parseInt(cpf[10]);
+    }
+
+function cadastrarConta(req, res, perfil) {
+  var texto = '', tamanho = 0;
+  req.on('data', function(chunk) { tamanho += chunk.length; if(tamanho <= 16384) texto += chunk; });
+  req.on('end', function() {
+    if(tamanho > 16384) return responderJson(res,413,{erro:'Dados muito longos.'});
+    var novo;
+    try { novo=JSON.parse(texto); } catch { return responderJson(res,400,{erro:'Dados inválidos.'}); }
+    if(!novo || Array.isArray(novo) || !['nome','email','cpf','telefone','senha'].every(function(k){return typeof novo[k]==='string' && novo[k].trim();})) return responderJson(res,400,{erro:'Preencha nome, e-mail, CPF, telefone e senha.'});
+    novo.nome=novo.nome.trim();novo.email=novo.email.trim().toLowerCase();novo.cpf=novo.cpf.replace(/\D/g,'');novo.telefone=novo.telefone.replace(/\D/g,'');
+    if(novo.nome.length<3 || novo.nome.length>150 || novo.email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(novo.email) || !validarCpf(novo.cpf) || ![10,11].includes(novo.telefone.length) || novo.senha.length<8 || novo.senha.length>128) return responderJson(res,400,{erro:'Confira nome, e-mail, CPF (11 dígitos), telefone e senha (8 a 128 caracteres).'});
+    if(perfil==='funcionario' && (typeof novo.especialidade!=='string' || !novo.especialidade.trim())) return responderJson(res,400,{erro:'Informe sua especialidade.'});
+    db.get('SELECT id FROM '+perfil+" WHERE LOWER(TRIM(email)) = ? OR REPLACE(REPLACE(cpf,'.',''),'-','') = ?",[novo.email,novo.cpf],function(erro,existente){
+      if(erro) return responderJson(res,500,{erro:'Não foi possível verificar o cadastro.'});
+      if(existente) return responderJson(res,409,{erro:'Já existe uma conta com este e-mail ou CPF neste perfil.'});
+      var campos='nome,cpf,email,telefone,senha', valores=[novo.nome,novo.cpf,novo.email,novo.telefone,novo.senha];
+      if(perfil==='funcionario'){campos+=',especialidade';valores.push(novo.especialidade.trim());}
+      db.run('INSERT INTO '+perfil+' ('+campos+') VALUES ('+valores.map(function(){return '?';}).join(',')+')',valores,function(erro){
+        if(erro) return responderJson(res,erro.code==='SQLITE_CONSTRAINT'?409:500,{erro:erro.code==='SQLITE_CONSTRAINT'?'E-mail ou CPF já cadastrado.':'Não foi possível cadastrar a conta.'});
+        responderJson(res,201,{id:this.lastID,nome:novo.nome,email:novo.email,telefone:novo.telefone,especialidade:perfil==='funcionario'?novo.especialidade.trim():undefined});
+      });
+    });
+  });
+}
+
 var TIPOS = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -53,6 +91,22 @@ function servirArquivo(res, caminhoRelativo) {
 
 var servidor = http.createServer(function (req, res) {
   var caminho = req.url.split('?')[0];
+
+  // Informações públicas sem dados de contato ou documentos dos usuários.
+  if (req.method === 'GET' && caminho === '/api/profissionais') {
+    db.all('SELECT id, nome, especialidade FROM funcionario ORDER BY nome', [], function (erro, linhas) {
+      responderJson(res, erro ? 500 : 200, erro ? { erro: 'Não foi possível carregar os profissionais.' } : linhas);
+    });
+    return;
+  }
+  if (req.method === 'GET' && caminho === '/api/resumo') {
+    db.get('SELECT (SELECT COUNT(*) FROM cliente) AS clientes, ' +
+      '(SELECT COUNT(*) FROM funcionario) AS funcionarios, (SELECT COUNT(*) FROM servico) AS servicos, ' +
+      '(SELECT COUNT(*) FROM os) AS pedidos', [], function (erro, linha) {
+      responderJson(res, erro ? 500 : 200, erro ? { erro: 'Não foi possível carregar o resumo.' } : linha);
+    });
+    return;
+  }
 
   // ---- autenticar cliente ou funcionario no SQLite ----
   if (req.method === 'POST' && caminho === '/api/login') {
@@ -115,42 +169,7 @@ var servidor = http.createServer(function (req, res) {
   }
 
   // ---- cadastrar ----
-  if (req.method === 'POST' && caminho === '/api/clientes') {
-    var texto = '';
-
-    req.on('data', function (pedaco) {
-      texto += pedaco;
-    });
-
-    req.on('end', function () {
-      var novo;
-      try {
-        novo = JSON.parse(texto);
-      } catch (erro) {
-        return responderJson(res, 400, { erro: 'Dados invalidos.' });
-      }
-
-      if (!novo.nome || !novo.cpf || !novo.email || !novo.telefone || !novo.senha) {
-        return responderJson(res, 400, { erro: 'Nome, cpf, email, telefone e senha sao obrigatorios.' });
-      }
-
-      var sql = 'INSERT INTO cliente (nome, cpf, email, telefone, senha) VALUES (?, ?, ?, ?, ?)';
-      var valores = [novo.nome, novo.cpf, novo.email, novo.telefone, novo.senha];
-
-      // function() e nao arrow: so assim o this traz o lastID.
-      db.run(sql, valores, function (erro) {
-        if (erro) {
-          return responderJson(res, 500, { erro: erro.message });
-        }
-        novo.id = this.lastID;
-        delete novo.senha;
-        console.log('Cliente cadastrado: id ' + novo.id + ' - ' + novo.nome);
-        responderJson(res, 201, novo);
-      });
-    });
-
-    return;
-  }
+  if (req.method === 'POST' && caminho === '/api/clientes') { cadastrarConta(req,res,'cliente'); return; }
 
   // ---- excluir ----
   if (req.method === 'DELETE' && caminho.indexOf('/api/clientes/') === 0) {
@@ -186,44 +205,7 @@ var servidor = http.createServer(function (req, res) {
   }
 
   // ---- cadastrar ----
-  if (req.method === 'POST' && caminho === '/api/funcionarios') {
-    var textoFunc = '';
-
-    req.on('data', function (pedaco) {
-      textoFunc += pedaco;
-    });
-
-    req.on('end', function () {
-      var novoFunc;
-      try {
-        novoFunc = JSON.parse(textoFunc);
-      } catch (erro) {
-        return responderJson(res, 400, { erro: 'Dados invalidos.' });
-      }
-
-      if (!novoFunc.nome || !novoFunc.cpf || !novoFunc.email || !novoFunc.telefone ||
-          !novoFunc.senha || !novoFunc.especialidade) {
-        return responderJson(res, 400, { erro: 'Nome, cpf, email, telefone, senha e especialidade sao obrigatorios.' });
-      }
-
-      var sqlFunc = 'INSERT INTO funcionario (nome, cpf, email, telefone, senha, especialidade) ' +
-                    'VALUES (?, ?, ?, ?, ?, ?)';
-      var valoresFunc = [novoFunc.nome, novoFunc.cpf, novoFunc.email, novoFunc.telefone,
-                         novoFunc.senha, novoFunc.especialidade];
-
-      db.run(sqlFunc, valoresFunc, function (erro) {
-        if (erro) {
-          return responderJson(res, 500, { erro: erro.message });
-        }
-        novoFunc.id = this.lastID;
-        delete novoFunc.senha;
-        console.log('Funcionario cadastrado: id ' + novoFunc.id + ' - ' + novoFunc.nome);
-        responderJson(res, 201, novoFunc);
-      });
-    });
-
-    return;
-  }
+  if (req.method === 'POST' && caminho === '/api/funcionarios') { cadastrarConta(req,res,'funcionario'); return; }
 
   // ---- excluir ----
   if (req.method === 'DELETE' && caminho.indexOf('/api/funcionarios/') === 0) {
@@ -319,7 +301,7 @@ var servidor = http.createServer(function (req, res) {
   // ---- listar ----
   if (req.method === 'GET' && caminho === '/api/os') {
     var sqlListaOs = 'SELECT ' +
-      'os.id, ' +
+      'os.id, os.id_cliente, os.id_servico, os.id_funcionario, ' +
       'cliente.nome AS cliente, ' +
       'servico.nome_servico AS servico, ' +
       'funcionario.nome AS funcionario, ' +
@@ -330,10 +312,22 @@ var servidor = http.createServer(function (req, res) {
       'FROM os ' +
       'INNER JOIN cliente ON os.id_cliente = cliente.id ' +
       'INNER JOIN servico ON os.id_servico = servico.id ' +
-      'INNER JOIN funcionario ON os.id_funcionario = funcionario.id ' +
-      'ORDER BY os.id DESC';
+      'INNER JOIN funcionario ON os.id_funcionario = funcionario.id ';
 
-    db.all(sqlListaOs, [], function (erro, linhas) {
+    var filtrosOs = new URL(req.url, 'http://localhost').searchParams;
+    var parametrosOs = [];
+    if (filtrosOs.has('perfil') || filtrosOs.has('id')) {
+      var perfilOs = filtrosOs.get('perfil');
+      var pessoaOs = Number(filtrosOs.get('id'));
+      if (!['cliente', 'funcionario'].includes(perfilOs) || !Number.isSafeInteger(pessoaOs) || pessoaOs < 1) {
+        return responderJson(res, 400, { erro: 'Filtro de conta inválido.' });
+      }
+      sqlListaOs += perfilOs === 'cliente' ? 'WHERE os.id_cliente = ? ' : 'WHERE os.id_funcionario = ? ';
+      parametrosOs.push(pessoaOs);
+    }
+    sqlListaOs += 'ORDER BY os.id DESC';
+
+    db.all(sqlListaOs, parametrosOs, function (erro, linhas) {
       if (erro) {
         return responderJson(res, 500, { erro: erro.message });
       }

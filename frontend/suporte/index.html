@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="suporte.css" />
+<link rel="stylesheet" href="/data-states.css">
 </head>
 <body>
 
@@ -26,7 +27,7 @@
       </a>
       <a href="contato.html">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 4l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        Abrir Ticket
+        Contato
       </a>
     </nav>
     <div class="header__right">
@@ -46,10 +47,7 @@
     <div class="hero__orb hero__orb--1" aria-hidden="true"></div>
     <div class="hero__orb hero__orb--2" aria-hidden="true"></div>
     <div class="hero__content">
-      <div class="hero__badge">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1L3.2 9.4l6.1-.9L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-        Suporte 24h · Resposta em até 4h
-      </div>
+
       <h1>Como podemos ajudar?</h1>
       <p>Encontre respostas rápidas, tutoriais e orientações para tirar o máximo da plataforma Dafix.</p>
       <form id="heroSearchForm" role="search" aria-label="Buscar artigos de ajuda">
@@ -57,7 +55,7 @@
           <span class="search-bar__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </span>
-          <input type="search" placeholder="Ex: como redefinir minha senha..." aria-label="Buscar pergunta" />
+          <input type="search" placeholder="Buscar ajuda sobre sua conta..." aria-label="Buscar pergunta" />
           <button type="submit">Buscar</button>
         </div>
       </form>
@@ -68,11 +66,7 @@
     <div class="page-wrap">
 
       <!-- STATUS DO SISTEMA -->
-      <div class="status-bar" role="status" style="margin-top: 40px;">
-        <span class="status-bar__dot" aria-hidden="true"></span>
-        <span class="status-bar__text">Todos os sistemas operacionais</span>
-        <span class="status-bar__sub">Última verificação: agora mesmo</span>
-      </div>
+
 
       <!-- CATEGORIAS -->
       <section class="section" aria-labelledby="cat-title">
@@ -158,202 +152,7 @@
           <svg style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-3);width:18px;height:18px;pointer-events:none;" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </div>
 
-        <div class="faq-list" role="list">
-
-          <!-- Conta -->
-          <div class="faq-item" data-cat="conta" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como redefinir minha senha?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
-                <p>Para redefinir sua senha, siga os passos abaixo:</p>
-                <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li>Acesse a tela de login e clique em <strong>"Esqueci minha senha"</strong>.</li>
-                  <li>Informe o e-mail associado à sua conta.</li>
-                  <li>Verifique sua caixa de entrada — você receberá um link de redefinição em até 2 minutos.</li>
-                  <li>Clique no link e cadastre uma nova senha (mínimo 8 caracteres).</li>
-                </ol>
-                <p style="margin-top:14px;">Não encontrou o e-mail? Verifique sua pasta de <em>spam</em> ou <a href="contato.html">abra um ticket</a>.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="conta" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como ativar a verificação em duas etapas (2FA)?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
-                <p>A verificação em duas etapas adiciona uma camada extra de segurança. Para ativá-la:</p>
-                <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li>Acesse <strong>Configurações → Segurança</strong> na sua conta.</li>
-                  <li>Clique em <strong>"Ativar autenticação 2FA"</strong>.</li>
-                  <li>Escaneie o QR Code com o aplicativo autenticador de sua preferência.</li>
-                  <li>Insira o código de 6 dígitos gerado e confirme.</li>
-                </ol>
-                <p style="margin-top:14px;">Recomendamos o uso do <strong>Google Authenticator</strong> ou <strong>Authy</strong>.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="conta" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como alterar meu e-mail ou telefone cadastrado?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--brand">Conta e Acesso</span>
-                <p>Para alterar informações de contato, vá em <strong>Configurações → Perfil</strong>. Clique no campo desejado, insira o novo dado e confirme via código de verificação enviado para o contato <em>atual</em>.</p>
-                <p style="margin-top:10px;">Por segurança, alterações de e-mail exigem confirmação em ambos os endereços (antigo e novo).</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pedidos -->
-          <div class="faq-item" data-cat="pedidos" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como solicitar um serviço na plataforma?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--orange">Pedidos</span>
-                <p>Solicitar um serviço é simples e rápido:</p>
-                <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li>Acesse <strong>Serviços</strong> no menu principal.</li>
-                  <li>Escolha a categoria e o profissional desejado.</li>
-                  <li>Selecione data, horário e confirme os detalhes.</li>
-                  <li>Realize o pagamento — o profissional será notificado imediatamente.</li>
-                </ol>
-                <p style="margin-top:14px;">Você receberá atualizações em tempo real via notificações e e-mail.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="pedidos" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Posso cancelar ou reagendar um serviço?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--orange">Pedidos</span>
-                <p><strong>Cancelamento:</strong> Pedidos podem ser cancelados com até <strong>2 horas de antecedência</strong> sem cobrança. Após esse prazo, pode incidir taxa de cancelamento de 20%.</p>
-                <p style="margin-top:10px;"><strong>Reagendamento:</strong> Você pode reagendar diretamente na aba <strong>Meus Pedidos → Reagendar</strong>, sujeito à disponibilidade do profissional.</p>
-                <p style="margin-top:10px;">Cancelamentos de emergência podem ser solicitados pelo <a href="contato.html">suporte</a>.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="pedidos" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como acompanhar o status do meu pedido?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--orange">Pedidos</span>
-                <p>Acesse <strong>Meus Pedidos</strong> no menu. Cada pedido exibe seu status atual:</p>
-                <ul style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li><strong>Aguardando</strong> — pedido enviado, aguardando confirmação do profissional.</li>
-                  <li><strong>Confirmado</strong> — profissional aceitou, serviço agendado.</li>
-                  <li><strong>Em andamento</strong> — serviço sendo executado.</li>
-                  <li><strong>Concluído</strong> — serviço finalizado. Você pode avaliar o profissional.</li>
-                </ul>
-                <p style="margin-top:14px;">Você também pode ativar notificações push em <strong>Configurações → Notificações</strong>.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagamentos -->
-          <div class="faq-item" data-cat="pagamentos" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Quais formas de pagamento são aceitas?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--green">Pagamentos</span>
-                <p>A Dafix aceita os seguintes métodos de pagamento:</p>
-                <ul style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li><strong>Cartão de crédito</strong> — Visa, Mastercard, Elo, Amex (parcelamento em até 12x)</li>
-                  <li><strong>Pix</strong> — confirmação instantânea</li>
-                  <li><strong>Boleto bancário</strong> — prazo de compensação de até 3 dias úteis</li>
-                  <li><strong>Carteira Dafix</strong> — saldo da plataforma</li>
-                </ul>
-                <p style="margin-top:14px;">Todos os pagamentos são processados com <strong>criptografia SSL</strong> e certificação PCI-DSS.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="pagamentos" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Como solicitar um reembolso?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--green">Pagamentos</span>
-                <p>Para solicitar reembolso, acesse <strong>Meus Pedidos</strong>, selecione o pedido e clique em <strong>"Solicitar reembolso"</strong>. O prazo de análise é de até <strong>2 dias úteis</strong>.</p>
-                <p style="margin-top:10px;"><strong>Prazos de estorno:</strong></p>
-                <ul style="margin:8px 0 0 18px;display:flex;flex-direction:column;gap:5px;">
-                  <li><strong>Pix / Carteira Dafix:</strong> até 24h</li>
-                  <li><strong>Cartão de crédito:</strong> até 2 faturas</li>
-                  <li><strong>Boleto:</strong> até 3 dias úteis via transferência</li>
-                </ul>
-                <p style="margin-top:14px;">Para casos urgentes, <a href="contato.html">entre em contato</a> com nossa equipe.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Técnico -->
-          <div class="faq-item" data-cat="tecnico" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              A plataforma está lenta ou fora do ar. O que fazer?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--violet">Técnico</span>
-                <p>Antes de entrar em contato com o suporte, tente estas ações:</p>
-                <ol style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li>Recarregue a página (<kbd style="padding:2px 6px;border-radius:5px;background:var(--bg);border:1px solid var(--border);font-size:12px;">Ctrl + Shift + R</kbd> ou <kbd style="padding:2px 6px;border-radius:5px;background:var(--bg);border:1px solid var(--border);font-size:12px;">Cmd + Shift + R</kbd>).</li>
-                  <li>Limpe o cache do navegador.</li>
-                  <li>Tente acessar em aba anônima ou em outro navegador.</li>
-                  <li>Verifique sua conexão com a internet.</li>
-                </ol>
-                <p style="margin-top:14px;">Se o problema persistir, informe o <a href="contato.html">suporte técnico</a> com o horário do erro e o navegador utilizado.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item" data-cat="tecnico" role="listitem">
-            <button class="faq-item__trigger" aria-expanded="false" type="button">
-              Quais navegadores são suportados?
-              <span class="faq-item__chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            </button>
-            <div class="faq-item__body" role="region" aria-label="Resposta">
-              <div class="faq-item__inner">
-                <span class="faq-item__tag faq-item__tag--violet">Técnico</span>
-                <p>A Dafix é compatível com as <strong>duas últimas versões estáveis</strong> dos seguintes navegadores:</p>
-                <ul style="margin:12px 0 0 18px;display:flex;flex-direction:column;gap:6px;">
-                  <li>Google Chrome (recomendado)</li>
-                  <li>Mozilla Firefox</li>
-                  <li>Microsoft Edge</li>
-                  <li>Apple Safari (macOS e iOS)</li>
-                </ul>
-                <p style="margin-top:14px;">O Internet Explorer <strong>não é suportado</strong>. Em dispositivos móveis, recomendamos Chrome ou Safari.</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        <div class="faq-list" role="list"><div class="faq-item" data-cat="conta"><button class="faq-item__trigger" type="button" aria-expanded="false"><span>Como criar uma conta?</span></button><div class="faq-item__body"><div class="faq-item__inner"><p>Na tela de acesso, escolha Cliente ou Funcionário e preencha o formulário de cadastro.</p></div></div></div><div class="faq-item" data-cat="conta"><button class="faq-item__trigger" type="button" aria-expanded="false"><span>Por que meus pedidos estão vazios?</span></button><div class="faq-item__body"><div class="faq-item__inner"><p>A lista mostra somente pedidos cadastrados para a sua conta. Se ainda não houver registros, ela ficará vazia.</p></div></div></div><div class="faq-item" data-cat="conta"><button class="faq-item__trigger" type="button" aria-expanded="false"><span>Como atualizar meu perfil?</span></button><div class="faq-item__body"><div class="faq-item__inner"><p>Entre na sua conta e abra Perfil. As edições feitas nessa tela ficam salvas neste navegador.</p></div></div></div><div class="faq-item" data-cat="conta"><button class="faq-item__trigger" type="button" aria-expanded="false"><span>Como sair da conta?</span></button><div class="faq-item__body"><div class="faq-item__inner"><p>Use Sair da conta no menu ou no cabeçalho. Você será direcionado à tela de login.</p></div></div></div></div>
 
         <!-- Estado vazio (busca sem resultado) -->
         <div class="faq-empty" aria-live="polite" role="status">
@@ -375,57 +174,7 @@
           <h2 id="contact-title">Fale com a nossa equipe</h2>
           <p class="lead">Escolha o canal mais conveniente para você.</p>
         </div>
-        <div class="contact-grid">
 
-          <div class="contact-card">
-            <span class="contact-card__icon cat-card__icon--brand">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-            </span>
-            <h3>Chat ao vivo</h3>
-            <p>Converse em tempo real com um especialista Dafix. Ideal para dúvidas rápidas e urgentes.</p>
-            <span class="contact-card__badge" style="background:var(--green-50);color:var(--green-500);">
-              <span style="width:7px;height:7px;border-radius:50%;background:var(--green-500);"></span>
-              Online agora · ≈ 2 min de espera
-            </span>
-            <button class="contact-card__cta" type="button" id="openChat">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-              Iniciar chat
-            </button>
-          </div>
-
-          <div class="contact-card">
-            <span class="contact-card__icon cat-card__icon--orange">
-              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 7 9-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-            <h3>E-mail / Ticket</h3>
-            <p>Descreva seu problema em detalhes. Nossa equipe responde em até 4 horas em dias úteis.</p>
-            <span class="contact-card__badge" style="background:var(--orange-50);color:var(--orange-500);">
-              <svg viewBox="0 0 24 24" fill="none" style="width:13px;height:13px;"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Resposta em até 4h
-            </span>
-            <a class="contact-card__cta" href="contato.html">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 4l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Abrir ticket
-            </a>
-          </div>
-
-          <div class="contact-card">
-            <span class="contact-card__icon cat-card__icon--violet">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l2 5-2 1a12 12 0 0 0 6 6l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-            </span>
-            <h3>Telefone</h3>
-            <p>Atendimento por voz para casos urgentes. Disponível de segunda a sexta, das 8h às 20h.</p>
-            <span class="contact-card__badge" style="background:var(--violet-50);color:var(--violet-500);">
-              <svg viewBox="0 0 24 24" fill="none" style="width:13px;height:13px;"><path d="M9 3H5a2 2 0 0 0-2 2v4a16 16 0 0 0 16 16h4a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Seg–Sex · 8h às 20h
-            </span>
-            <button class="contact-card__cta contact-card__cta--ghost" type="button" data-copy="0800 555 1234">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M5 4h3l2 5-2 1a12 12 0 0 0 6 6l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-              0800 555 1234 (copiar)
-            </button>
-          </div>
-
-        </div>
       </section>
 
     </div>
@@ -442,8 +191,8 @@
         <a href="../index.html">Login</a>
         <a href="index.html">Central de Ajuda</a>
         <a href="contato.html">Contato</a>
-        <a href="#">Privacidade</a>
-        <a href="#">Termos de Uso</a>
+        <span>Privacidade</span>
+        <span>Termos de Uso</span>
       </nav>
       <p class="footer__copy">© 2026 Dafix · Todos os direitos reservados</p>
     </div>

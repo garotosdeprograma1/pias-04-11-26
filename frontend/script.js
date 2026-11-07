@@ -7,7 +7,7 @@
    ============================================================ */
    (() => {
     "use strict";
-  
+
     /* ----------------- i18n dictionary ----------------- */
     const I18N = {
       pt: {
@@ -167,7 +167,7 @@
         "session.error": "Could not save your sign-in in this browser. Check its storage permissions."
       }
     };
-  
+
     /* ----------------- State ----------------- */
     const state = {
       lang: ["pt", "en"].includes(localStorage.getItem("dafix_lang")) ? localStorage.getItem("dafix_lang") : "pt",
@@ -175,17 +175,16 @@
       tab: "login",       // login | signup
       profile: "cliente", // cliente | funcionario
     };
-  
+
     let DATA = null;
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
     const t = (k) => (I18N[state.lang] && I18N[state.lang][k]) || k;
-  
+
     /* ----------------- Data loading ----------------- */
     async function loadData() {
       try {
-        const res = await fetch("data.json", { cache: "no-store" });
-        DATA = await res.json();
+        DATA = window.DafixAuthData;
       } catch (e) {
         DATA = { config: { sistema: "Dafix" }, clientes: [], funcionarios: [], mensagens: { pt: {}, en: {} } };
       }
@@ -213,7 +212,7 @@
       Object.keys(vars).forEach((k) => { str = str.replace(`{${k}}`, vars[k]); });
       return str;
     }
-  
+
     /* ----------------- i18n apply ----------------- */
     function applyI18n() {
       document.documentElement.lang = state.lang === "pt" ? "pt-BR" : "en";
@@ -224,13 +223,13 @@
       applyTheme();
       refreshDynamicTexts();
     }
-  
+
     function refreshDynamicTexts() {
       // Card title/subtitle by tab + profile
       const p = state.profile === "cliente" ? "client" : "staff";
       $("#cardTitle").textContent = t(`card.${state.tab}.${p}.title`);
       $("#cardSubtitle").textContent = t(`card.${state.tab}.${p}.sub`);
-  
+
       // Email labels/placeholders depend on profile (corporate vs personal)
       const corp = state.profile === "funcionario";
       [["login-email", "field.email.label", "field.emailCorp.label"],
@@ -242,7 +241,7 @@
         input.placeholder = corp ? t("field.emailCorp.ph") : t("field.email.ph");
       });
     }
-  
+
     /* ----------------- Theme ----------------- */
     function applyTheme() {
       document.documentElement.setAttribute("data-theme", state.theme);
@@ -252,7 +251,7 @@
       const themeColor = document.querySelector('meta[name="theme-color"]');
       if (themeColor) themeColor.setAttribute("content", state.theme === "dark" ? "#111612" : "#203b30");
     }
-  
+
     /* ----------------- Tabs ----------------- */
     function setTab(tab) {
       state.tab = tab;
@@ -272,7 +271,7 @@
       }
       refreshDynamicTexts();
     }
-  
+
     /* ----------------- Profile segmented control ----------------- */
     function setProfile(profile) {
       state.profile = profile;
@@ -287,7 +286,7 @@
       staffWrap.hidden = profile !== "funcionario";
       refreshDynamicTexts();
     }
-  
+
     /* ----------------- Masks ----------------- */
     function maskPhone(v) {
       v = v.replace(/\D/g, "").slice(0, 11);
@@ -303,7 +302,7 @@
         .replace(/(\d{3})(\d)/, "$1.$2")
         .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
     }
-  
+
     /* ----------------- Validators ----------------- */
     const reEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     function validCPF(cpf) {
@@ -322,13 +321,13 @@
       const d = (v || "").replace(/\D/g, "");
       return d.length === 10 || d.length === 11;
     }
-  
+
     // returns { ok, msg }
     function validateField(input) {
       const type = input.dataset.validate;
       const val = (input.value || "").trim();
       if (!type) return { ok: true };
-  
+
       switch (type) {
         case "email":
           if (!val) return { ok: false, msg: t("v.required") };
@@ -359,7 +358,7 @@
           return { ok: true };
       }
     }
-  
+
     function paintField(input, result, { showValid = true } = {}) {
       const field = input.closest(".field");
       if (!field) return;
@@ -373,7 +372,7 @@
         if (hint) hint.textContent = result.msg || "";
       }
     }
-  
+
     /* ----------------- Password strength ----------------- */
     function updateStrength(input) {
       const wrap = input.closest(".field").querySelector("[data-strength]");
@@ -395,7 +394,7 @@
       bar.style.setProperty("--c", c);
       label.textContent = t(key);
     }
-  
+
     /* ----------------- Toasts ----------------- */
     function toast(type, title, message) {
       const wrap = $("#toasts");
@@ -456,7 +455,7 @@
         fn();
       }, delay);
     }
-  
+
     /* ----------------- Form helpers ----------------- */
     function validateForm(form, { showValid = true } = {}) {
       let ok = true;
@@ -484,7 +483,7 @@
       if (firstInvalid) firstInvalid.focus();
       return ok;
     }
-  
+
     /* ----------------- Rotas pós-login ----------------- */
 const ROUTES = {
   cliente:     "/cliente/index.html",
@@ -535,7 +534,7 @@ async function handleLogin() {
     }
   }
 }
-  
+
     async function handleSignup() {
       const form = $("#panel-signup");
       const btn = $("[data-submit]", form);
@@ -553,7 +552,7 @@ async function handleLogin() {
       };
       if (group === "funcionarios") {
         user.especialidade = $("#su-spec").value.trim();
-        user.area = $("#su-area").value.trim();
+
       }
       btn.classList.add("is-loading");
       btn.disabled = true;
@@ -574,7 +573,7 @@ async function handleLogin() {
         btn.disabled = false;
       }
     }
-  
+
     /* ----------------- Modal (forgot password) ----------------- */
     const modal = $("#forgotModal");
     let lastFocused = null;
@@ -604,22 +603,10 @@ async function handleLogin() {
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
     }
-    function handleForgot() {
-      const input = $("#forgot-email");
-      const res = validateField(input);
-      paintField(input, res);
-      if (!res.ok) return;
-      const btn = $("[data-submit]", $("#forgotForm"));
-      withLoading(btn, () => {
-        const email = input.value.trim();
-        $("#forgotForm").hidden = true;
-        const success = $("[data-modal-success]");
-        success.hidden = false;
-        $("[data-modal-success-msg]").textContent = msg("senhaEnviada", { email });
-        toast("success", t("toast.sent.title"), msg("senhaEnviada", { email }));
-      }, 1000);
-    }
-  
+    function handleForgot() { toast("info", "Recuperação indisponível", "O envio de recuperação ainda não está configurado."); }
+
+    document.addEventListener("DOMContentLoaded", () => { if (new URLSearchParams(location.search).get("tab") === "signup") setTimeout(() => setTab("signup"), 0); });
+
     /* ----------------- Wire up events ----------------- */
     function bind() {
       // Theme & language
@@ -633,12 +620,12 @@ async function handleLogin() {
         localStorage.setItem("dafix_lang", state.lang);
         applyI18n();
       });
-  
+
       // Tabs
       $$(".tab").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
       // Profile
       $$(".seg__opt").forEach((b) => b.addEventListener("click", () => setProfile(b.dataset.profile)));
-  
+
       // Password visibility
       $$("[data-toggle-pw]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -647,7 +634,7 @@ async function handleLogin() {
           btn.setAttribute("aria-label", input.type === "password" ? "Mostrar senha" : "Ocultar senha");
         });
       });
-  
+
       // Masks + live validation
       $$("input[data-mask], input[data-validate]").forEach((input) => {
         if (input.type === "checkbox") {
@@ -674,17 +661,17 @@ async function handleLogin() {
           if (input.value.trim() || input.dataset.validate) paintField(input, validateField(input));
         });
       });
-  
+
       // Submits
       $("#panel-login").addEventListener("submit", (e) => { e.preventDefault(); handleLogin(); });
       $("#panel-signup").addEventListener("submit", (e) => { e.preventDefault(); handleSignup(); });
       $("#forgotForm").addEventListener("submit", (e) => { e.preventDefault(); handleForgot(); });
-  
+
       // Modal open/close
-      $("#forgotLink").addEventListener("click", openModal);
+      $("#forgotLink").addEventListener("click", (event) => { event.preventDefault(); handleForgot(); });
       $$("[data-close-modal]").forEach((el) => el.addEventListener("click", closeModal));
     }
-  
+
     /* ----------------- Init ----------------- */
     async function init() {
       if (new URLSearchParams(window.location.search).get("dev") === "1") {
@@ -700,7 +687,7 @@ async function handleLogin() {
       const last = localStorage.getItem("dafix_last_email");
       if (last) { $("#login-email").value = last; $("#remember").checked = true; }
     }
-  
+
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
     else init();
   })();

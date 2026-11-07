@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#203b30" />
-  <title>Abrir Ticket — Suporte Dafix</title>
+  <title>Contato — Suporte Dafix</title>
   <meta name="description" content="Entre em contato com o suporte Dafix. Abra um ticket e receba resposta em até 4 horas." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="suporte.css" />
+<link rel="stylesheet" href="/data-states.css">
 </head>
 <body>
 
@@ -26,7 +27,7 @@
       </a>
       <a href="contato.html" class="is-active">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 4l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        Abrir Ticket
+        Contato
       </a>
     </nav>
     <div class="header__right">
@@ -41,225 +42,7 @@
     </div>
   </header>
 
-  <main id="main-content">
-    <div class="page-wrap">
-
-      <!-- BREADCRUMB -->
-      <nav class="breadcrumb" aria-label="Localização na página">
-        <a href="../index.html">Dafix</a>
-        <span class="breadcrumb__sep" aria-hidden="true">›</span>
-        <a href="index.html">Central de Ajuda</a>
-        <span class="breadcrumb__sep" aria-hidden="true">›</span>
-        <span class="breadcrumb__current">Abrir Ticket</span>
-      </nav>
-
-      <!-- TÍTULO DA SEÇÃO -->
-      <div class="section__head" style="text-align:left;margin-bottom:32px;">
-        <p class="section__eyebrow">
-          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 4l8 8 8-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-          Suporte via ticket
-        </p>
-        <h1>Fale com nossa equipe</h1>
-        <p class="lead" style="text-align:left;margin:10px 0 0;">Descreva seu problema em detalhes. Quanto mais informações você nos der, mais rápido conseguimos ajudar.</p>
-      </div>
-
-      <!-- FORM + ASIDE -->
-      <div class="form-section">
-
-        <!-- FORMULÁRIO -->
-        <div>
-          <!-- Estado de sucesso (escondido inicialmente) -->
-          <div class="success-state" aria-live="polite" role="status">
-            <div class="success-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <h3>Ticket aberto com sucesso!</h3>
-            <p>Nossa equipe recebeu sua mensagem e responderá em até 4 horas em dias úteis.</p>
-            <p>Seu número de protocolo:</p>
-            <span class="ticket-id" aria-label="Número do protocolo">DAF-00000</span>
-            <p style="font-size:13px;color:var(--text-2);">Guarde este número para acompanhar o seu atendimento. Você também receberá uma cópia por e-mail.</p>
-            <button class="contact-card__cta" type="button" id="newTicketBtn" style="max-width:260px;margin-top:8px;">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Abrir novo ticket
-            </button>
-          </div>
-
-          <!-- Formulário principal -->
-          <div class="form-card">
-            <h2>Novo ticket de suporte</h2>
-            <p>Preencha os campos abaixo. Campos marcados com <span style="color:var(--orange-500)">*</span> são obrigatórios.</p>
-
-            <form id="contactForm" novalidate aria-label="Formulário de abertura de ticket">
-
-              <div class="field-row">
-                <div class="field">
-                  <label for="ctName">Nome completo <span>*</span></label>
-                  <input type="text" id="ctName" name="name" required minlength="3" autocomplete="name" placeholder="Seu nome" />
-                  <span class="field__error" role="alert"></span>
-                </div>
-                <div class="field">
-                  <label for="ctEmail">E-mail <span>*</span></label>
-                  <input type="email" id="ctEmail" name="email" required autocomplete="email" placeholder="seu@email.com" />
-                  <span class="field__error" role="alert"></span>
-                </div>
-              </div>
-
-              <div class="field-row">
-                <div class="field">
-                  <label for="ctCategory">Categoria <span>*</span></label>
-                  <select id="ctCategory" name="category" required>
-                    <option value="">Selecione a categoria</option>
-                    <option value="conta">Conta e Acesso</option>
-                    <option value="pedidos">Pedidos e Serviços</option>
-                    <option value="pagamentos">Pagamentos e Reembolsos</option>
-                    <option value="tecnico">Problema Técnico</option>
-                    <option value="profissional">Área do Profissional</option>
-                    <option value="outros">Outros</option>
-                  </select>
-                  <span class="field__error" role="alert"></span>
-                </div>
-                <div class="field">
-                  <label for="ctPriority">Prioridade</label>
-                  <select id="ctPriority" name="priority">
-                    <option value="normal">Normal — até 4h</option>
-                    <option value="alta">Alta — até 2h</option>
-                    <option value="urgente">Urgente — até 1h</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="field">
-                <label for="ctSubject">Assunto <span>*</span></label>
-                <input type="text" id="ctSubject" name="subject" required minlength="6" placeholder="Descreva brevemente o problema" />
-                <span class="field__error" role="alert"></span>
-              </div>
-
-              <div class="field">
-                <label for="ctMessage">Mensagem detalhada <span>*</span></label>
-                <textarea id="ctMessage" name="message" required minlength="20" maxlength="2000" placeholder="Descreva o problema com o máximo de detalhes possível: o que estava fazendo, mensagens de erro exibidas, horário do ocorrido, navegador utilizado..."></textarea>
-                <span class="field__error" role="alert"></span>
-              </div>
-
-              <div class="field">
-                <label for="ctOrderId">Número do pedido (opcional)</label>
-                <input type="text" id="ctOrderId" name="order_id" placeholder="Ex: #2398 — deixe em branco se não aplicável" />
-              </div>
-
-              <!-- Aviso de privacidade -->
-              <p style="font-size:12.5px;color:var(--text-3);line-height:1.6;margin-bottom:14px;padding:12px;background:var(--bg);border-radius:10px;border:1px solid var(--border);">
-                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;vertical-align:middle;margin-right:5px;color:var(--text-2);" aria-hidden="true"><path d="M12 2l7 3v5c0 5.25-3.5 10.07-7 11.5C8.5 20.07 5 15.25 5 10V5l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                Seus dados são tratados com segurança conforme nossa <a href="#" style="color:var(--brand-600);text-decoration:underline;">Política de Privacidade</a>. Não compartilhamos informações com terceiros.
-              </p>
-
-              <button class="form-submit" type="submit" aria-label="Enviar ticket de suporte">
-                <span class="spinner" aria-hidden="true"></span>
-                <span class="btn-text" style="display:flex;align-items:center;gap:9px;">
-                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Enviar ticket
-                </span>
-              </button>
-
-            </form>
-          </div>
-        </div>
-
-        <!-- ASIDE -->
-        <aside class="form-aside" aria-label="Informações de suporte">
-
-          <!-- SLA / Tempos de resposta -->
-          <div class="sla-card">
-            <h4>
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Tempos de resposta
-            </h4>
-            <div class="sla-list">
-              <div class="sla-item">
-                <span class="sla-item__label">Urgente</span>
-                <span class="sla-item__val">≤ 1 hora</span>
-              </div>
-              <div class="sla-item">
-                <span class="sla-item__label">Alta prioridade</span>
-                <span class="sla-item__val">≤ 2 horas</span>
-              </div>
-              <div class="sla-item">
-                <span class="sla-item__label">Normal</span>
-                <span class="sla-item__val">≤ 4 horas</span>
-              </div>
-              <div class="sla-item">
-                <span class="sla-item__label">Horário de atend.</span>
-                <span class="sla-item__val">24h / 7 dias</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Canais de contato -->
-          <div class="info-card">
-            <h4>Outros canais</h4>
-            <ul class="info-list">
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                <div>
-                  <strong>Chat ao vivo</strong><br>
-                  <span>Disponível 24h · ~2 min</span>
-                </div>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4h3l2 5-2 1a12 12 0 0 0 6 6l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-                <div>
-                  <strong>Telefone</strong><br>
-                  <span>0800 555 1234 · Seg–Sex 8h–20h</span>
-                </div>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 7 9-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <div>
-                  <strong>E-mail direto</strong><br>
-                  <span>suporte@dafix.com.br</span>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Dicas para um bom ticket -->
-          <div class="info-card" style="background:var(--surface-2);">
-            <h4>
-              <svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px;display:inline;vertical-align:middle;margin-right:6px;" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 2.7-1.5 5-3.7 6.3V17a1 1 0 0 1-1 1h-4.6a1 1 0 0 1-1-1v-1.7A7 7 0 0 1 12 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              Dicas para agilizar
-            </h4>
-            <ul style="display:flex;flex-direction:column;gap:10px;">
-              <li style="font-size:13px;color:var(--text-2);display:flex;gap:9px;align-items:flex-start;">
-                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--brand-500);" aria-hidden="true"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span>Informe o <strong>horário exato</strong> em que o problema ocorreu.</span>
-              </li>
-              <li style="font-size:13px;color:var(--text-2);display:flex;gap:9px;align-items:flex-start;">
-                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--brand-500);" aria-hidden="true"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span>Copie e cole a <strong>mensagem de erro</strong> exibida, se houver.</span>
-              </li>
-              <li style="font-size:13px;color:var(--text-2);display:flex;gap:9px;align-items:flex-start;">
-                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--brand-500);" aria-hidden="true"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span>Mencione o <strong>dispositivo e navegador</strong> que está utilizando.</span>
-              </li>
-              <li style="font-size:13px;color:var(--text-2);display:flex;gap:9px;align-items:flex-start;">
-                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px;flex-shrink:0;margin-top:2px;color:var(--brand-500);" aria-hidden="true"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span>Inclua o <strong>número do pedido</strong>, se o problema estiver relacionado a um serviço.</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Status do sistema -->
-          <div class="status-bar" role="status" style="margin:0;">
-            <span class="status-bar__dot" aria-hidden="true"></span>
-            <div>
-              <span class="status-bar__text">Sistemas operacionais</span><br>
-              <span style="font-size:11.5px;color:var(--text-2);">Uptime: 99.98% nos últimos 30 dias</span>
-            </div>
-          </div>
-
-        </aside>
-      </div>
-
-    </div>
-  </main>
+  <main id="main-content"><div class="container"><section class="section"><h1>Contato</h1><p class="data-empty">O envio de mensagens e os canais de atendimento ainda não estão disponíveis.</p><a class="btn btn--primary" href="index.html">Consultar a central de ajuda</a></section></div></main>
 
   <!-- FOOTER -->
   <footer class="footer" role="contentinfo">
@@ -272,8 +55,8 @@
         <a href="../index.html">Login</a>
         <a href="index.html">Central de Ajuda</a>
         <a href="contato.html">Contato</a>
-        <a href="#">Privacidade</a>
-        <a href="#">Termos de Uso</a>
+        <span>Privacidade</span>
+        <span>Termos de Uso</span>
       </nav>
       <p class="footer__copy">© 2026 Dafix · Todos os direitos reservados</p>
     </div>

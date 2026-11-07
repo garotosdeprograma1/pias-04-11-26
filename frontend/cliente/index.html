@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/cliente/stylecli.css">
+  <link rel="stylesheet" href="/data-states.css">
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="a11y.skip">Pular para o conteúdo</a>
@@ -48,12 +49,7 @@
         </div>
       </nav>
 
-      <div class="sidebar__promo">
-        <span class="promo__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span>
-        <p class="promo__title" data-i18n="promo.title">Indique e ganhe</p>
-        <p class="promo__text" data-i18n="promo.text">Convide amigos e ganhe R$ 30 de desconto no próximo serviço.</p>
-        <button class="promo__btn" id="promo-btn" data-testid="promo-btn" data-i18n="promo.btn">Convidar amigos</button>
-      </div>
+
 
       <div class="sidebar__user">
         <button class="avatar avatar--sm js-avatar" id="sidebar-avatar" aria-label="Perfil"><span class="avatar__initials"></span><span class="avatar__status"></span></button>
@@ -91,7 +87,7 @@
           <div class="notifications">
             <button class="icon-btn" id="notif-btn" aria-label="Notificações" aria-expanded="false" data-testid="notif-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              <span class="notif-badge" id="notif-badge" data-testid="notif-badge">3</span>
+              <span class="notif-badge" id="notif-badge" data-testid="notif-badge">0</span>
             </button>
             <div class="dropdown" id="notif-dropdown" data-testid="notif-dropdown">
               <div class="dropdown__head">
@@ -300,13 +296,7 @@
               <p data-i18n="orders.subtitle">Acompanhe e gerencie todos os seus pedidos em um só lugar.</p>
             </div>
           </div>
-          <div class="filter-bar" id="order-filters" role="group" aria-label="Filtrar pedidos por status">
-            <button class="filter-chip is-active" data-status="all" data-testid="filter-all" data-i18n="orders.filterAll">Todos</button>
-            <button class="filter-chip" data-status="in_progress" data-testid="filter-in-progress" data-i18n="status.in_progress">Em andamento</button>
-            <button class="filter-chip" data-status="pending" data-testid="filter-pending" data-i18n="status.pending">Pendente</button>
-            <button class="filter-chip" data-status="completed" data-testid="filter-completed" data-i18n="status.completed">Concluído</button>
-            <button class="filter-chip" data-status="cancelled" data-testid="filter-cancelled" data-i18n="status.cancelled">Cancelado</button>
-          </div>
+
           <div class="orders-list" id="orders-list" data-testid="orders-list"></div>
           <div class="empty-state" id="orders-empty" hidden>
             <span class="empty-state__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span>
@@ -361,38 +351,7 @@
   </div>
 
   <!-- ===================== MODAL: AVALIAÇÃO ===================== -->
-  <div class="modal" id="rating-modal" role="dialog" aria-modal="true" aria-labelledby="rating-modal-title">
-    <div class="modal__backdrop" data-close="rating-modal"></div>
-    <div class="modal__dialog modal__dialog--sm" data-testid="rating-modal">
-      <button class="modal__close" id="rating-close" aria-label="Fechar avaliação" data-testid="rating-close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="modal__icon modal__icon--amber" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-      </div>
-      <h3 class="modal__title" id="rating-modal-title" data-i18n="modal.title">Como foi o serviço?</h3>
-      <p class="modal__desc">
-        <strong id="rating-service-name" data-testid="rating-service-name">—</strong>
-        <span data-i18n="modal.with">com</span>
-        <strong id="rating-pro-name" data-testid="rating-pro-name">—</strong>
-      </p>
 
-      <div class="stars-row" id="rating-stars" role="radiogroup" aria-label="Nota de 1 a 5 estrelas"></div>
-      <p class="stars-label" id="stars-label" data-testid="stars-label">&nbsp;</p>
-      <span class="field__error stars-error" id="stars-error" role="alert"></span>
-
-      <div class="field">
-        <label for="rating-comment" data-i18n="modal.commentLabel">Comentário (opcional)</label>
-        <textarea id="rating-comment" maxlength="300" rows="4" data-testid="rating-comment" placeholder=""></textarea>
-        <div class="field__meta"><span></span><span class="field__counter" id="char-counter" data-testid="char-counter">0/300</span></div>
-      </div>
-
-      <button class="btn btn--primary btn--block" id="rating-submit" data-testid="rating-submit">
-        <span class="btn__label" data-i18n="modal.submit">Enviar avaliação</span>
-        <span class="spinner"></span>
-      </button>
-    </div>
-  </div>
 
   <!-- ===================== MODAL: ALTERAR FOTO ===================== -->
   <div class="modal" id="photo-modal" role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
@@ -438,73 +397,14 @@
   </div>
 
   <!-- ===================== MODAL: DENÚNCIA ===================== -->
-  <div class="modal" id="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
-    <div class="modal__backdrop" data-close="report-modal"></div>
-    <div class="modal__dialog" data-testid="report-modal">
-      <button class="modal__close" data-close="report-modal" aria-label="Fechar denúncia" data-testid="report-close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
 
-      <div id="report-form-wrap">
-        <div class="modal__icon modal__icon--red" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/></svg>
-        </div>
-        <h3 class="modal__title" id="report-modal-title" data-testid="report-modal-title">—</h3>
-        <p class="modal__desc" data-i18n="report.subtitle">Sua denúncia é confidencial e será analisada pela nossa equipe de segurança em até 48h úteis.</p>
-
-        <div class="report-target" id="report-target" data-testid="report-target">
-          <span class="report-target__icon" id="report-target-icon"></span>
-          <div>
-            <p class="report-target__label" data-i18n="report.target">Você está denunciando</p>
-            <strong id="report-target-name">—</strong>
-            <span class="report-target__meta" id="report-target-meta"></span>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="report-reason" data-i18n="report.reason">Motivo da denúncia</label>
-          <select id="report-reason" data-testid="report-reason"></select>
-          <span class="field__error" id="err-report-reason" role="alert"></span>
-        </div>
-
-        <div class="field">
-          <label for="report-details" data-i18n="report.details">Descreva o ocorrido</label>
-          <textarea id="report-details" maxlength="500" rows="4" data-testid="report-details" placeholder=""></textarea>
-          <div class="field__meta">
-            <span class="field__error" id="err-report-details" role="alert"></span>
-            <span class="field__counter" id="report-counter" data-testid="report-counter">0/500</span>
-          </div>
-        </div>
-
-        <label class="toggle-row report-anon">
-          <div><strong data-i18n="report.anonymous">Denúncia anônima</strong><span data-i18n="report.anonymousSub">Seu nome não será exibido ao denunciado.</span></div>
-          <span class="switch"><input type="checkbox" id="report-anonymous" data-testid="report-anonymous" /><span class="switch__slider"></span></span>
-        </label>
-
-        <div class="modal__actions">
-          <button class="btn btn--ghost" data-close="report-modal" data-i18n="report.cancel">Cancelar</button>
-          <button class="btn btn--danger" id="report-submit" data-testid="report-submit">
-            <span class="btn__label" data-i18n="report.submit">Enviar denúncia</span>
-            <span class="spinner"></span>
-          </button>
-        </div>
-      </div>
-
-      <div class="modal__success" id="report-success" hidden data-testid="report-success">
-        <span class="success-check">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-        </span>
-        <h3 class="modal__title" data-i18n="report.successTitle">Denúncia enviada!</h3>
-        <p class="modal__desc" id="report-success-text">—</p>
-        <button class="btn btn--primary btn--block" id="report-done" data-testid="report-done" data-i18n="report.done">Entendi</button>
-      </div>
-    </div>
-  </div>
 
   <!-- ===================== TOASTS ===================== -->
   <div class="toasts" id="toast-container" aria-live="polite"></div>
 
   <script src="/account-session.js"></script>
+  <script src="/data-source.js"></script>
   <script src="/cliente/scriptcli.js" type="module"></script>
+
 </body>
 </html>

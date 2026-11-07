@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/publico/style.css" />
+  <link rel="stylesheet" href="/data-states.css">
 </head>
 <body data-page="institucional">
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
@@ -23,9 +24,9 @@
     </a>
     <nav class="header-nav" role="navigation" aria-label="Menu principal">
       <a href="/" class="nav-link">Início</a>
-      <a href="/servicos" class="nav-link">Serviços</a>
-      <a href="/institucional" class="nav-link is-active">Sobre Nós</a>
-      <a href="/institucional#contato" class="nav-link">Contato</a>
+      <a href="/publico/servicos.html" class="nav-link">Serviços</a>
+      <a href="/publico/institucional.html" class="nav-link is-active">Sobre Nós</a>
+      <a href="/publico/institucional.html#contato" class="nav-link">Contato</a>
     </nav>
     <div class="header-actions">
       <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
@@ -33,7 +34,7 @@
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </button>
       <a href="/login" class="btn btn--ghost btn--sm">Entrar</a>
-      <a href="/servicos" class="btn btn--primary btn--sm ripple">Cadastrar</a>
+      <a href="/index.html?tab=signup" class="btn btn--primary btn--sm ripple">Cadastrar</a>
       <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -43,12 +44,12 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Menu mobile">
     <a href="/" class="nav-link">Início</a>
-    <a href="/servicos" class="nav-link">Serviços</a>
-    <a href="/institucional" class="nav-link is-active">Sobre Nós</a>
-    <a href="/institucional#contato" class="nav-link">Contato</a>
+    <a href="/publico/servicos.html" class="nav-link">Serviços</a>
+    <a href="/publico/institucional.html" class="nav-link is-active">Sobre Nós</a>
+    <a href="/publico/institucional.html#contato" class="nav-link">Contato</a>
     <div class="mobile-menu-actions">
       <a href="/login" class="btn btn--ghost btn--full">Entrar</a>
-      <a href="/servicos" class="btn btn--primary btn--full">Cadastrar grátis</a>
+      <a href="/index.html?tab=signup" class="btn btn--primary btn--full">Cadastrar grátis</a>
     </div>
   </div>
 
@@ -63,7 +64,7 @@
           Nossa história
         </div>
         <h1 class="inst-hero-title" id="inst-title">Conectando pessoas a<br>profissionais de <span style="opacity:.85">excelência</span></h1>
-        <p class="inst-hero-sub">Fundada em 2022, a DaFix nasceu com uma missão clara: tornar a contratação de profissionais qualificados simples, segura e acessível para todos.</p>
+        <p class="inst-hero-sub">A Dafix reúne cadastros de clientes, profissionais e serviços em um só lugar.</p>
         <div class="inst-hero-stats" id="instHeroStats">
           <!-- populated by JS -->
         </div>
@@ -110,13 +111,9 @@
               <div class="grad-divider"></div>
               <p class="section-sub">Construímos cada funcionalidade pensando em segurança, confiança e facilidade para você.</p>
             </div>
-            <div class="diffs-list" id="diffsList">
-              <!-- populated by JS -->
-            </div>
+            <div class="diffs-list" id="diffsList"><div class="diff-item"><div><p class="diff-item-title">Seu cadastro em um só lugar</p><p class="diff-item-desc">Consulte os profissionais e mantenha as informações da sua conta atualizadas.</p></div></div></div>
           </div>
-          <div class="diffs-visual reveal-right" id="diffsVisual">
-            <!-- populated by JS -->
-          </div>
+          <div class="diffs-visual reveal-right" id="diffsVisual"><p class="data-empty">Avaliações e indicadores ainda não disponíveis.</p></div>
         </div>
       </div>
     </section>
@@ -130,9 +127,7 @@
           <div class="grad-divider"></div>
           <p class="section-sub">Pessoas apaixonadas por tecnologia e por conectar o mundo a serviços de qualidade.</p>
         </div>
-        <div class="team-grid" id="teamGrid">
-          <!-- populated by JS -->
-        </div>
+        <div class="team-grid" id="teamGrid"><p class="data-empty">Equipe ainda não informada.</p></div>
       </div>
     </section>
 
@@ -149,44 +144,7 @@
           <!-- FORM -->
           <div class="reveal-left">
             <div class="contact-form-wrap">
-              <form id="contactForm" novalidate>
-                <div style="display:flex;flex-direction:column;gap:16px">
-                  <div class="form-row">
-                    <div class="field" id="field-nome">
-                      <label for="cNome">Nome completo <span style="color:var(--danger)">*</span></label>
-                      <input type="text" id="cNome" name="nome" placeholder="Seu nome" autocomplete="name" />
-                      <span class="field-error" id="err-nome"></span>
-                    </div>
-                    <div class="field" id="field-email">
-                      <label for="cEmail">E-mail <span style="color:var(--danger)">*</span></label>
-                      <input type="email" id="cEmail" name="email" placeholder="seu@email.com" autocomplete="email" />
-                      <span class="field-error" id="err-email"></span>
-                    </div>
-                  </div>
-                  <div class="field" id="field-assunto">
-                    <label for="cAssunto">Assunto <span style="color:var(--danger)">*</span></label>
-                    <select id="cAssunto" name="assunto">
-                      <option value="">Selecione o assunto...</option>
-                      <option value="duvida">Dúvida geral</option>
-                      <option value="suporte">Suporte técnico</option>
-                      <option value="parceria">Proposta de parceria</option>
-                      <option value="profissional">Quero ser profissional</option>
-                      <option value="imprensa">Imprensa</option>
-                      <option value="outro">Outro</option>
-                    </select>
-                    <span class="field-error" id="err-assunto"></span>
-                  </div>
-                  <div class="field" id="field-mensagem">
-                    <label for="cMensagem">Mensagem <span style="color:var(--danger)">*</span></label>
-                    <textarea id="cMensagem" name="mensagem" placeholder="Escreva sua mensagem aqui..." rows="5"></textarea>
-                    <span class="field-error" id="err-mensagem"></span>
-                  </div>
-                  <button class="btn btn--primary btn--full ripple" type="submit" id="submitBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    Enviar mensagem
-                  </button>
-                </div>
-              </form>
+              <form id="contactForm" novalidate><p class="data-empty">O envio de mensagens ainda não está disponível.</p></form>
               <div class="form-success" id="formSuccess" hidden>
                 <div class="success-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -199,9 +157,7 @@
           </div>
 
           <!-- CONTACT INFO -->
-          <div class="contact-info reveal-right" id="contactInfoCards">
-            <!-- populated by JS -->
-          </div>
+          <div class="contact-info reveal-right" id="contactInfoCards"><p class="data-empty">Canais de contato ainda não informados.</p></div>
         </div>
       </div>
     </section>
@@ -211,13 +167,13 @@
       <div class="container">
         <div class="cta-inner reveal">
           <h2 class="cta-title" id="cta-inst-title">Comece a usar o DaFix hoje</h2>
-          <p class="cta-sub">Cadastre-se gratuitamente e tenha acesso a profissionais verificados em todo o Brasil.</p>
+          <p class="cta-sub">Cadastre-se para acessar a plataforma.</p>
           <div class="cta-btns">
-            <a href="/servicos" class="btn btn--white btn--lg ripple">
+            <a href="/publico/servicos.html" class="btn btn--white btn--lg ripple">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
               Buscar Serviços
             </a>
-            <a href="/servicos" class="btn btn--outline-white btn--lg">Criar Conta Grátis</a>
+            <a href="/index.html?tab=signup" class="btn btn--outline-white btn--lg">Criar Conta Grátis</a>
           </div>
         </div>
       </div>
@@ -228,13 +184,13 @@
   <!-- ====== FOOTER ====== -->
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <div class="footer-grid" id="footerContent"></div>
+      <div class="footer-grid" id="footerContent"><div class="footer-brand"><strong>Dafix</strong><p>Serviços para sua casa.</p></div><div><a href="/index.html">Entrar ou cadastrar</a></div><div><a href="/suporte/index.html">Central de ajuda</a></div></div>
       <div class="footer-bottom">
         <p class="footer-copy">© <span id="year"></span> DaFix · Todos os direitos reservados</p>
         <div class="footer-legal">
-          <a href="#">Privacidade</a>
-          <a href="#">Termos</a>
-          <a href="#">Cookies</a>
+          <span>Privacidade</span>
+          <span>Termos</span>
+          <span>Cookies</span>
         </div>
       </div>
     </div>
@@ -244,5 +200,8 @@
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
   <script src="/publico/script.js" defer></script>
+
+<script src="/data-source.js"></script>
+<script src="/public-records.js"></script>
 </body>
 </html>

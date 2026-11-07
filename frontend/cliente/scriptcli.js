@@ -4,7 +4,7 @@
 
    Módulos:
    1. I18N        — dicionário PT-BR / EN
-   2. MOCK DATA   — dados simulados (futuro: API Python/SQL)
+   2. DADOS       — registros carregados da API
    3. UTILS       — helpers (formatação, DOM, storage)
    4. THEME       — alternância claro/escuro
    5. LANGUAGE    — alternância de idioma
@@ -53,7 +53,7 @@
        'overview.greetingAfternoon': 'Boa tarde',
        'overview.greetingEvening': 'Boa noite',
        'overview.greetingSub': 'Aqui está um resumo da sua conta hoje. Acompanhe seus pedidos e descubra novos serviços.',
-       'overview.newRequest': 'Novo pedido',
+       'overview.newRequest': 'Ver catálogo',
        'overview.recentOrders': 'Pedidos recentes',
        'overview.recentSub': 'Seus últimos pedidos e status atuais.',
        'overview.seeAll': 'Ver todos',
@@ -65,7 +65,7 @@
        'stats.hired': 'Serviços contratados',
        'stats.favorites': 'Favoritos',
        'stats.pendingReviews': 'Avaliações pendentes',
-       'quick.request': 'Solicitar serviço',
+       'quick.request': 'Consultar serviços',
        'quick.orders': 'Ver meus pedidos',
        'quick.profile': 'Editar meu perfil',
        'quick.review': 'Avaliar serviço',
@@ -95,7 +95,7 @@
        'profile.memberSince': 'Conta de cliente',
        'profile.notProvided': 'Não informado',
        'profile.localNotice': 'As alterações deste perfil ficam salvas neste navegador. Os dados de acesso continuam sendo os do cadastro.',
-       'profile.ordersChip': '%s serviços contratados',
+       'profile.ordersChip': '%s pedidos registrados',
        'profile.security': 'Segurança da conta',
        'profile.lastAccess': 'Último acesso',
        'profile.twoFactor': 'Verificação em 2 etapas',
@@ -300,7 +300,7 @@
        'profile.memberSince': 'Client account',
        'profile.notProvided': 'Not provided',
        'profile.localNotice': 'Profile changes are saved in this browser. Your sign-in details remain the ones from registration.',
-       'profile.ordersChip': '%s services hired',
+       'profile.ordersChip': '%s registered orders',
        'profile.security': 'Account security',
        'profile.lastAccess': 'Last access',
        'profile.twoFactor': 'Two-step verification',
@@ -443,9 +443,9 @@
        'toast.promo': 'Invite link copied! Share it with your friends.',
      },
    };
-   
+
    /* ============================================================
-      2. MOCK DATA (futura integração Python + SQL via fetch)
+      2. ÍCONES E DADOS DA API
       ============================================================ */
    const ICONS = {
      bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
@@ -467,7 +467,7 @@
      search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
      chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
    };
-   
+
    // Presets de avatar na paleta da marca
    const AVATAR_PRESETS = {
      g1: '#203b30',
@@ -477,100 +477,18 @@
      g5: '#9b7635',
      g6: '#596f60',
    };
-   
-   const SERVICES = [
-     { id: 'svc-1', icon: 'bolt', category: 'repairs', priceMin: 120, priceMax: 350, rating: 4.8, reviews: 312, popularity: 95,
-       name: { pt: 'Eletricista Residencial', en: 'Residential Electrician' },
-       desc: { pt: 'Instalações, reparos em tomadas, disjuntores e quadros elétricos.', en: 'Installations, repairs for outlets, breakers and electrical panels.' } },
-     { id: 'svc-2', icon: 'wrench', category: 'repairs', priceMin: 100, priceMax: 280, rating: 4.7, reviews: 268, popularity: 90,
-       name: { pt: 'Encanador', en: 'Plumber' },
-       desc: { pt: 'Vazamentos, desentupimentos, troca de torneiras e registros.', en: 'Leaks, unclogging, faucet and valve replacement.' } },
-     { id: 'svc-3', icon: 'sparkles', category: 'cleaning', priceMin: 90, priceMax: 220, rating: 4.9, reviews: 540, popularity: 100,
-       name: { pt: 'Limpeza Residencial', en: 'Home Cleaning' },
-       desc: { pt: 'Limpeza completa, pesada ou de manutenção para sua casa.', en: 'Complete, deep or maintenance cleaning for your home.' } },
-     { id: 'svc-4', icon: 'brush', category: 'repairs', priceMin: 250, priceMax: 900, rating: 4.6, reviews: 187, popularity: 75,
-       name: { pt: 'Pintura de Interiores', en: 'Interior Painting' },
-       desc: { pt: 'Pintura de paredes, tetos e retoques com acabamento profissional.', en: 'Walls, ceilings and touch-ups with professional finish.' } },
-     { id: 'svc-5', icon: 'leaf', category: 'outdoor', priceMin: 80, priceMax: 200, rating: 4.5, reviews: 142, popularity: 60,
-       name: { pt: 'Jardinagem', en: 'Gardening' },
-       desc: { pt: 'Poda, plantio, gramados e manutenção de jardins.', en: 'Pruning, planting, lawns and garden maintenance.' } },
-     { id: 'svc-6', icon: 'furniture', category: 'installation', priceMin: 70, priceMax: 180, rating: 4.7, reviews: 230, popularity: 82,
-       name: { pt: 'Montagem de Móveis', en: 'Furniture Assembly' },
-       desc: { pt: 'Montagem e desmontagem de móveis com agilidade e cuidado.', en: 'Assembly and disassembly of furniture with care and speed.' } },
-     { id: 'svc-7', icon: 'snowflake', category: 'installation', priceMin: 150, priceMax: 450, rating: 4.8, reviews: 198, popularity: 70,
-       name: { pt: 'Ar-condicionado', en: 'Air Conditioning' },
-       desc: { pt: 'Instalação, limpeza e manutenção de aparelhos split.', en: 'Installation, cleaning and maintenance of split units.' } },
-     { id: 'svc-8', icon: 'key', category: 'repairs', priceMin: 60, priceMax: 150, rating: 4.4, reviews: 95, popularity: 50,
-       name: { pt: 'Chaveiro 24h', en: '24h Locksmith' },
-       desc: { pt: 'Aberturas, trocas de fechadura e cópias de chave.', en: 'Lockouts, lock replacement and key copies.' } },
-     { id: 'svc-9', icon: 'bug', category: 'cleaning', priceMin: 180, priceMax: 400, rating: 4.6, reviews: 121, popularity: 55,
-       name: { pt: 'Dedetização', en: 'Pest Control' },
-       desc: { pt: 'Controle de pragas com produtos seguros e garantia.', en: 'Pest control with safe products and warranty.' } },
-   ];
-   
-   const DEFAULT_ORDERS = [
-     { id: 'PED-2026-0145', serviceId: 'svc-3', date: '2026-06-02', amount: 180, fee: 18, status: 'in_progress',
-       payment: 'pay.pix', reviewed: false,
-       pro: { name: 'Mariana Souza', rating: 4.9, jobs: 214 },
-       history: [
-         { key: 'hist.created', date: '2026-06-02T09:14:00', done: true },
-         { key: 'hist.confirmed', date: '2026-06-02T11:30:00', done: true },
-         { key: 'hist.scheduled', date: '2026-06-05T08:00:00', done: true },
-         { key: 'hist.started', date: '2026-06-05T08:30:00', done: false, current: true },
-       ] },
-     { id: 'PED-2026-0139', serviceId: 'svc-1', date: '2026-05-28', amount: 240, fee: 24, status: 'pending',
-       payment: 'pay.credit', reviewed: false,
-       pro: { name: 'Roberto Lima', rating: 4.8, jobs: 167 },
-       history: [
-         { key: 'hist.created', date: '2026-05-28T15:40:00', done: true },
-         { key: 'hist.confirmed', date: '', done: false, current: true },
-       ] },
-     { id: 'PED-2026-0127', serviceId: 'svc-6', date: '2026-05-18', amount: 130, fee: 13, status: 'completed',
-       payment: 'pay.pix', reviewed: false,
-       pro: { name: 'Felipe Castro', rating: 4.7, jobs: 98 },
-       history: [
-         { key: 'hist.created', date: '2026-05-18T10:05:00', done: true },
-         { key: 'hist.confirmed', date: '2026-05-18T12:20:00', done: true },
-         { key: 'hist.scheduled', date: '2026-05-20T14:00:00', done: true },
-         { key: 'hist.started', date: '2026-05-20T14:10:00', done: true },
-         { key: 'hist.completed', date: '2026-05-20T16:45:00', done: true },
-       ] },
-     { id: 'PED-2026-0112', serviceId: 'svc-2', date: '2026-05-04', amount: 160, fee: 16, status: 'completed',
-       payment: 'pay.credit', reviewed: true,
-       pro: { name: 'André Pereira', rating: 4.6, jobs: 143 },
-       history: [
-         { key: 'hist.created', date: '2026-05-04T08:00:00', done: true },
-         { key: 'hist.confirmed', date: '2026-05-04T09:15:00', done: true },
-         { key: 'hist.scheduled', date: '2026-05-06T10:00:00', done: true },
-         { key: 'hist.started', date: '2026-05-06T10:05:00', done: true },
-         { key: 'hist.completed', date: '2026-05-06T12:30:00', done: true },
-       ] },
-     { id: 'PED-2026-0098', serviceId: 'svc-5', date: '2026-04-22', amount: 110, fee: 11, status: 'cancelled',
-       payment: 'pay.cash', reviewed: false,
-       pro: { name: 'Joana Ribeiro', rating: 4.5, jobs: 76 },
-       history: [
-         { key: 'hist.created', date: '2026-04-22T13:00:00', done: true },
-         { key: 'hist.cancelled', date: '2026-04-23T09:30:00', done: true },
-       ] },
-   ];
-   
-   const NOTIFICATIONS = [
-     { type: 'green', hoursAgo: 2,
-       text: { pt: 'Mariana Souza iniciou o serviço de Limpeza Residencial.', en: 'Mariana Souza started your Home Cleaning service.' } },
-     { type: 'amber', hoursAgo: 26,
-       text: { pt: 'Você tem 1 avaliação pendente: Montagem de Móveis.', en: 'You have 1 pending review: Furniture Assembly.' } },
-     { type: 'blue', hoursAgo: 72,
-       text: { pt: 'Nova promoção: 15% OFF em serviços de jardinagem neste mês.', en: 'New promo: 15% OFF gardening services this month.' } },
-   ];
-   
+
+   let SERVICES = [];
+   const NOTIFICATIONS = [];
+
    const REPORT_REASONS = ['report.r.billing', 'report.r.conduct', 'report.r.noshow', 'report.r.quality', 'report.r.misleading', 'report.r.safety', 'report.r.other'];
-   
+
    /* ============================================================
       3. UTILS & STATE
       ============================================================ */
    const $ = (sel, ctx = document) => ctx.querySelector(sel);
    const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-   
+
    const storage = {
      get(key, fallback) {
        try { const v = localStorage.getItem(storage.key(key)); return v === null ? fallback : JSON.parse(v); }
@@ -590,7 +508,7 @@
    };
 
    const profile = session ? account.loadProfile() : {};
-   
+
    const state = {
      lang: storage.get('sh_lang', 'pt'),
      theme: storage.raw('dafix_theme', storage.get('sh_theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')),
@@ -599,9 +517,9 @@
        ...profile,
        prefs: { email: false, sms: false, news: false, ...profile.prefs },
      },
-     orders: storage.get('sh_orders', DEFAULT_ORDERS),
-     favorites: storage.get('sh_favorites', ['svc-3', 'svc-7']),
-     reports: storage.get('sh_reports', []),
+     orders: [],
+     favorites: storage.get('favorites.v2', []),
+     reports: [],
      notifRead: storage.get('sh_notif_read', false),
      view: 'account',
      orderFilter: 'all',
@@ -615,11 +533,11 @@
      photoDraft: null,
      reportCtx: null, // { type:'service'|'pro', targetId }
    };
-   
+
    const t = (key) => (I18N[state.lang] && I18N[state.lang][key]) || I18N.pt[key] || key;
-   
+
    const fmtMoney = (v) => new Intl.NumberFormat(state.lang === 'pt' ? 'pt-BR' : 'en-US', { style: 'currency', currency: 'BRL' }).format(v);
-   
+
    const fmtDate = (iso, withTime = false) => {
      if (!iso) return '—';
      const d = new Date(iso);
@@ -629,13 +547,13 @@
        : { day: '2-digit', month: 'short', year: 'numeric' };
      return new Intl.DateTimeFormat(locale, opts).format(d);
    };
-   
+
    const serviceById = (id) => SERVICES.find((s) => s.id === id);
    const initials = (name) => String(name || '').trim().split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-   
+
    const STATUS_BADGE = { pending: 'badge--amber', in_progress: 'badge--blue', completed: 'badge--green', cancelled: 'badge--red' };
-   
+
    /* ============================================================
       4. THEME
       ============================================================ */
@@ -652,7 +570,7 @@
        $('#theme-toggle').addEventListener('click', Theme.toggle);
      },
    };
-   
+
    /* ============================================================
       5. LANGUAGE
       ============================================================ */
@@ -660,8 +578,6 @@
      applyStatic() {
        $$('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
        $('#service-search').placeholder = t('services.searchPlaceholder');
-       $('#rating-comment').placeholder = t('modal.commentPlaceholder');
-       $('#report-details').placeholder = t('report.detailsPlaceholder');
        document.documentElement.lang = state.lang === 'pt' ? 'pt-BR' : 'en';
        $('#lang-label').textContent = state.lang === 'pt' ? 'EN' : 'PT';
      },
@@ -672,7 +588,6 @@
        NotifPanel.render();
        Profile.fill();
        Reports.render();
-       Reports.fillReasons();
        Orders.render();
        Services.renderFilters();
        Services.render();
@@ -688,7 +603,7 @@
        Language.applyStatic();
      },
    };
-   
+
    /* ============================================================
       6. NAVIGATION + TABS
       ============================================================ */
@@ -720,10 +635,9 @@
        $('#sidebar-overlay').addEventListener('click', Navigation.closeSidebar);
        $('#topbar-avatar').addEventListener('click', () => { Navigation.go('account'); Tabs.goAccount('profile'); });
        $('#sidebar-avatar').addEventListener('click', () => { Navigation.go('account'); Tabs.goAccount('profile'); });
-       $('#promo-btn').addEventListener('click', () => Toast.show(t('toast.promo'), 'success'));
      },
    };
-   
+
    const Tabs = {
      place(tabsEl) {
        const ind = $('.tabs__indicator', tabsEl);
@@ -748,7 +662,7 @@
        Tabs.placeAll();
      },
    };
-   
+
    /* ============================================================
       7. AVATAR — foto, preset ou iniciais
       ============================================================ */
@@ -769,7 +683,7 @@
        $$('.js-avatar').forEach((el) => Avatar.paint(el, state.user.avatar));
      },
    };
-   
+
    /* ============================================================
       8. OVERVIEW
       ============================================================ */
@@ -780,51 +694,17 @@
        if (h < 18) return t('overview.greetingAfternoon');
        return t('overview.greetingEvening');
      },
-   
+
      renderStats() {
-       const active = state.orders.filter((o) => o.status === 'pending' || o.status === 'in_progress').length;
-       const hired = state.orders.filter((o) => o.status !== 'cancelled').length;
-       const favs = state.favorites.length;
-       const pending = state.orders.filter((o) => o.status === 'completed' && !o.reviewed).length;
-   
-       const stats = [
-         { icon: ICONS.clipboard, cls: '', value: active, label: t('stats.active'), testid: 'stat-active' },
-         { icon: ICONS.check, cls: 'metric__icon--green', value: hired, label: t('stats.hired'), testid: 'stat-hired' },
-         { icon: ICONS.heart, cls: 'metric__icon--rose', value: favs, label: t('stats.favorites'), testid: 'stat-favorites' },
-         { icon: ICONS.star, cls: 'metric__icon--amber', value: pending, label: t('stats.pendingReviews'), testid: 'stat-pending-reviews' },
-       ];
-   
-       $('#stats-grid').innerHTML = stats.map((s) => `
-         <div class="metric" data-testid="${s.testid}">
-           <div class="metric__top"><span class="metric__icon ${s.cls}">${s.icon}</span></div>
-           <div class="metric__value">${s.value}</div>
-           <div class="metric__label">${s.label}</div>
-         </div>`).join('');
-       $('#stats-grid').classList.add('stagger');
+       $('#stats-grid').innerHTML = [
+         ['Pedidos registrados', state.orders.length], ['Serviços no catálogo', SERVICES.length], ['Favoritos', state.favorites.length]
+       ].map(([label,value]) => `<div class="metric"><div class="metric__value">${value}</div><div class="metric__label">${label}</div></div>`).join('');
      },
-   
+
      renderRecent() {
-       const recent = [...state.orders].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
-       $('#recent-orders').innerHTML = recent.map((o) => {
-         const svc = serviceById(o.serviceId);
-         return `
-         <li class="recent-item" data-order="${o.id}" data-testid="recent-order-${o.id}" tabindex="0" role="button">
-           <span class="recent-icon">${ICONS[svc.icon]}</span>
-           <div class="recent-info">
-             <strong>${svc.name[state.lang]}</strong>
-             <span>${o.id} · ${fmtDate(o.date)}</span>
-           </div>
-           <span class="badge ${STATUS_BADGE[o.status]}">${t('status.' + o.status)}</span>
-         </li>`;
-       }).join('');
-   
-       $$('#recent-orders .recent-item').forEach((item) => {
-         const open = () => { Navigation.go('orders'); Orders.expand(item.dataset.order); };
-         item.addEventListener('click', open);
-         item.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
-       });
+       $('#recent-orders').innerHTML = state.orders.length ? state.orders.slice(0,3).map(o=>`<li class="recent-item"><div class="recent-info"><strong>${window.DafixData.escape(o.servico)}</strong><span>#${o.id} · ${window.DafixData.date(o.data)}</span></div></li>`).join('') : '<li class="data-empty">Nenhum pedido cadastrado.</li>';
      },
-   
+
      renderNotifsCard() {
        $('#notif-list').innerHTML = NOTIFICATIONS.map((n) => {
          const ago = n.hoursAgo < 24
@@ -837,13 +717,12 @@
          </li>`;
        }).join('');
      },
-   
+
      renderQuickActions() {
        const actions = [
          { icon: ICONS.search, label: t('quick.request'), testid: 'qa-request', fn: () => Navigation.go('services') },
          { icon: ICONS.clipboard, label: t('quick.orders'), testid: 'qa-orders', fn: () => Navigation.go('orders') },
          { icon: ICONS.user, label: t('quick.profile'), testid: 'qa-profile', fn: () => { Navigation.go('account'); Tabs.goAccount('profile'); } },
-         { icon: ICONS.star, label: t('quick.review'), testid: 'qa-review', fn: () => Rating.openForPending() },
        ];
        const wrap = $('#quick-actions');
        wrap.innerHTML = '';
@@ -856,20 +735,20 @@
          wrap.appendChild(btn);
        });
      },
-   
+
      render() {
        const firstName = state.user.name.trim().split(/\s+/)[0];
        $('#greeting-title').textContent = firstName ? `${Overview.greeting()}, ${firstName}!` : `${Overview.greeting()}!`;
        $('#hero-date').textContent = new Intl.DateTimeFormat(state.lang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
        $('#sidebar-username').textContent = state.user.name || t('profile.notProvided');
-       $('#nav-orders-badge').textContent = state.orders.filter((o) => o.status === 'pending' || o.status === 'in_progress').length;
+       $('#nav-orders-badge').textContent = state.orders.length;
        Avatar.renderAll();
        Overview.renderStats();
        Overview.renderRecent();
        Overview.renderNotifsCard();
        Overview.renderQuickActions();
      },
-   
+
      init() {
        $('#greeting-cta').addEventListener('click', () => Navigation.go('services'));
        $('#hero-orders-btn').addEventListener('click', () => Navigation.go('orders'));
@@ -877,20 +756,20 @@
        Overview.render();
      },
    };
-   
+
    /* ============================================================
       9. NOTIFS — dropdown do topbar
       ============================================================ */
    const NotifPanel = {
      open: false,
-   
+
      render() {
        const unread = state.notifRead ? 0 : NOTIFICATIONS.length;
        const badge = $('#notif-badge');
        badge.textContent = unread;
        badge.hidden = unread === 0;
        $('#notif-sub').textContent = unread > 0 ? t('notif.newCount').replace('%s', unread) : t('notif.noneNew');
-   
+
        $('#notif-dropdown-list').innerHTML = NOTIFICATIONS.map((n) => {
          const ago = n.hoursAgo < 24
            ? t('notif.timeAgoH').replace('%s', n.hoursAgo)
@@ -902,13 +781,13 @@
          </li>`;
        }).join('');
      },
-   
+
      toggle(force) {
        NotifPanel.open = force !== undefined ? force : !NotifPanel.open;
        $('#notif-dropdown').classList.toggle('is-open', NotifPanel.open);
        $('#notif-btn').setAttribute('aria-expanded', NotifPanel.open);
      },
-   
+
      markAll() {
        state.notifRead = true;
        storage.set('sh_notif_read', true);
@@ -916,7 +795,7 @@
        Overview.renderNotifsCard();
        Toast.show(t('toast.notifRead'), 'success');
      },
-   
+
      init() {
        NotifPanel.render();
        $('#notif-btn').addEventListener('click', (e) => { e.stopPropagation(); NotifPanel.toggle(); });
@@ -926,7 +805,7 @@
        });
      },
    };
-   
+
    /* ============================================================
       10. PROFILE
       ============================================================ */
@@ -934,7 +813,7 @@
      editing: false,
      saving: false,
      fields: ['name', 'email', 'phone', 'address'],
-   
+
      fill() {
        $('#f-name').value = state.user.name;
        $('#f-email').value = state.user.email;
@@ -951,7 +830,7 @@
        const accessDate = session && session.loginAt ? new Date(session.loginAt) : null;
        $('#last-access').textContent = accessDate && !Number.isNaN(accessDate.getTime()) ? fmtDate(accessDate.toISOString(), true) : t('profile.notProvided');
      },
-   
+
      setEditing(on) {
        Profile.editing = on;
        Profile.fields.forEach((f) => { $(`#f-${f}`).disabled = !on; });
@@ -961,21 +840,21 @@
        if (on) $('#f-name').focus();
        else Profile.clearErrors();
      },
-   
+
      clearErrors() {
        Profile.fields.forEach((f) => {
          $(`#err-${f}`).classList.remove('show');
          $(`#f-${f}`).closest('.field').classList.remove('is-invalid');
        });
      },
-   
+
      setError(field, msg) {
        const el = $(`#err-${field}`);
        el.textContent = msg;
        el.classList.add('show');
        $(`#f-${field}`).closest('.field').classList.add('is-invalid');
      },
-   
+
      validate() {
        Profile.clearErrors();
        let ok = true;
@@ -985,7 +864,7 @@
        if ($('#f-address').value.trim() && $('#f-address').value.trim().length < 5) { Profile.setError('address', t('err.addressRequired')); ok = false; }
        return ok;
      },
-   
+
      async save(e) {
        e.preventDefault();
        if (Profile.saving) return;
@@ -1017,7 +896,7 @@
          button.classList.remove('is-loading');
        }
      },
-   
+
      init() {
        Profile.fill();
        $('#edit-profile-btn').addEventListener('click', () => Profile.setEditing(true));
@@ -1025,20 +904,20 @@
        $('#profile-form').addEventListener('submit', Profile.save);
      },
    };
-   
+
    /* ============================================================
       11. PHOTO — modal de alterar foto (FUNCIONAL)
       ============================================================ */
    const Photo = {
      MAX_BYTES: 5 * 1024 * 1024,
-   
+
      open() {
        state.photoDraft = state.user.avatar;
        Photo.paintPreview();
        Photo.renderPresets();
        Modals.open('photo-modal');
      },
-   
+
      paintPreview() {
        Avatar.paint($('#photo-preview'), state.photoDraft, state.user.name);
        // marca preset selecionado
@@ -1046,7 +925,7 @@
          b.classList.toggle('is-selected', state.photoDraft === `preset:${b.dataset.preset}`);
        });
      },
-   
+
      renderPresets() {
        const wrap = $('#photo-presets');
        wrap.innerHTML = '';
@@ -1065,13 +944,13 @@
          wrap.appendChild(btn);
        });
      },
-   
+
      // Lê o arquivo, valida, redimensiona via canvas (256px) e gera dataURL leve
      handleFile(file) {
        if (!file) return;
        if (!/^image\/(png|jpe?g|webp)$/.test(file.type)) { Toast.show(t('toast.photoInvalid'), 'error'); return; }
        if (file.size > Photo.MAX_BYTES) { Toast.show(t('toast.photoTooBig'), 'error'); return; }
-   
+
        const reader = new FileReader();
        reader.onload = () => {
          const img = new Image();
@@ -1093,13 +972,13 @@
        };
        reader.readAsDataURL(file);
      },
-   
+
      remove() {
        state.photoDraft = 'preset:g1';
        Photo.paintPreview();
        Toast.show(t('toast.photoRemoved'));
      },
-   
+
      async save() {
        const btn = $('#photo-save-btn');
        if (btn.disabled) return;
@@ -1119,7 +998,7 @@
          btn.disabled = false;
        }
      },
-   
+
      init() {
        $('#change-photo-btn').addEventListener('click', Photo.open);
        $('#profile-avatar').addEventListener('click', Photo.open);
@@ -1129,174 +1008,28 @@
        $('#photo-save-btn').addEventListener('click', Photo.save);
      },
    };
-   
+
    /* ============================================================
       12. ORDERS
       ============================================================ */
    const Orders = {
      render() {
-       const list = $('#orders-list');
-       const filtered = state.orders.filter((o) => state.orderFilter === 'all' || o.status === state.orderFilter);
-       $('#orders-empty').hidden = filtered.length > 0;
-   
-       list.innerHTML = filtered.map((o) => {
-         const svc = serviceById(o.serviceId);
-         return `
-         <article class="order-card" id="order-${o.id}" data-testid="order-card-${o.id}">
-           <button class="order-header" aria-expanded="false" data-order="${o.id}" data-testid="order-header-${o.id}">
-             <span class="order-icon">${ICONS[svc.icon]}</span>
-             <span class="order-main">
-               <strong>${svc.name[state.lang]}</strong>
-               <span>${o.id} · ${t('order.requestedOn')} ${fmtDate(o.date)}</span>
-             </span>
-             <span class="order-price">${fmtMoney(o.amount + o.fee)}</span>
-             <span class="badge ${STATUS_BADGE[o.status]} order-status-badge">${t('status.' + o.status)}</span>
-             <span class="order-chevron">${ICONS.chevron}</span>
-           </button>
-           <div class="order-body">
-             <div class="order-body-inner">
-               <div>
-                 <div class="order-section">
-                   <h4>${t('order.description')}</h4>
-                   <p class="order-desc">${svc.desc[state.lang]}</p>
-                 </div>
-                 <div class="order-section">
-                   <h4>${t('order.history')}</h4>
-                   <ul class="timeline">
-                     ${o.history.map((h) => `
-                       <li class="${h.done ? 'done' : ''} ${h.current ? 'current' : ''}">
-                         <span class="timeline__dot"></span>
-                         <div>
-                           <p class="timeline__title">${t(h.key)}</p>
-                           <p class="timeline__meta">${h.date ? fmtDate(h.date, true) : '—'}</p>
-                         </div>
-                       </li>`).join('')}
-                   </ul>
-                 </div>
-               </div>
-               <div>
-                 <div class="order-section">
-                   <h4>${t('order.professional')}</h4>
-                   <div class="pro-row">
-                     <span class="avatar avatar--lg" style="background:${AVATAR_PRESETS.g4}"><span class="avatar__initials">${initials(o.pro.name)}</span></span>
-                     <div class="pro-info">
-                       <strong>${o.pro.name}</strong>
-                       <span><svg class="star-mini" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> ${o.pro.rating} · ${o.pro.jobs} jobs</span>
-                     </div>
-                   </div>
-                 </div>
-                 <div class="order-section">
-                   <h4>${t('order.payment')}</h4>
-                   <table class="pay-table">
-                     <tr><td>${t('order.subtotal')}</td><td>${fmtMoney(o.amount)}</td></tr>
-                     <tr><td>${t('order.fee')}</td><td>${fmtMoney(o.fee)}</td></tr>
-                     <tr class="total"><td>${t('order.total')} · ${t(o.payment)}</td><td>${fmtMoney(o.amount + o.fee)}</td></tr>
-                   </table>
-                 </div>
-               </div>
-               <div class="order-actions">
-                 ${(o.status === 'pending' || o.status === 'in_progress') ? `
-                   <button class="btn btn--outline-danger btn--sm" data-action="cancel" data-order="${o.id}" data-testid="cancel-order-${o.id}">${t('order.cancel')}</button>
-                   <button class="btn btn--ghost btn--sm" data-action="contact" data-order="${o.id}" data-testid="contact-order-${o.id}">${t('order.contact')}</button>` : ''}
-                 ${o.status === 'completed' && !o.reviewed ? `
-                   <button class="btn btn--primary btn--sm" data-action="review" data-order="${o.id}" data-testid="review-order-${o.id}">${t('order.review')}</button>` : ''}
-                 ${o.status === 'completed' && o.reviewed ? `
-                   <span class="badge badge--green">${t('order.reviewed')}</span>` : ''}
-                 <button class="btn btn--ghost btn--sm" data-action="support" data-order="${o.id}" data-testid="support-order-${o.id}">${t('order.support')}</button>
-                 <button class="btn btn--text btn--sm" data-action="report-pro" data-order="${o.id}" data-testid="report-pro-${o.id}">
-                   ${ICONS.flag}<span>${t('order.reportPro')}</span>
-                 </button>
-               </div>
-             </div>
-           </div>
-         </article>`;
-       }).join('');
-   
-       list.classList.add('stagger');
-   
-       $$('.order-header', list).forEach((btn) => btn.addEventListener('click', () => Orders.toggle(btn.dataset.order)));
-       $$('[data-action]', list).forEach((btn) => {
-         btn.addEventListener('click', (e) => {
-           e.stopPropagation();
-           const { action, order } = btn.dataset;
-           if (action === 'cancel') Orders.cancel(order);
-           if (action === 'contact') Toast.show(t('toast.contact'));
-           if (action === 'support') Toast.show(t('toast.support'), 'success');
-           if (action === 'review') Rating.open(order);
-           if (action === 'report-pro') Reports.open('pro', order);
-         });
-       });
+       const D = window.DafixData;
+       $('#orders-empty').hidden = true;
+       $('#orders-list').innerHTML = D.table(['Pedido','Serviço','Funcionário','Data','Local','Valor registrado'], state.orders.map(o=>['#'+o.id,o.servico,o.funcionario,D.date(o.data),o.local,D.money(o.preco_unitario)]), 'Nenhum pedido cadastrado para esta conta.');
      },
-   
-     toggle(id) {
-       const card = $(`#order-${id}`);
-       if (!card) return;
-       const body = $('.order-body', card);
-       const header = $('.order-header', card);
-       const isOpen = card.classList.contains('expanded');
-   
-       if (isOpen) {
-         body.style.maxHeight = body.scrollHeight + 'px';
-         requestAnimationFrame(() => { body.style.maxHeight = '0px'; });
-         card.classList.remove('expanded');
-         header.setAttribute('aria-expanded', 'false');
-       } else {
-         card.classList.add('expanded');
-         header.setAttribute('aria-expanded', 'true');
-         body.style.maxHeight = body.scrollHeight + 'px';
-         setTimeout(() => { if (card.classList.contains('expanded')) body.style.maxHeight = 'none'; }, 450);
-       }
-     },
-   
-     expand(id) {
-       if (state.orderFilter !== 'all') {
-         state.orderFilter = 'all';
-         $$('#order-filters .filter-chip').forEach((c) => c.classList.toggle('is-active', c.dataset.status === 'all'));
-         Orders.render();
-       }
-       const card = $(`#order-${id}`);
-       if (card && !card.classList.contains('expanded')) Orders.toggle(id);
-       if (card) setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
-     },
-   
-     cancel(id) {
-       const order = state.orders.find((o) => o.id === id);
-       if (!order) return;
-       order.status = 'cancelled';
-       order.history.forEach((h) => { delete h.current; });
-       order.history.push({ key: 'hist.cancelled', date: new Date().toISOString(), done: true });
-       storage.set('sh_orders', state.orders);
-       Orders.render();
-       Overview.render();
-       Toast.show(t('toast.orderCancelled'), 'success');
-     },
-   
-     init() {
-       $$('#order-filters .filter-chip').forEach((chip) => {
-         chip.addEventListener('click', () => {
-           state.orderFilter = chip.dataset.status;
-           $$('#order-filters .filter-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
-           Orders.render();
-         });
-       });
-       Orders.render();
-     },
+     expand() { Navigation.go('orders'); },
+     init() { this.render(); }
    };
-   
-   /* ============================================================
-      13. SERVICES
-      ============================================================ */
+
    const Services = {
      renderFilters() {
-       const cats = [
-         { v: 'all', l: t('cat.all') }, { v: 'repairs', l: t('cat.repairs') }, { v: 'cleaning', l: t('cat.cleaning') },
-         { v: 'installation', l: t('cat.installation') }, { v: 'outdoor', l: t('cat.outdoor') },
-       ];
+       const cats = [{ v: 'all', l: 'Todos os serviços' }];
        const prices = [
          { v: 'all', l: t('price.all') }, { v: 'low', l: t('price.low') }, { v: 'mid', l: t('price.mid') }, { v: 'high', l: t('price.high') },
        ];
        const sorts = [
-         { v: 'popular', l: t('sort.popular') }, { v: 'rating', l: t('sort.rating') },
+         { v: 'popular', l: 'Nome' },
          { v: 'priceAsc', l: t('sort.priceAsc') }, { v: 'priceDesc', l: t('sort.priceDesc') },
        ];
        const fill = (sel, opts, current) => {
@@ -1306,11 +1039,11 @@
        fill($('#filter-price'), prices, state.priceRange);
        fill($('#filter-sort'), sorts, state.sort);
      },
-   
+
      filtered() {
        let items = [...SERVICES];
        if (state.serviceTab === 'favorites') items = items.filter((s) => state.favorites.includes(s.id));
-   
+
        const q = state.search.toLowerCase().trim();
        if (q) {
          items = items.filter((s) =>
@@ -1321,9 +1054,9 @@
        if (state.priceRange === 'low') items = items.filter((s) => s.priceMin <= 150);
        if (state.priceRange === 'mid') items = items.filter((s) => s.priceMin > 150 && s.priceMin <= 300);
        if (state.priceRange === 'high') items = items.filter((s) => s.priceMin > 300);
-   
+
        const sorters = {
-         popular: (a, b) => b.popularity - a.popularity,
+         popular: (a, b) => a.name.pt.localeCompare(b.name.pt),
          rating: (a, b) => b.rating - a.rating,
          priceAsc: (a, b) => a.priceMin - b.priceMin,
          priceDesc: (a, b) => b.priceMin - a.priceMin,
@@ -1331,64 +1064,27 @@
        items.sort(sorters[state.sort]);
        return items;
      },
-   
+
      render() {
-       const grid = $('#services-grid');
-       const items = Services.filtered();
-       const empty = $('#services-empty');
-       empty.hidden = items.length > 0;
-       $('#services-empty-text').textContent = state.serviceTab === 'favorites' && !state.favorites.length
-         ? t('services.emptyFavs') : t('services.emptySearch');
-   
-       $('#fav-count').textContent = state.favorites.length;
-   
-       grid.innerHTML = items.map((s) => {
-         const fav = state.favorites.includes(s.id);
-         return `
-         <article class="service-card" data-testid="service-card-${s.id}">
-           <div class="service-card__head">
-             <span class="service-card__icon">${ICONS[s.icon]}</span>
-             <div class="service-card__btns">
-               <button class="flag-btn" data-report-svc="${s.id}" data-testid="report-service-${s.id}" aria-label="${t('services.report')}" title="${t('services.report')}">
-                 ${ICONS.flag}
-               </button>
-               <button class="fav-btn ${fav ? 'favorited' : ''}" data-fav="${s.id}" data-testid="fav-btn-${s.id}"
-                 aria-label="${t('services.fav')}" aria-pressed="${fav}" title="${t('services.fav')}">
-                 ${ICONS.heart}
-               </button>
-             </div>
-           </div>
-           <div>
-             <p class="service-card__cat">${t('cat.' + s.category)}</p>
-             <h3 class="service-card__title">${s.name[state.lang]}</h3>
-           </div>
-           <p class="service-card__desc">${s.desc[state.lang]}</p>
-           <div class="service-card__meta">
-             <span class="service-card__rating">${ICONS.star} ${s.rating} <span class="count">(${s.reviews} ${t('services.reviews')})</span></span>
-             <span class="service-card__price"><small>${t('services.from')}</small>${fmtMoney(s.priceMin)}</span>
-           </div>
-           <button class="btn btn--primary btn--block" data-request="${s.id}" data-testid="request-btn-${s.id}">
-             <span class="btn__label">${t('services.request')}</span>
-             <span class="spinner"></span>
-           </button>
-         </article>`;
-       }).join('');
-   
-       $$('[data-fav]', grid).forEach((btn) => btn.addEventListener('click', () => Services.toggleFav(btn.dataset.fav)));
-       $$('[data-report-svc]', grid).forEach((btn) => btn.addEventListener('click', () => Reports.open('service', btn.dataset.reportSvc)));
-       $$('[data-request]', grid).forEach((btn) => btn.addEventListener('click', () => Services.request(btn)));
+       const D=window.DafixData;
+       const items=Services.filtered();
+       $('#services-empty').hidden=items.length>0;
+       $('#services-empty-text').textContent='Nenhum serviço encontrado.';
+       $('#fav-count').textContent=state.favorites.length;
+       $('#services-grid').innerHTML=items.map(service=>`<article class="service-card"><h3>${D.escape(service.name[state.lang])}</h3><p>${D.escape(service.desc[state.lang])}</p><strong>${D.money(service.priceMin)}</strong><button class="btn btn--ghost" data-favorite="${service.id}">${state.favorites.includes(service.id)?'Remover dos favoritos':'Favoritar'}</button></article>`).join('');
+       $$('[data-favorite]').forEach(button=>button.addEventListener('click',()=>Services.toggleFav(button.dataset.favorite)));
      },
-   
+
      toggleFav(id) {
        const svc = serviceById(id);
        const wasFav = state.favorites.includes(id);
        state.favorites = wasFav ? state.favorites.filter((f) => f !== id) : [...state.favorites, id];
-       storage.set('sh_favorites', state.favorites);
+       storage.set('favorites.v2', state.favorites);
        Services.render();
        Overview.renderStats();
        Toast.show(`${svc.name[state.lang]} ${wasFav ? t('toast.favRemoved') : t('toast.favAdded')}`, wasFav ? 'info' : 'success');
      },
-   
+
      request(btn) {
        btn.classList.add('is-loading');
        btn.disabled = true;
@@ -1398,7 +1094,7 @@
          Toast.show(t('toast.requestSent'), 'success');
        }, 900);
      },
-   
+
      goTab(tab) {
        state.serviceTab = tab;
        $$('#view-services .tab').forEach((b) => {
@@ -1409,11 +1105,11 @@
        Services.render();
        Tabs.placeAll();
      },
-   
+
      init() {
        Services.renderFilters();
        $$('#view-services .tab').forEach((btn) => btn.addEventListener('click', () => Services.goTab(btn.dataset.subtab)));
-   
+
        let debounce;
        $('#service-search').addEventListener('input', (e) => {
          clearTimeout(debounce);
@@ -1422,254 +1118,19 @@
        $('#filter-category').addEventListener('change', (e) => { state.category = e.target.value; Services.render(); });
        $('#filter-price').addEventListener('change', (e) => { state.priceRange = e.target.value; Services.render(); });
        $('#filter-sort').addEventListener('change', (e) => { state.sort = e.target.value; Services.render(); });
-   
+
        Services.render();
      },
    };
-   
+
    /* ============================================================
       14. REPORTS — denúncia de serviço/profissional
       ============================================================ */
    const Reports = {
-     fillReasons() {
-       const sel = $('#report-reason');
-       sel.innerHTML = `<option value="">${t('report.reasonPlaceholder')}</option>` +
-         REPORT_REASONS.map((r) => `<option value="${r}">${t(r)}</option>`).join('');
-     },
-   
-     // type: 'service' (targetId = serviceId) | 'pro' (targetId = orderId)
-     open(type, targetId) {
-       state.reportCtx = { type, targetId };
-   
-       let name = '', meta = '', iconHtml = '';
-       if (type === 'service') {
-         const svc = serviceById(targetId);
-         name = svc.name[state.lang];
-         meta = t('cat.' + svc.category);
-         iconHtml = ICONS[svc.icon];
-         $('#report-modal-title').textContent = t('report.titleService');
-       } else {
-         const order = state.orders.find((o) => o.id === targetId);
-         name = order.pro.name;
-         meta = `${serviceById(order.serviceId).name[state.lang]} · ${order.id}`;
-         iconHtml = `<span>${initials(order.pro.name)}</span>`;
-         $('#report-modal-title').textContent = t('report.titlePro');
-       }
-       $('#report-target-name').textContent = name;
-       $('#report-target-meta').textContent = meta;
-       $('#report-target-icon').innerHTML = iconHtml;
-   
-       // reseta formulário
-       Reports.fillReasons();
-       $('#report-details').value = '';
-       $('#report-counter').textContent = '0/500';
-       $('#report-anonymous').checked = false;
-       Reports.clearErrors();
-       $('#report-form-wrap').hidden = false;
-       $('#report-success').hidden = true;
-   
-       Modals.open('report-modal');
-     },
-   
-     clearErrors() {
-       ['report-reason', 'report-details'].forEach((id) => {
-         $(`#err-${id.replace('report-', 'report-')}`);
-       });
-       $('#err-report-reason').classList.remove('show');
-       $('#err-report-details').classList.remove('show');
-       $('#report-reason').closest('.field').classList.remove('is-invalid');
-       $('#report-details').closest('.field').classList.remove('is-invalid');
-     },
-   
-     validate() {
-       Reports.clearErrors();
-       let ok = true;
-       if (!$('#report-reason').value) {
-         $('#err-report-reason').textContent = t('err.reasonRequired');
-         $('#err-report-reason').classList.add('show');
-         $('#report-reason').closest('.field').classList.add('is-invalid');
-         ok = false;
-       }
-       if ($('#report-details').value.trim().length < 20) {
-         $('#err-report-details').textContent = t('err.detailsMin');
-         $('#err-report-details').classList.add('show');
-         $('#report-details').closest('.field').classList.add('is-invalid');
-         ok = false;
-       }
-       return ok;
-     },
-   
-     submit() {
-       if (!Reports.validate()) return;
-       const btn = $('#report-submit');
-       btn.classList.add('is-loading');
-       btn.disabled = true;
-   
-       // Simula envio para a futura API Python/SQL
-       setTimeout(() => {
-         btn.classList.remove('is-loading');
-         btn.disabled = false;
-   
-         const proto = 'DEN-' + Date.now().toString().slice(-6);
-         const { type, targetId } = state.reportCtx;
-         const report = {
-           id: proto,
-           type,
-           targetId,
-           targetName: $('#report-target-name').textContent,
-           reason: $('#report-reason').value,
-           details: $('#report-details').value.trim(),
-           anonymous: $('#report-anonymous').checked,
-           date: new Date().toISOString(),
-           status: 'open',
-         };
-         state.reports = [report, ...state.reports];
-         storage.set('sh_reports', state.reports);
-   
-         $('#report-form-wrap').hidden = true;
-         $('#report-success').hidden = false;
-         $('#report-success-text').textContent = t('report.successText').replace('%s', proto);
-   
-         Reports.render();
-         Toast.show(t('toast.reportSent'), 'success');
-       }, 900);
-     },
-   
-     render() {
-       const list = $('#reports-list');
-       $('#reports-empty').hidden = state.reports.length > 0;
-       list.innerHTML = state.reports.map((r) => `
-         <li class="report-item" data-testid="report-item-${r.id}">
-           <div class="report-item__head">
-             <strong>${escapeHtml(r.targetName)}</strong>
-             <span class="badge badge--amber">${t('reports.status.open')}</span>
-           </div>
-           <p class="report-item__reason">${t(r.reason)}</p>
-           <div class="report-item__meta">
-             <span class="chip ${r.type === 'service' ? 'chip--blue' : 'chip--violet'}">${r.type === 'service' ? t('reports.typeService') : t('reports.typePro')}</span>
-             ${r.anonymous ? `<span class="chip">${t('reports.anonTag')}</span>` : ''}
-             <span class="report-item__proto">${r.id}</span>
-             <span>· ${fmtDate(r.date)}</span>
-           </div>
-         </li>`).join('');
-     },
-   
-     init() {
-       Reports.fillReasons();
-       Reports.render();
-       $('#report-submit').addEventListener('click', Reports.submit);
-       $('#report-done').addEventListener('click', () => Modals.close('report-modal'));
-       $('#report-details').addEventListener('input', (e) => {
-         $('#report-counter').textContent = `${e.target.value.length}/500`;
-       });
-     },
+     render() { $('#reports-list').replaceChildren(); $('#reports-empty').hidden=false; },
    };
-   
-   /* ============================================================
-      15. RATING — modal de avaliação
-      ============================================================ */
-   const Rating = {
-     buildStars() {
-       const wrap = $('#rating-stars');
-       wrap.innerHTML = '';
-       for (let i = 1; i <= 5; i++) {
-         const btn = document.createElement('button');
-         btn.className = 'star-btn';
-         btn.dataset.value = i;
-         btn.dataset.testid = `star-${i}`;
-         btn.setAttribute('role', 'radio');
-         btn.setAttribute('aria-label', `${i} ${i === 1 ? 'estrela' : 'estrelas'}`);
-         btn.innerHTML = ICONS.star;
-         btn.addEventListener('click', () => Rating.select(i));
-         btn.addEventListener('mouseenter', () => Rating.paint(i));
-         btn.addEventListener('mouseleave', () => Rating.paint(state.ratingStars));
-         wrap.appendChild(btn);
-       }
-     },
-   
-     paint(n) {
-       $$('.star-btn').forEach((b) => b.classList.toggle('lit', Number(b.dataset.value) <= n));
-       $('#stars-label').textContent = n > 0 ? t(`modal.star${n}`) : '\u00A0';
-     },
-   
-     select(n) {
-       state.ratingStars = n;
-       Rating.paint(n);
-       $('#stars-error').classList.remove('show');
-     },
-   
-     open(orderId) {
-       const order = state.orders.find((o) => o.id === orderId);
-       if (!order) return;
-       const svc = serviceById(order.serviceId);
-       state.ratingOrder = orderId;
-       state.ratingStars = 0;
-   
-       $('#rating-service-name').textContent = svc.name[state.lang];
-       $('#rating-pro-name').textContent = order.pro.name;
-       $('#rating-comment').value = '';
-       $('#char-counter').textContent = '0/300';
-       $('#stars-error').classList.remove('show');
-       Rating.paint(0);
-   
-       Modals.open('rating-modal');
-       setTimeout(() => { const s = $('.star-btn'); if (s) s.focus(); }, 350);
-     },
-   
-     openForPending() {
-       const pending = state.orders.find((o) => o.status === 'completed' && !o.reviewed);
-       if (pending) Rating.open(pending.id);
-       else Toast.show(t('toast.noPending'));
-     },
-   
-     submit() {
-       if (state.ratingStars === 0) {
-         const err = $('#stars-error');
-         err.textContent = t('modal.starsError');
-         err.classList.add('show');
-         return;
-       }
-       const btn = $('#rating-submit');
-       btn.classList.add('is-loading');
-       btn.disabled = true;
-   
-       setTimeout(() => {
-         btn.classList.remove('is-loading');
-         btn.disabled = false;
-   
-         const order = state.orders.find((o) => o.id === state.ratingOrder);
-         if (order) { order.reviewed = true; storage.set('sh_orders', state.orders); }
-   
-         Modals.close('rating-modal');
-         Orders.render();
-         Overview.render();
-         Toast.show(t('toast.reviewSent'), 'success');
-       }, 900);
-     },
-   
-     autoPrompt() {
-       if (sessionStorage.getItem(account.key('sh_rating_prompted'))) return;
-       const pending = state.orders.find((o) => o.status === 'completed' && !o.reviewed);
-       if (pending) {
-         sessionStorage.setItem(account.key('sh_rating_prompted'), '1');
-         setTimeout(() => Rating.open(pending.id), 1400);
-       }
-     },
-   
-     init() {
-       Rating.buildStars();
-       $('#rating-close').addEventListener('click', () => Modals.close('rating-modal'));
-       $('#rating-submit').addEventListener('click', Rating.submit);
-       $('#rating-comment').addEventListener('input', (e) => {
-         $('#char-counter').textContent = `${e.target.value.length}/300`;
-       });
-       Rating.autoPrompt();
-     },
-   };
-   
-   /* ============================================================
-      16. TOASTS
-      ============================================================ */
+   const Rating = { openForPending() { Toast.show('Nenhuma avaliação disponível.'); } };
+
    const Toast = {
      show(message, type = 'info') {
        const container = $('#toast-container');
@@ -1685,7 +1146,7 @@
        }, 3500);
      },
    };
-   
+
    /* ============================================================
       17. MODAIS — helpers genéricos
       ============================================================ */
@@ -1721,7 +1182,7 @@
        document.addEventListener('keydown', Modals.trapFocus);
      },
    };
-   
+
    /* ============================================================
       18. INIT
       ============================================================ */
@@ -1737,8 +1198,26 @@
      Photo.init();
      Orders.init();
      Services.init();
-     Reports.init();
-     Rating.init();
+     Reports.render();
+
      Language.init();
      Language.rerenderAll();
+     loadRegisteredData();
    });
+
+   async function loadRegisteredData() {
+     const D=window.DafixData;
+     try {
+       const [catalog, orders]=await Promise.all([D.list('/api/servicos'),D.orders(session)]);
+       SERVICES=catalog.map(s=>({id:'service-'+s.id, name:{pt:s.nome_servico,en:s.nome_servico},desc:{pt:s.descricao || '',en:s.descricao || ''},priceMin:Number(s.preco_base),category:'all'}));
+       state.orders=orders;
+       state.favorites=state.favorites.filter(id=>SERVICES.some(s=>s.id===id));
+       Overview.render();Orders.render();Services.render();Profile.fill();
+       $('#notif-list').innerHTML='<li class="data-empty">Nenhuma notificação registrada.</li>';
+       $('#notif-dropdown-list').innerHTML='<li class="data-empty">Nenhuma notificação registrada.</li>';
+     } catch(error) {
+       ['#recent-orders','#orders-list','#services-grid'].forEach(selector=>$(selector).innerHTML=D.empty(error.message));
+       $('#stats-grid').innerHTML=D.empty('Resumo indisponível.');
+       $('#services-empty').hidden=true;$('#orders-empty').hidden=true;
+     }
+   }

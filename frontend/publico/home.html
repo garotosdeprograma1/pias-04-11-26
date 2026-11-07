@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/publico/style.css" />
+  <link rel="stylesheet" href="/data-states.css">
 </head>
 <body data-page="home">
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
@@ -25,9 +26,9 @@
     </a>
     <nav class="header-nav" role="navigation" aria-label="Menu principal">
       <a href="/" class="nav-link is-active">Início</a>
-      <a href="/servicos" class="nav-link">Serviços</a>
-      <a href="/institucional" class="nav-link">Sobre Nós</a>
-      <a href="/institucional#contato" class="nav-link">Contato</a>
+      <a href="/publico/servicos.html" class="nav-link">Serviços</a>
+      <a href="/publico/institucional.html" class="nav-link">Sobre Nós</a>
+      <a href="/publico/institucional.html#contato" class="nav-link">Contato</a>
     </nav>
     <div class="header-actions">
       <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
@@ -35,7 +36,7 @@
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
       </button>
       <a href="/login" class="btn btn--ghost btn--sm">Entrar</a>
-      <a href="/servicos" class="btn btn--primary btn--sm ripple">Cadastrar</a>
+      <a href="/index.html?tab=signup" class="btn btn--primary btn--sm ripple">Cadastrar</a>
       <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -45,12 +46,12 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu" role="navigation" aria-label="Menu mobile">
     <a href="/" class="nav-link is-active">Início</a>
-    <a href="/servicos" class="nav-link">Serviços</a>
-    <a href="/institucional" class="nav-link">Sobre Nós</a>
-    <a href="/institucional#contato" class="nav-link">Contato</a>
+    <a href="/publico/servicos.html" class="nav-link">Serviços</a>
+    <a href="/publico/institucional.html" class="nav-link">Sobre Nós</a>
+    <a href="/publico/institucional.html#contato" class="nav-link">Contato</a>
     <div class="mobile-menu-actions">
       <a href="/login" class="btn btn--ghost btn--full">Entrar</a>
-      <a href="/servicos" class="btn btn--primary btn--full">Cadastrar grátis</a>
+      <a href="/index.html?tab=signup" class="btn btn--primary btn--full">Cadastrar grátis</a>
     </div>
   </div>
 
@@ -71,7 +72,7 @@
               para qualquer necessidade
             </h1>
             <p class="hero-sub reveal reveal-d2">
-              A plataforma mais segura para contratar eletricistas, encanadores, programadores, designers e muito mais. Profissionais verificados, avaliações reais.
+              Consulte os profissionais cadastrados e encontre a especialidade que você procura.
             </p>
             <div class="hero-search-wrap reveal reveal-d3">
               <div class="hero-search" role="search">
@@ -79,18 +80,12 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
                 </span>
                 <input type="search" id="heroSearch" placeholder="Ex: eletricista, programador, pintor..." aria-label="Buscar profissional" autocomplete="off" />
-                <a href="/servicos" class="btn btn--primary ripple" id="heroSearchBtn">
+                <a href="/publico/servicos.html" class="btn btn--primary ripple" id="heroSearchBtn">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
                   Buscar
                 </a>
               </div>
-              <div class="hero-tags">
-                <span class="hero-tag-label">Popular:</span>
-                <button class="hero-tag ripple" data-cat="eletricista">⚡ Eletricista</button>
-                <button class="hero-tag ripple" data-cat="programador">💻 Programador</button>
-                <button class="hero-tag ripple" data-cat="pintor">🎨 Pintor</button>
-                <button class="hero-tag ripple" data-cat="encanador">🔧 Encanador</button>
-              </div>
+
             </div>
             <div class="hero-stats reveal reveal-d4" id="heroStats">
               <!-- populated by JS -->
@@ -98,72 +93,7 @@
           </div>
 
           <!-- Hero visual -->
-          <div class="hero-visual" aria-hidden="true">
-            <div class="hero-blob"></div>
-            <div class="hero-card-main">
-              <div class="hcard-head">
-                <img src="/assets/logo.png" alt="" class="hcard-logo" width="34" height="34" aria-hidden="true">
-                <div>
-                  <p class="hcard-brand">DaFix <small>Profissionais verificados</small></p>
-                </div>
-              </div>
-              <div class="hcard-item">
-                <span class="hcard-item-icon">⚡</span>
-                <div>
-                  <p class="hcard-item-name">Eletricista Residencial</p>
-                  <p class="hcard-item-price">A partir de R$ 89</p>
-                </div>
-                <div class="hcard-item-right">
-                  <p class="hcard-item-rating">★ 4.9</p>
-                </div>
-              </div>
-              <div class="hcard-item">
-                <span class="hcard-item-icon">🔧</span>
-                <div>
-                  <p class="hcard-item-name">Hidráulica</p>
-                  <p class="hcard-item-price">A partir de R$ 99</p>
-                </div>
-                <div class="hcard-item-right">
-                  <p class="hcard-item-rating">★ 4.8</p>
-                </div>
-              </div>
-              <div class="hcard-item">
-                <span class="hcard-item-icon">🎨</span>
-                <div>
-                  <p class="hcard-item-name">Pintura</p>
-                  <p class="hcard-item-price">A partir de R$ 149</p>
-                </div>
-                <div class="hcard-item-right">
-                  <p class="hcard-item-rating">★ 4.9</p>
-                </div>
-              </div>
-              <div class="hcard-cta">
-                <span>Solicitar agora</span>
-                <button>Contratar</button>
-              </div>
-            </div>
-            <div class="hero-float hf-1">
-              <div class="hf-icon" style="background:#dce7de">✅</div>
-              <div>
-                <p class="hf-val" data-counter="10000" data-suffix="+">0+</p>
-                <p class="hf-label">Serviços concluídos</p>
-              </div>
-            </div>
-            <div class="hero-float hf-2">
-              <div class="hf-icon" style="background:#eaf3ed">⭐</div>
-              <div>
-                <p class="hf-val" data-counter="98" data-suffix="%">0%</p>
-                <p class="hf-label">Clientes satisfeitos</p>
-              </div>
-            </div>
-            <div class="hero-float hf-3">
-              <div class="hf-icon" style="background:#f5e8e3">🔧</div>
-              <div>
-                <p class="hf-val" data-counter="3200" data-suffix="+">0+</p>
-                <p class="hf-label">Profissionais ativos</p>
-              </div>
-            </div>
-          </div>
+          <div class="hero-visual" aria-hidden="true"><div class="hero-card-main"><h2>Encontre quem entende do serviço.</h2><p>Consulte os profissionais e especialidades cadastrados.</p><a class="btn btn--primary" href="servicos.html">Ver profissionais</a></div></div>
         </div>
       </div>
     </section>
@@ -203,13 +133,13 @@
             <div class="step-num">2</div>
             <div class="step-icon">👤</div>
             <h3 class="step-title">Escolha</h3>
-            <p class="step-desc">Compare perfis, avaliações, preços e disponibilidade. Encontre o profissional ideal.</p>
+            <p class="step-desc">Consulte os nomes e as especialidades dos profissionais cadastrados.</p>
           </div>
           <div class="step-card reveal reveal-d3">
             <div class="step-num">3</div>
             <div class="step-icon">🤝</div>
             <h3 class="step-title">Contrate</h3>
-            <p class="step-desc">Solicite o serviço com segurança. Pagamento protegido e garantia de satisfação.</p>
+            <p class="step-desc">Entre na sua conta para acompanhar os seus registros.</p>
           </div>
         </div>
       </div>
@@ -224,7 +154,7 @@
             <h2 class="section-title" id="pros-title">Em destaque <span class="grad">na plataforma</span></h2>
             <div class="grad-divider"></div>
           </div>
-          <a href="/servicos" class="btn btn--ghost">
+          <a href="/publico/servicos.html" class="btn btn--ghost">
             Ver todos
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
@@ -242,11 +172,9 @@
           <p class="section-label">Depoimentos</p>
           <h2 class="section-title" id="t-title">O que dizem nossos <span class="grad">clientes</span></h2>
           <div class="grad-divider"></div>
-          <p class="section-sub">Mais de 12.000 clientes já encontraram o profissional ideal pelo DaFix.</p>
+          <p class="section-sub">Os profissionais aparecem aqui após o cadastro.</p>
         </div>
-        <div class="testimonials-grid" id="testimonialsGrid">
-          <!-- populated by JS -->
-        </div>
+        <div class="testimonials-grid" id="testimonialsGrid"><p class="data-empty">Nenhum depoimento publicado.</p></div>
       </div>
     </section>
 
@@ -270,13 +198,13 @@
         <div class="cta-inner reveal">
           <p class="section-label" style="color:rgba(255,255,255,.7)">Comece agora</p>
           <h2 class="cta-title" id="cta-title">Pronto para encontrar o profissional ideal?</h2>
-          <p class="cta-sub">Cadastre-se grátis e tenha acesso a milhares de profissionais verificados.</p>
+          <p class="cta-sub">Crie sua conta para acessar os serviços cadastrados.</p>
           <div class="cta-btns">
-            <a href="/servicos" class="btn btn--white btn--lg ripple">
+            <a href="/publico/servicos.html" class="btn btn--white btn--lg ripple">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/></svg>
               Buscar Serviços
             </a>
-            <a href="/servicos" class="btn btn--outline-white btn--lg">
+            <a href="/publico/servicos.html" class="btn btn--outline-white btn--lg">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
               Criar Conta Grátis
             </a>
@@ -290,15 +218,13 @@
   <!-- ====== FOOTER ====== -->
   <footer class="footer" role="contentinfo">
     <div class="container">
-      <div class="footer-grid" id="footerContent">
-        <!-- populated by JS -->
-      </div>
+      <div class="footer-grid" id="footerContent"><div class="footer-brand"><strong>Dafix</strong><p>Serviços para sua casa.</p></div><div><a href="/index.html">Entrar ou cadastrar</a></div><div><a href="/suporte/index.html">Central de ajuda</a></div></div>
       <div class="footer-bottom">
         <p class="footer-copy">© <span id="year"></span> DaFix · Todos os direitos reservados</p>
         <div class="footer-legal">
-          <a href="#">Privacidade</a>
-          <a href="#">Termos</a>
-          <a href="#">Cookies</a>
+          <span>Privacidade</span>
+          <span>Termos</span>
+          <span>Cookies</span>
         </div>
       </div>
     </div>
@@ -308,5 +234,8 @@
   <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
 
   <script src="/publico/script.js" defer></script>
+
+<script src="/data-source.js"></script>
+<script src="/public-records.js"></script>
 </body>
 </html>
