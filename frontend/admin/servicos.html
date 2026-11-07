@@ -1,93 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#203b30"/>
-<title>Serviços — Dafix Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="css/admin.css"/>
-  <link rel="stylesheet" href="/assets/css/data-states.css">
-</head>
-<body>
-<div class="mob-overlay" id="mobOverlay"></div>
-<div class="admin-shell" id="shell">
-
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar__brand">
-    <img src="/assets/images/logo.png" alt="DaFix" class="sidebar__logo" width="36" height="36">
-    <div class="sidebar__brand-info">
-      <div class="sidebar__name">Dafix</div>
-      <div class="sidebar__tagline">Gestão de serviços residenciais</div>
-    </div>
-  </div>
-  <nav class="sidebar__nav">
-    <div class="nav-group">
-      <div class="nav-group__label">Principal</div>
-      <a href="dashboard.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-text">Dashboard</span></a>
-      <a href="usuarios.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/></svg><span class="nav-text">Usuários</span></a>
-      <a href="servicos.html" class="nav-link active"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><span class="nav-text">Serviços</span></a>
-      <a href="relatorios.html" class="nav-link"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="nav-text">Relatórios</span></a>
-    </div>
-    <div class="nav-group">
-      <div class="nav-group__label">Sistema</div>
-      <span><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span class="nav-text">Configurações</span></span>
-    </div>
-  </nav>
-  <div class="sidebar__footer">
-    <div class="sidebar__profile"><div class="sidebar__avatar">DF</div><div class="sidebar__profile-info"><div class="sidebar__profile-name">Gestão Dafix</div><div class="sidebar__profile-role">Painel de gestão</div></div></div>
-    <a href="../index.html" class="nav-link nav-link--danger" style="margin-top:4px"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="nav-text">Sair</span></a>
-  </div>
-</aside>
-
-<button class="sidebar-toggle" id="sidebarToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg></button>
-
-<header class="admin-header">
-  <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-  <div class="header__info">
-    <div class="header__title">Serviços</div>
-    <div class="header__crumb"><a href="dashboard.html">Dafix Admin</a><span class="crumb-sep">›</span><span>Serviços</span></div>
-  </div>
-  <div class="header__search">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" placeholder="Buscar serviço…" id="srvSearch"/>
-  </div>
-  <div class="header__actions">
-    <button class="theme-btn"><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8 8 0 0 1-9.7-11.6 1 1 0 0 0-1.2-1.31A10 10 0 1 0 22 14.05a1 1 0 0 0-.36-1.05Z"/></svg><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
-    <div class="header__profile"><div class="h-avatar">DF</div><div><div class="h-name">Gestão Dafix</div><div class="h-role">Painel de gestão</div></div></div>
-  </div>
-</header>
-
-<main class="admin-main"><section data-record-page="servicos"><div class="page-head"><div><h1>Serviços e pedidos</h1><p>Consulte os registros cadastrados na plataforma.</p></div></div>
- <div id="record-summary" class="data-summary"></div>
- <div class="data-tools"><input id="record-search" type="search" placeholder="Buscar registros" aria-label="Buscar registros"><select id="record-role" aria-label="Perfil" hidden><option value="">Todos os perfis</option><option value="cliente">Clientes</option><option value="funcionario">Funcionários</option></select><button id="record-reload" type="button">Atualizar</button><button id="record-export" type="button" disabled>Baixar CSV</button></div>
- <p id="record-count" role="status">Carregando…</p><div id="records" class="data-panel"><p class="data-empty">Carregando registros…</p></div>
- <section class="data-panel"><h2>Cadastrar serviço</h2><p>Defina os serviços oferecidos e seus preços. Eles aparecerão no catálogo do cliente.</p>
-<form id="catalog-form" class="record-form">
-<label>Nome do serviço<input name="nome" list="service-suggestions" maxlength="150" required></label>
-<datalist id="service-suggestions"><option value="Serviços elétricos"><option value="Serviços hidráulicos"><option value="Pintura"><option value="Montagem de móveis"><option value="Limpeza residencial"><option value="Jardinagem"></datalist>
-<label>Descrição<textarea name="descricao" maxlength="1000" rows="3" required></textarea></label>
-<label>Preço base (R$)<input name="preco" type="number" min="0" step="0.01" required></label>
-<button type="submit" class="btn">Cadastrar serviço</button><p id="catalog-message" role="status"></p></form></section><section class="data-panel"><h2>Catálogo de serviços</h2><div id="record-catalog"></div></section>
-
- </section></main>
-</div>
-
-<!-- ══ SERVICE MODAL ══ -->
-
-
-<!-- ══ VIEW MODAL ══ -->
-
-
-<div class="toasts"></div>
-<script src="js/main.js"></script>
-
-
-<script src="/assets/js/account-session.js"></script>
-<script src="/assets/js/data-source.js"></script>
-<script src="/admin/js/records.js"></script>
-<script src="/admin/js/catalogo.js"></script>
-</body>
-</html>
+<!doctype html>
+<html lang="pt-BR" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#203b30"><title>Catálogo de serviços · Administração Dafix</title><link rel="stylesheet" href="/assets/css/data-states.css"><link rel="stylesheet" href="/admin/css/admin.css"></head>
+<body><a class="skip-link" href="#main">Pular para o conteúdo</a><div class="admin-shell" id="shell">
+<aside class="sidebar" id="sidebar" aria-label="Navegação administrativa"><a class="brand" href="dashboard.html"><img src="/assets/images/logo.png" alt="" width="38" height="38"><span>Dafix<small>ADMINISTRAÇÃO</small></span></a><button id="closeMenu" class="close-menu" type="button" aria-label="Fechar menu">×</button><p class="sidebar-label">ESPAÇO DE GESTÃO</p><nav><a class="nav-link " href="dashboard.html" ><span class="nav-number">01</span>Visão geral<span class="nav-arrow" aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span></a><a class="nav-link " href="usuarios.html" ><span class="nav-number">02</span>Pessoas<span class="nav-arrow" aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span></a><a class="nav-link active" href="servicos.html" aria-current="page"><span class="nav-number">03</span>Catálogo de serviços<span class="nav-arrow" aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span></a><a class="nav-link " href="relatorios.html" ><span class="nav-number">04</span>Relatórios<span class="nav-arrow" aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span></a></nav><div class="sidebar-bottom"><p>Serviços para a casa.<br>Cuidado em cada detalhe.</p><a href="/index.html">Voltar ao acesso <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></span></a><a id="account-link" href="/index.html" hidden>Voltar à minha conta <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></a></div></aside>
+<button type="button" id="mobOverlay" class="mob-overlay" aria-label="Fechar navegação" hidden></button>
+<div class="workspace"><header class="admin-header"><div class="header-context"><button type="button" id="menuBtn" aria-label="Abrir navegação" aria-controls="sidebar" aria-expanded="false">☰</button><a href="dashboard.html">Administração</a><span aria-hidden="true">/</span><span>Catálogo de serviços</span></div><button class="theme-btn" type="button" aria-label="Alternar tema">Tema escuro</button></header>
+<main id="main" class="admin-main"><section data-record-page="servicos"><div class="page-head"><div><span class="eyebrow">PAINEL DE GESTÃO</span><h1>Catálogo de serviços</h1><p>Organize os serviços que seus clientes podem solicitar.</p></div></div>
+<div id="record-summary" class="data-summary" aria-label="Resumo dos registros"></div>
+<div class="content-grid with-editor"><section class="records-panel" aria-labelledby="records-title"><div class="section-heading"><div><h2 id="records-title">Serviços publicados</h2><p id="record-count" role="status">Carregando registros…</p></div><button id="record-reload" type="button">Atualizar</button></div>
+<div class="records-toolbar"><label class="search-field"><span class="sr-only">Buscar serviços</span><input id="record-search" type="search" placeholder="Buscar pelo nome ou descrição"></label><select id="record-role" aria-label="Filtrar perfil" hidden><option value="">Todos os perfis</option><option value="cliente">Clientes</option><option value="funcionario">Funcionários</option></select><button id="record-export" type="button" disabled>Exportar CSV</button></div>
+<div id="records"><p class="data-empty">Carregando registros…</p></div></section><aside class="editor"><span class="eyebrow">NOVO SERVIÇO</span><h2>Adicionar ao catálogo</h2><p>Após salvar, o serviço aparece na área do cliente.</p><form id="catalog-form" class="record-form"><label>Nome do serviço<input name="nome" maxlength="150" required placeholder="Ex.: Manutenção elétrica"></label><label>Descrição<textarea name="descricao" rows="4" maxlength="1000" required placeholder="Descreva o atendimento oferecido"></textarea></label><label>Preço base (R$)<input name="preco" type="number" min="0" step="0.01" required placeholder="0,00"></label><button class="primary" type="submit">Cadastrar serviço</button><p id="catalog-message" role="status" aria-live="polite"></p></form></aside></div>
+<footer class="page-footer"><span>Dafix · Administração</span><a href="/suporte/index.html">Central de ajuda <svg class="arrow-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 10h12m-5-5 5 5-5 5"/></svg></a></footer></section></main></div></div>
+<script src="/assets/js/account-session.js"></script><script src="/assets/js/data-source.js"></script><script src="/admin/js/main.js"></script><script src="/admin/js/records.js"></script><script src="/admin/js/catalogo.js"></script></body></html>

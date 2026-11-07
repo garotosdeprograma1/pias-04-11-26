@@ -11,16 +11,22 @@
     if (mode === 'usuarios') {
       headers = ['Nome', 'E-mail', 'Telefone', 'Perfil', 'Especialidade'];
       rows = users.filter(u => !role || u.perfil === role).map(u => [u.nome,u.email,u.telefone,u.perfil === 'cliente' ? 'Cliente' : 'Funcionário',u.especialidade || 'Não informado']);
+    } else if (mode === 'servicos') {
+      headers = ['Serviço', 'Descrição', 'Preço base'];
+      rows = services.map(service => [service.nome_servico, service.descricao || 'Não informado', D.money(service.preco_base)]);
     } else {
       headers = ['Pedido', 'Cliente', 'Funcionário', 'Serviço', 'Valor registrado', 'Data', 'Local'];
       rows = orders.map(o => ['#'+o.id,o.cliente,o.funcionario,o.servico,D.money(o.preco_unitario),D.date(o.data),o.local]);
     }
     rows = rows.filter(row => row.some(value => String(value).toLocaleLowerCase('pt-BR').includes(query)));
-    target.innerHTML = D.table(headers,rows,mode === 'usuarios' ? 'Nenhum usuário encontrado.' : 'Nenhum pedido encontrado.');
+    target.innerHTML = D.table(headers,rows,mode === 'usuarios' ? 'Nenhuma conta encontrada.' : mode === 'servicos' ? 'Nenhum serviço encontrado. Cadastre o primeiro serviço no formulário.' : 'Nenhum pedido encontrado.');
     document.getElementById('record-count').textContent = rows.length + ' registro(s)';
     document.getElementById('record-export').disabled = !rows.length;
   }
+  let loading=false;
   async function load() {
+    if(loading)return;loading=true;document.getElementById('record-reload').disabled=true;
+    document.getElementById('record-search').disabled=true;document.getElementById('record-role').disabled=true;document.getElementById('record-export').disabled=true;
     target.innerHTML = D.empty('Carregando registros…');
     try {
       const [clients,staff,catalog,registered] = await Promise.all([
@@ -32,22 +38,19 @@
         ['Clientes cadastrados',clients.length],['Funcionários cadastrados',staff.length],
         ['Serviços no catálogo',services.length],['Pedidos registrados',orders.length]
       ].map(([label,value])=>'<article><span>'+label+'</span><strong>'+value+'</strong></article>').join('');
-      if (mode === 'servicos') document.getElementById('record-catalog').innerHTML = D.table(['Serviço','Descrição','Preço base'],services.map(s=>[s.nome_servico,s.descricao || 'Não informado',D.money(s.preco_base)]),'Nenhum serviço cadastrado.');
       if (mode === 'relatorios') document.getElementById('report-total').textContent = D.money(orders.reduce((sum,o)=>sum+Number(o.preco_unitario || 0),0));
+      document.getElementById('record-search').disabled=false;document.getElementById('record-role').disabled=false;
       render();
     } catch(error) {
       target.innerHTML = D.empty(error.message);
       document.getElementById('record-count').textContent = 'Dados indisponíveis';
+      document.getElementById('record-summary').innerHTML = D.empty('Não foi possível carregar o resumo. Use Atualizar para tentar novamente.');
       document.getElementById('record-export').disabled = true;
-    }
+    } finally {loading=false;document.getElementById('record-reload').disabled=false;}
   }
   document.getElementById('record-search').addEventListener('input',render);
   document.getElementById('record-role').addEventListener('change',render);
   document.getElementById('record-reload').addEventListener('click',load);
   document.getElementById('record-export').addEventListener('click',()=>D.csv('dafix-'+mode+'.csv',headers,rows));
-  const session = window.DafixAccount.readSession();
-  document.querySelectorAll('.sidebar__profile-name').forEach(el=>el.textContent=session?.nome || 'Gestão Dafix');
-  document.querySelectorAll('.sidebar__avatar,.user-avatar').forEach(el=>el.textContent=session?.nome?.trim().split(/\s+/).map(p=>p[0]).slice(0,2).join('') || 'DF');
-  document.getElementById('searchInput')?.addEventListener('input',event=>{document.getElementById('record-search').value=event.target.value;render()});
   load();
 })();
