@@ -1073,7 +1073,7 @@
        $('#services-empty').hidden=items.length>0;
        $('#services-empty-text').textContent='Nenhum serviço encontrado.';
        $('#fav-count').textContent=state.favorites.length;
-       $('#services-grid').innerHTML=items.map(service=>`<article class="service-card"><h3>${D.escape(service.name[state.lang])}</h3><p>${D.escape(service.desc[state.lang])}</p><strong>${D.money(service.priceMin)}</strong><button class="btn btn--ghost" data-favorite="${service.id}">${state.favorites.includes(service.id)?'Remover dos favoritos':'Favoritar'}</button></article>`).join('');
+       $('#services-grid').innerHTML=items.map(service=>`<article class="service-card"><h3>${D.escape(service.name[state.lang])}</h3><p>${D.escape(service.desc[state.lang])}</p><strong>${D.money(service.priceMin)}</strong><button class="btn btn--primary" data-request-service="${service.id}">Solicitar serviço</button><button class="btn btn--ghost" data-favorite="${service.id}">${state.favorites.includes(service.id)?'Remover dos favoritos':'Favoritar'}</button></article>`).join('');
        $$('[data-favorite]').forEach(button=>button.addEventListener('click',()=>Services.toggleFav(button.dataset.favorite)));
      },
 
@@ -1085,16 +1085,6 @@
        Services.render();
        Overview.renderStats();
        Toast.show(`${svc.name[state.lang]} ${wasFav ? t('toast.favRemoved') : t('toast.favAdded')}`, wasFav ? 'info' : 'success');
-     },
-
-     request(btn) {
-       btn.classList.add('is-loading');
-       btn.disabled = true;
-       setTimeout(() => {
-         btn.classList.remove('is-loading');
-         btn.disabled = false;
-         Toast.show(t('toast.requestSent'), 'success');
-       }, 900);
      },
 
      goTab(tab) {
@@ -1200,6 +1190,7 @@
      Photo.init();
      Orders.init();
      Services.init();
+     document.addEventListener('dafix:order-created', async event => { await loadRegisteredData(); Navigation.go('orders'); Toast.show('Pedido #'+event.detail.id+' registrado.', 'success'); });
      Reports.render();
 
      Language.init();

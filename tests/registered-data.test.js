@@ -77,4 +77,12 @@ test('an empty database stays empty and registered records are returned without 
   assert.equal((await request('/api/os?perfil=funcionario&id='+employee.data.id)).data.length,1);
   assert.equal((await request('/api/os?perfil=invalido&id=1')).status,400);
   assert.equal((await request('/api/os?perfil=cliente&id=0')).status,400);
+  assert.equal((await request('/api/solicitacoes',{...order,data:'2099-02-30'})).status,400);
+  assert.equal((await request('/api/solicitacoes',{...order,data:'2000-01-01'})).status,400);
+  assert.equal((await request('/api/solicitacoes',{...order,data:'2099-11-07',id_funcionario:99999})).status,404);
+  const requested=await request('/api/solicitacoes',{...order,data:'2099-11-07',preco_unitario:0});
+  assert.equal(requested.status,201);
+  assert.equal(requested.data.preco_unitario,95);
+  assert.equal((await request('/api/os?perfil=cliente&id='+first.data.id)).data.length,2);
+  assert.equal((await request('/api/servicos',{nome_servico:'Inválido',preco_base:-1})).status,400);
 });

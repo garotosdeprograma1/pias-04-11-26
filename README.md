@@ -60,3 +60,11 @@ node --test tests/*.test.js
 ```
 
 Os testes usam as ferramentas nativas do Node.js. O teste da API cria um banco temporário e o remove ao terminar; não altera `backend/banco.db`. Os dados presentes nesses arquivos são exclusivos dos testes.
+
+## Catálogo e solicitações
+
+Na tela de login ou no menu do cliente, use **Administração**. Em **Serviços**, cadastre o nome, a descrição e o preço base do serviço oferecido. As sugestões de nomes ajudam no preenchimento; nenhum serviço é inserido automaticamente.
+
+Com pelo menos um serviço e um funcionário cadastrados, o cliente pode abrir **Serviços → Solicitar serviço**, escolher o profissional e informar data, endereço e descrição. O pedido é salvo no SQLite e aparece nas áreas do cliente, do funcionário escolhido e da administração. A data informada é uma preferência; o sistema não verifica disponibilidade da agenda nem processa pagamentos.
+
+O atalho administrativo abre o painel existente; ele não adiciona autenticação ou permissão de administrador.

@@ -256,7 +256,7 @@ var servidor = http.createServer(function (req, res) {
         return responderJson(res, 400, { erro: 'Dados invalidos.' });
       }
 
-      if (!novoServ.nome_servico || novoServ.preco_base === undefined) {
+      if (!novoServ || typeof novoServ.nome_servico !== 'string' || !novoServ.nome_servico.trim() || novoServ.nome_servico.length > 150 || typeof novoServ.preco_base !== 'number' || !Number.isFinite(novoServ.preco_base) || novoServ.preco_base < 0 || (novoServ.descricao != null && (typeof novoServ.descricao !== 'string' || novoServ.descricao.length > 1000))) {
         return responderJson(res, 400, { erro: 'Nome_servico e preco_base sao obrigatorios.' });
       }
 
@@ -297,6 +297,36 @@ var servidor = http.createServer(function (req, res) {
   // =================================================================
   // API: os (ordem de servico)
   // =================================================================
+
+  // Solicitações do catálogo: o preço vem do banco, nunca do navegador.
+  if (req.method === 'POST' && caminho === '/api/solicitacoes') {
+    let body = '', size = 0;
+    req.on('data', chunk => { size += chunk.length; if (size <= 16384) body += chunk; });
+    req.on('end', () => {
+      if (size > 16384) return responderJson(res, 413, {erro:'Solicitação muito longa.'});
+      let order;
+      try { order = JSON.parse(body); } catch { return responderJson(res,400,{erro:'Dados inválidos.'}); }
+      if (!order || !['id_cliente','id_funcionario','id_servico'].every(key => Number.isSafeInteger(order[key]) && order[key]>0) ||
+          typeof order.data !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(order.data) ||
+          !['local','descricao'].every(key => typeof order[key]==='string' && order[key].trim().length>=3 && order[key].length<=1000)) {
+        return responderJson(res,400,{erro:'Informe serviço, profissional, data, endereço e descrição válidos.'});
+      }
+      const date = new Date(order.data+'T12:00:00Z');
+      const today = new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
+      if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0,10)!==order.data || order.data<today) return responderJson(res,400,{erro:'Escolha uma data válida a partir de hoje.'});
+      db.get('SELECT servico.preco_base FROM servico, cliente, funcionario WHERE servico.id=? AND cliente.id=? AND funcionario.id=?',
+        [order.id_servico,order.id_cliente,order.id_funcionario], (error,row) => {
+          if (error) return responderJson(res,500,{erro:'Não foi possível consultar os cadastros.'});
+          if (!row) return responderJson(res,404,{erro:'Serviço, cliente ou profissional não encontrado. Atualize a página.'});
+          db.run('INSERT INTO os (id_cliente,id_servico,id_funcionario,preco_unitario,data,local,descricao) VALUES (?,?,?,?,?,?,?)',
+            [order.id_cliente,order.id_servico,order.id_funcionario,row.preco_base,order.data,order.local.trim(),order.descricao.trim()], function(error) {
+              if(error) return responderJson(res,500,{erro:'Não foi possível registrar o pedido.'});
+              responderJson(res,201,{id:this.lastID,preco_unitario:row.preco_base});
+            });
+        });
+    });
+    return;
+  }
 
   // ---- listar ----
   if (req.method === 'GET' && caminho === '/api/os') {

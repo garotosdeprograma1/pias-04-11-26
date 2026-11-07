@@ -64,7 +64,13 @@
  <div id="record-summary" class="data-summary"></div>
  <div class="data-tools"><input id="record-search" type="search" placeholder="Buscar registros" aria-label="Buscar registros"><select id="record-role" aria-label="Perfil" hidden><option value="">Todos os perfis</option><option value="cliente">Clientes</option><option value="funcionario">Funcionários</option></select><button id="record-reload" type="button">Atualizar</button><button id="record-export" type="button" disabled>Baixar CSV</button></div>
  <p id="record-count" role="status">Carregando…</p><div id="records" class="data-panel"><p class="data-empty">Carregando registros…</p></div>
- <section class="data-panel"><h2>Catálogo de serviços</h2><div id="record-catalog"></div></section>
+ <section class="data-panel"><h2>Cadastrar serviço</h2><p>Defina os serviços oferecidos e seus preços. Eles aparecerão no catálogo do cliente.</p>
+<form id="catalog-form" class="record-form">
+<label>Nome do serviço<input name="nome" list="service-suggestions" maxlength="150" required></label>
+<datalist id="service-suggestions"><option value="Serviços elétricos"><option value="Serviços hidráulicos"><option value="Pintura"><option value="Montagem de móveis"><option value="Limpeza residencial"><option value="Jardinagem"></datalist>
+<label>Descrição<textarea name="descricao" maxlength="1000" rows="3" required></textarea></label>
+<label>Preço base (R$)<input name="preco" type="number" min="0" step="0.01" required></label>
+<button type="submit" class="btn">Cadastrar serviço</button><p id="catalog-message" role="status"></p></form></section><section class="data-panel"><h2>Catálogo de serviços</h2><div id="record-catalog"></div></section>
 
  </section></main>
 </div>
@@ -82,5 +88,6 @@
 <script src="/assets/js/account-session.js"></script>
 <script src="/assets/js/data-source.js"></script>
 <script src="/admin/js/records.js"></script>
+<script src="/admin/js/catalogo.js"></script>
 </body>
 </html>

@@ -42,6 +42,7 @@
             <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
             <span class="nav__text" data-i18n="nav.services">Serviços</span>
           </button>
+          <a href="/admin/dashboard.html" class="nav__item"><span class="nav__text">Administração</span></a>
           <a href="../index.html" class="nav__item nav__item--logout" data-action="logout" data-testid="sidebar-logout">
             <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h10"/></svg></span>
             <span class="nav__text" data-i18n="nav.logout">Sair da conta</span>
@@ -406,5 +407,18 @@
   <script src="/assets/js/data-source.js"></script>
   <script src="/cliente/js/cliente.js" type="module"></script>
 
+
+<dialog id="request-dialog" class="request-dialog" aria-labelledby="request-title">
+  <div class="data-tools"><h2 id="request-title">Solicitar serviço</h2><button type="button" data-request-close>Fechar</button></div>
+  <form id="request-form" class="record-form">
+    <label>Profissional<select id="request-professional" name="profissional" required></select></label>
+    <label>Data desejada<input id="request-date" name="data" type="date" required></label>
+    <label>Endereço do atendimento<input name="local" autocomplete="street-address" minlength="3" maxlength="1000" required></label>
+    <label>Descreva o que precisa<textarea name="descricao" rows="4" minlength="3" maxlength="1000" required></textarea></label>
+    <p id="request-message" role="status"></p>
+    <button type="submit" class="btn btn--primary">Confirmar solicitação</button>
+  </form>
+</dialog>
+<script src="/cliente/js/solicitacao.js" defer></script>
 </body>
 </html>
