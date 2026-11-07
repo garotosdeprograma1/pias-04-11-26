@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const script = fs.readFileSync(path.join(__dirname, '../frontend/account-session.js'), 'utf8');
+const script = fs.readFileSync(path.join(__dirname, '../frontend/assets/js/account-session.js'), 'utf8');
 const CLIENT = { id: 1, nome: 'Ana Ribeiro', email: 'ana@example.test', telefone: '11912345678', perfil: 'cliente', loginAt: 100 };
 const EMPLOYEE = { id: 1, nome: 'Lia Costa', email: 'lia@example.test', telefone: '21912345678', especialidade: 'Jardinagem', perfil: 'funcionario', loginAt: 200 };
 

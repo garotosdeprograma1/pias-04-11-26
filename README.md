@@ -1,75 +1,62 @@
-# DaFix — Plataforma de Serviços Residenciais
+# DaFix
 
-## Estrutura do Projeto
+Plataforma de serviços residenciais com áreas pública, do cliente, do funcionário e administrativa. As páginas usam HTML, CSS e JavaScript, sem etapa de compilação. O servidor existente é JavaScript com Node.js e SQLite.
 
-```
-project/
-├── backend/
-│   ├── server.js          # Servidor Node.js (porta 5000)
-│   └── sql/               # Scripts de banco de dados
-│       ├── cadastrar.sql
-│       ├── consulta.sql
-│       └── criar_tabelas.sql
-│
-├── frontend/
-│   ├── index.html          # Página de login/cadastro
-│   ├── landing.html        # Landing page
-│   ├── style.css           # Estilos do login
-│   ├── script.js           # Lógica do login
-│   ├── landing-page.css    # Estilos da landing page
-│   ├── landing-page.js     # Lógica da landing page
-│   ├── data.json           # Dados de config/clientes/funcionários
-│   │
-│   ├── admin/              # Painel administrativo
-│   │   ├── dashboard.html
-│   │   ├── relatorios.html
-│   │   ├── servicos.html
-│   │   ├── usuarios.html
-│   │   ├── css/
-│   │   └── js/
-│   │
-│   ├── cliente/            # Área do cliente
-│   │   ├── index.html
-│   │   ├── scriptcli.js
-│   │   └── stylecli.css
-│   │
-│   ├── funcionario/        # Área do funcionário
-│   │   ├── funcionario-dashboard.html
-│   │   ├── funcionario-dashboard.css
-│   │   ├── funcionario-dashboard.js
-│   │   ├── funcionario-pedidos.html
-│   │   ├── funcionario-pedidos.js
-│   │   ├── funcionario-servicos.html
-│   │   ├── funcionario-servicos.js
-│   │   ├── funcionario-agenda.html
-│   │   └── funcionario-agenda.js
-│   │
-│   ├── publico/            # Páginas públicas
-│   │   ├── home.html
-│   │   ├── institucional.html
-│   │   ├── servicos.html
-│   │   ├── style.css
-│   │   ├── script.js
-│   │   └── data.json
-│   │
-│   ├── suporte/            # Central de suporte
-│   │   ├── index.html
-│   │   ├── contato.html
-│   │   ├── suporte.css
-│   │   └── suporte.js
-│   │
-│   └── assets/            # Imagens e mídia
-│       └── logo.png
-│
-├── .gitignore
-├── LICENSE
-└── package-lock.json
-```
+## Executar localmente
 
-## Como executar
+Requisitos: Node.js 24 e npm. Na pasta do projeto:
 
 ```bash
+npm ci --prefix backend
 node backend/server.js
 ```
 
-O servidor roda em `http://localhost:5000/`
+Abra **http://localhost:5000/** para acessar login e cadastro ou **http://localhost:5000/landing.html** para a apresentação do projeto. Mantenha o terminal aberto enquanto usa o site.
+
+As páginas precisam desse servidor para acessar a API; abrir o HTML diretamente ou usar apenas um servidor estático não permite consultar o banco.
+
+## Organização
+
+```text
+backend/
+  server.js                Servidor HTTP, API e validações
+  db.js                    Conexão e criação das tabelas SQLite
+  banco.db                 Banco usado pela aplicação
+  package.json             Dependências do servidor
+  package-lock.json        Versões das dependências
+frontend/
+  index.html               Login e cadastro
+  landing.html             Apresentação
+  assets/
+    css/                   Login, apresentação e estados de dados
+    js/                    Autenticação, sessão e acesso compartilhado à API
+    images/                Imagens compartilhadas
+  admin/                   Páginas administrativas, css/ e js/
+  cliente/                 Área do cliente, css/ e js/
+  funcionario/             Área do funcionário, css/ e js/
+  publico/                 Páginas públicas, css/ e js/
+  suporte/                 Central de ajuda, css/ e js/
+tests/
+  account-session.test.js  Sessão, dados por conta e logout
+  registered-data.test.js  Cadastro, consultas e pedidos por conta
+```
+
+Os arquivos específicos de cada área ficam junto das suas páginas, separados em `css/` e `js/`. Recursos usados por várias áreas ficam em `frontend/assets/`. Os endereços das páginas HTML foram preservados.
+
+## Dados
+
+`backend/db.js` cria as tabelas que ainda não existem, sem inserir registros de demonstração. O cadastro e a API gravam em `backend/banco.db`. Preserve esse arquivo para manter os dados cadastrados.
+
+As telas consultam os registros disponíveis e mostram mensagens quando não há dados ou quando a consulta falha. Funcionalidades sem integração configurada, como envio de e-mail, informam sua indisponibilidade.
+
+## Verificações de desenvolvimento
+
+A pasta `tests/` não é necessária para executar o site e não é servida ao navegador. Ela foi mantida para verificar as correções de cadastro, isolamento dos dados das contas e logout.
+
+Depois de instalar as dependências do servidor, execute na raiz do projeto:
+
+```bash
+node --test tests/*.test.js
+```
+
+Os testes usam as ferramentas nativas do Node.js. O teste da API cria um banco temporário e o remove ao terminar; não altera `backend/banco.db`. Os dados presentes nesses arquivos são exclusivos dos testes.
