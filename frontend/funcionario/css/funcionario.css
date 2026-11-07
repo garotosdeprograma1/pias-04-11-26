@@ -907,3 +907,7 @@ ul, ol { list-style: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Keep long contact details inside the profile card. */
+.info-list li > div { min-width: 0; }
+.info-list__value { overflow-wrap: anywhere; }

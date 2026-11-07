@@ -774,3 +774,9 @@ ul,ol{list-style:none}
 @media(max-width:768px){.section{padding:48px 0}.hero-title{font-size:clamp(2.5rem,8vw,3.5rem)}.brand-name{display:inline}.hero-search .btn{width:auto;margin:0;border-radius:0 0 8px 8px}.hero-search input{width:100%;min-width:0}.hero-stats{gap:24px}}
 
 .btn--white,.hcard-cta button{color:#203b30}
+
+/* Statistics inherit the contrast of the institutional cover. */
+.inst-hero .stat-val { color: #fff; }
+.inst-hero .stat-label, .inst-hero .data-empty { color: #dce7de; }
+/* Match the search field to the active theme, including typed text. */
+.search-bar { background: var(--surface); }
