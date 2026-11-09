@@ -108,7 +108,7 @@
       // scroll para a seção de FAQ e filtra
       const faqSection = $(".faq-section");
       if (faqSection) {
-        faqSection.scrollIntoView({ behavior: "smooth" });
+        faqSection.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         setTimeout(() => {
           if (searchInput) {
             searchInput.value = q;

@@ -30,7 +30,7 @@
       if (target) {
         e.preventDefault();
         const top = target.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         closeMobileMenu();
       }
     });
@@ -62,6 +62,7 @@
 
   if (hamburger) hamburger.addEventListener('click', openMobileMenu);
   if (mobileClose) mobileClose.addEventListener('click', closeMobileMenu);
+  window.addEventListener('resize', () => { if (innerWidth > 1024 && mobileMenu?.classList.contains('is-open')) closeMobileMenu(); });
   if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
 
   document.addEventListener('keydown', e => {
@@ -230,9 +231,11 @@
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      scrollProgress.style.width = pct + '%';
+      scrollProgress.style.transform = 'scaleX(' + Math.min(1, Math.max(0, pct / 100)) + ')';
     };
-    window.addEventListener('scroll', updateProgress, { passive: true });
+    let progressFrame = 0;
+    window.addEventListener('scroll', () => { if (!progressFrame) progressFrame = requestAnimationFrame(() => { progressFrame = 0; updateProgress(); }); }, { passive: true });
+    window.addEventListener('resize', updateProgress);
     updateProgress();
   }
 
@@ -252,7 +255,7 @@
       const section = document.getElementById('solicitar');
       if (section) {
         const top = section.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
+        window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
       }
     });
   });

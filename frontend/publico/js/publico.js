@@ -54,11 +54,13 @@ function initHeader() {
     if (progress) {
       const scrollTop = window.scrollY;
       const docH = document.documentElement.scrollHeight - window.innerHeight;
-      progress.style.width = docH > 0 ? `${(scrollTop / docH) * 100}%` : '0%';
+      progress.style.transform = 'scaleX(' + (docH > 0 ? Math.min(1, Math.max(0, scrollTop / docH)) : 0) + ')';
     }
   };
 
-  window.addEventListener('scroll', update, { passive: true });
+  let frame = 0;
+  window.addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; update(); }); }, { passive: true });
+  window.addEventListener('resize', update);
   update();
 }
 
@@ -81,13 +83,14 @@ function initMobileMenu() {
   }
 
   btn.addEventListener('click', () => setOpen(!open));
+  window.addEventListener('resize', () => { if (innerWidth > 1024 && open) setOpen(false); });
 
   document.addEventListener('click', e => {
     if (open && !menu.contains(e.target) && !btn.contains(e.target)) setOpen(false);
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && open) setOpen(false);
+    if (e.key === 'Escape' && open) { setOpen(false); btn.focus(); }
   });
 
   $$('.nav-link', menu).forEach(a => a.addEventListener('click', () => setOpen(false)));
