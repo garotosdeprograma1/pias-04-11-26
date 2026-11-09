@@ -130,5 +130,11 @@
   });
   window.addEventListener('pageshow', refreshSession);
 
-  window.DafixAccount = { readSession, requireProfile, key, loadProfile, saveProfile, startSession };
+  async function logout(destination = '/index.html') {
+    const response = await fetch('/api/logout', {method:'POST'});
+    if (!response.ok) throw new Error('Não foi possível encerrar a sessão. Tente novamente.');
+    for (const name of ['localStorage','sessionStorage']) { try { window[name].removeItem(SESSION_KEY); } catch {} }
+    window.location.replace(destination);
+  }
+  window.DafixAccount = { logout, readSession, requireProfile, key, loadProfile, saveProfile, startSession };
 })();

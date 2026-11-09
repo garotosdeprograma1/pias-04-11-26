@@ -6,7 +6,7 @@ Plataforma de serviços residenciais com áreas pública, do cliente, do funcion
 
 Requisitos: Node.js 24 e npm.
 
-**No Windows:** extraia o projeto e dê dois cliques em `iniciar.bat`, na raiz. Ele instala as dependências quando necessário, inicia o servidor e abre o navegador. Mantenha a janela aberta; pressione Ctrl+C para encerrar. A primeira instalação precisa de internet.
+**No Windows:** o inicializador está em `backend/abrir.bat`. Mantenha a janela do servidor aberta enquanto usa o projeto e pressione Ctrl+C para encerrar. A instalação das dependências precisa de internet.
 
 Para iniciar pelo terminal, na pasta do projeto:
 
@@ -69,6 +69,20 @@ Os testes usam as ferramentas nativas do Node.js. O teste da API cria um banco t
 
 Na tela de login ou no menu do cliente, use **Administração**. Em **Serviços**, cadastre o nome, a descrição e o preço base do serviço oferecido. As sugestões de nomes ajudam no preenchimento; nenhum serviço é inserido automaticamente.
 
-Com pelo menos um serviço e um funcionário cadastrados, o cliente pode abrir **Serviços → Solicitar serviço**, escolher o profissional e informar data, endereço e descrição. O pedido é salvo no SQLite e aparece nas áreas do cliente, do funcionário escolhido e da administração. A data informada é uma preferência; o sistema não verifica disponibilidade da agenda nem processa pagamentos.
+Com pelo menos um serviço cadastrado, o cliente pode abrir **Serviços → Solicitar serviço** e informar data, endereço e descrição. O pedido fica **aguardando aceite**, sem escolher profissional. Em **Pedidos disponíveis**, os profissionais podem assumir o atendimento. O servidor permite apenas um aceite por pedido; depois disso ele aparece nos pedidos e na agenda do responsável. A data informada é uma preferência; o sistema não verifica conflitos de agenda nem processa pagamentos.
 
-O atalho administrativo abre o painel existente; ele não adiciona autenticação ou permissão de administrador.
+## Acesso administrativo
+
+O painel e as APIs administrativas exigem uma sessão de administrador validada no servidor. O atalho **Administração** abre `/admin-login.html`. Clientes e funcionários não recebem essa permissão pelo cadastro público.
+
+Para configurar o primeiro acesso no seu servidor:
+
+1. Cadastre sua conta de cliente com seus dados reais pela página de cadastro.
+2. No terminal, na raiz do projeto, execute `node backend/criar-admin.js seu-email@exemplo.com`, usando o e-mail da conta que acabou de cadastrar.
+3. Entre na administração com esse e-mail e a mesma senha.
+
+Esse comando só pode ser executado por quem tem acesso aos arquivos e ao terminal do servidor. Não existe senha padrão. Novos administradores podem ser cadastrados por um administrador conectado em **Pessoas**.
+
+As sessões usam cookies HttpOnly, expiram em 12 horas e são invalidadas ao sair. Reiniciar o servidor exige novo login. As senhas novas são armazenadas com scrypt; senhas antigas são convertidas no próximo login válido. Para publicação fora do computador local, sirva o site por HTTPS.
+
+A atualização do banco preserva os pedidos existentes e permite pedidos sem profissional até o aceite. Faça uma cópia de segurança de `backend/banco.db` antes de atualizar uma instalação com dados reais.

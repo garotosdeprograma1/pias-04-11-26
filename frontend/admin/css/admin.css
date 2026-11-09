@@ -159,3 +159,12 @@ p{margin:8px 0;color:var(--text-muted)}
 img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}
 
 h1,.welcome h2,.dialog-heading h2{font-family:"DM Serif Display",Georgia,serif}
+/* Controles com as mesmas medidas e estados das áreas de cliente e profissional. */
+button,.primary{min-height:42px;padding:10px 16px;border-radius:8px;font-size:13.5px;font-weight:600;gap:8px;transition:background .2s,color .2s,border-color .2s,transform .15s}
+button:active,.primary:active{transform:translateY(1px)}.primary:hover:not(:disabled){background:#9f4b34;color:#fff;filter:none}
+.admin-controls{display:flex;align-items:center;gap:12px;min-width:0}#admin-name{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.icon-btn{width:40px;height:40px;min-height:40px;flex-shrink:0;display:grid;place-items:center;padding:0;border:0;border-radius:12px;background:transparent;color:var(--text-muted)}.icon-btn svg{width:20px;height:20px}.icon-btn:hover{background:var(--bg)}
+.icon-sun{display:none}:root[data-theme=dark] .icon-sun{display:block}:root[data-theme=dark] .icon-moon{display:none}
+.logout-btn{color:#b94343}.logout-btn svg{width:20px;height:20px}.sidebar-bottom .logout-btn{display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left}.danger-btn{background:#b94343;color:#fff;border:0}.danger-btn:hover:not(:disabled){background:#a03a3a}
+#admin-logout-dialog p{margin:16px 0}#admin-logout-dialog .dialog-actions{justify-content:flex-end}
+@media(max-width:600px){#admin-name{display:none}.admin-controls{gap:4px}}

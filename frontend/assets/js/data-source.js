@@ -9,6 +9,7 @@
     let data;
     try { data = await response.json(); }
     catch { throw new Error('Não foi possível carregar os dados. Abra o projeto pelo servidor.'); }
+    if (response.status === 401 && location.pathname !== '/admin-login.html') { location.replace(location.pathname.startsWith('/admin/') ? '/admin-login.html' : '/index.html'); }
     if (!response.ok) throw new Error(data.erro || 'Não foi possível carregar os dados.');
     return data;
   }

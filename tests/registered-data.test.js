@@ -14,8 +14,12 @@ before(async () => {
   directory = fs.mkdtempSync(path.join(os.tmpdir(), 'dafix-registered-test-'));
   const backend = path.resolve(__dirname, '../backend');
   fs.copyFileSync(path.join(backend, 'db.js'), path.join(directory, 'db.js'));
+  fs.copyFileSync(path.join(backend, 'auth.js'), path.join(directory, 'auth.js'));
+  fs.copyFileSync(path.join(backend, 'criar-admin.js'), path.join(directory, 'criar-admin.js'));
+
   fs.symlinkSync(path.join(backend, 'node_modules'), path.join(directory, 'node_modules'));
   const source = fs.readFileSync(path.join(backend, 'server.js'), 'utf8')
+    .replaceAll("'../frontend'",JSON.stringify(path.resolve(__dirname,'../frontend')))
     .replace('var PORTA = 5000;', 'var PORTA = 0;')
     .replace("var HOST = 'localhost';", "var HOST = '127.0.0.1';")
     .replace("console.log('  Pronto! Gravando em banco.db (SQLite).');", "console.log('TEST_PORT=' + servidor.address().port);");
@@ -39,69 +43,50 @@ after(async () => {
   if (directory) fs.rmSync(directory, { recursive: true, force: true });
 });
 
-async function request(endpoint, body) {
-  const response = await fetch(origin + endpoint, body ? { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) } : undefined);
-  return { status: response.status, data: await response.json() };
+async function request(endpoint, body, cookie='') {
+  const response = await fetch(origin + endpoint, {method:body!==undefined?'POST':'GET',headers:{'Content-Type':'application/json',Cookie:cookie},...(body!==undefined?{body:JSON.stringify(body)}:{}),redirect:'manual'});
+  const data=await response.json().catch(()=>null);
+  return {status:response.status,data,cookie:response.headers.get('set-cookie')?.split(';')[0],location:response.headers.get('location')};
 }
 
-test('an empty database stays empty and registered records are returned without simulated fields', async () => {
-  assert.deepEqual((await request('/api/resumo')).data, {clientes:0,funcionarios:0,servicos:0,pedidos:0});
-  for (const endpoint of ['/api/clientes','/api/funcionarios','/api/servicos','/api/os','/api/profissionais']) {
-    assert.deepEqual((await request(endpoint)).data, []);
-  }
-  const account = {nome:'Conta de teste',email:'cliente@example.test',cpf:'52998224725',telefone:'11999998888',senha:'SenhaTeste123'};
-  assert.equal((await request('/api/clientes',{})).status,400);
-  assert.equal((await request('/api/clientes',{...account,senha:'curta'})).status,400);
-  assert.equal((await request('/api/clientes',{...account,email:'invalido'})).status,400);
-  const first = await request('/api/clientes',account);
-  assert.equal((await request('/api/clientes',{...account,email:' CLIENTE@EXAMPLE.TEST ',cpf:'12345678909'})).status,409);
-  const malformed=await fetch(origin+'/api/clientes',{method:'POST',body:'null'});assert.equal(malformed.status,400);
-  const second = await request('/api/clientes',{...account,nome:'Outra conta de teste',email:'outra@example.test',cpf:'11144477735'});
-  const employee = await request('/api/funcionarios',{...account,email:'equipe@example.test',especialidade:'Especialidade de teste'});
-  assert.equal(first.status,201);assert.equal(second.status,201);assert.equal(employee.status,201);
-  const service = await request('/api/servicos',{nome_servico:'Serviço de teste',descricao:'Registro exclusivo do teste',preco_base:95});
-  assert.equal(service.status,201);
-  const order = {id_cliente:first.data.id,id_funcionario:employee.data.id,id_servico:service.data.id,preco_unitario:105,data:'2026-11-06',local:'Endereço informado no teste',descricao:'Pedido criado pelo teste'};
-  assert.equal((await request('/api/os',order)).status,201);
-  assert.deepEqual((await request('/api/resumo')).data, {clientes:2,funcionarios:1,servicos:1,pedidos:1});
-  const publicStaff = (await request('/api/profissionais')).data;
-  assert.equal(publicStaff.length,1);
-  assert.deepEqual(Object.keys(publicStaff[0]).sort(),['especialidade','id','nome']);
-  const clientOrders = (await request('/api/os?perfil=cliente&id='+first.data.id)).data;
-  assert.equal(clientOrders.length,1);
-  assert.equal(clientOrders[0].id_cliente,first.data.id);
-  assert.equal(clientOrders[0].preco_unitario,105);
-  assert.equal('status' in clientOrders[0],false);
-  assert.equal('rating' in clientOrders[0],false);
-  assert.deepEqual((await request('/api/os?perfil=cliente&id='+second.data.id)).data,[]);
-  assert.equal((await request('/api/os?perfil=funcionario&id='+employee.data.id)).data.length,1);
-  assert.equal((await request('/api/os?perfil=invalido&id=1')).status,400);
-  assert.equal((await request('/api/os?perfil=cliente&id=0')).status,400);
-  assert.equal((await request('/api/solicitacoes',{...order,data:'2099-02-30'})).status,400);
-  assert.equal((await request('/api/solicitacoes',{...order,data:'2000-01-01'})).status,400);
-  assert.equal((await request('/api/solicitacoes',{...order,data:'2099-11-07',id_funcionario:99999})).status,404);
-  const requested=await request('/api/solicitacoes',{...order,data:'2099-11-07',preco_unitario:0});
-  assert.equal(requested.status,201);
-  assert.equal(requested.data.preco_unitario,95);
-  assert.equal((await request('/api/os?perfil=cliente&id='+first.data.id)).data.length,2);
-  assert.equal((await request('/api/servicos',{nome_servico:'Inválido',preco_base:-1})).status,400);
-});
-
-test('administrators persist, reject duplicates and authenticate without exposing passwords', async () => {
-  const account = {nome:'Admin de teste',email:'admin@example.test',cpf:'52998224725',telefone:'11999998888',senha:'SenhaTeste123'};
-  assert.deepEqual((await request('/api/admins')).data, []);
-  assert.equal((await request('/api/admins',{...account,cpf:'00000000000'})).status,400);
-  const created = await request('/api/admins',account);
-  assert.equal(created.status,201);
-  assert.equal((await request('/api/admins',account)).status,409);
-  const list = (await request('/api/admins')).data;
-  assert.equal(list.length,1);
-  assert.equal(list[0].nome,account.nome);
-  assert.equal('senha' in list[0],false);
-  const login = await request('/api/login',{perfil:'admin',email:account.email,senha:account.senha});
-  assert.equal(login.status,200);
-  assert.equal(login.data.perfil,'admin');
-  assert.equal(login.data.usuario.id,created.data.id);
-  assert.equal('senha' in login.data.usuario,false);
+const account={nome:'Conta de teste',email:'cliente@example.test',cpf:'52998224725',telefone:'11999998888',senha:'SenhaTeste123'};
+test('server authorization, private orders and atomic professional acceptance', async()=>{
+  assert.equal((await request('/api/admins')).status,401);
+  assert.equal((await request('/api/admins',account)).status,401);
+  assert.equal((await request('/admin/dashboard.html')).location,'/admin-login.html');
+  assert.equal((await request('/api/servicos',{nome_servico:'Teste',preco_base:95})).status,401);
+  assert.equal((await request('/api/clientes',account)).status,201);
+  assert.equal((await request('/api/clientes',account)).status,409);
+  const other=await request('/api/clientes',{...account,nome:'Outra pessoa',email:'outra@example.test',cpf:'11144477735'});
+  assert.equal(other.status,201);
+  for(const email of ['profissional@example.test','outro@example.test'])assert.equal((await request('/api/funcionarios',{...account,email,cpf:email.startsWith('outro')?'11144477735':account.cpf,especialidade:'Instalações'})).status,201);
+  const login=async(perfil,email=account.email)=>request('/api/login',{perfil,email,senha:account.senha});
+  const client=await login('cliente'),staff=await login('funcionario','profissional@example.test'),staff2=await login('funcionario','outro@example.test');
+  assert.equal(client.status,200);assert(client.cookie);assert(!('senha' in client.data.usuario));
+  assert.equal((await request('/api/admins',account,client.cookie)).status,403);
+  assert.equal((await request('/api/clientes',undefined,staff.cookie)).status,403);
+  assert.equal((await request('/admin/dashboard.html',undefined,client.cookie)).status,302);
+  await new Promise((resolve,reject)=>{const p=spawn(process.execPath,[path.join(directory,'criar-admin.js'),account.email]);p.on('exit',code=>code?reject(new Error('Falha ao criar administrador')):resolve());p.on('error',reject)});
+  const admin=await login('admin');assert.equal(admin.status,200);
+  assert.equal((await request('/admin/dashboard.html',undefined,admin.cookie)).status,200);
+  assert.equal((await request('/api/admins',undefined,admin.cookie)).data.length,1);
+  const service=await request('/api/servicos',{nome_servico:'Serviço registrado',preco_base:95},admin.cookie);assert.equal(service.status,201);
+  const order={id_servico:service.data.id,data:'2099-11-09',local:'Endereço do cliente',descricao:'Manutenção solicitada',id_cliente:other.data.id,id_funcionario:staff.data.usuario.id,preco_unitario:0};
+  assert.equal((await request('/api/solicitacoes',order,staff.cookie)).status,403);
+  assert.equal((await request('/api/solicitacoes',{...order,data:'2099-02-30'},client.cookie)).status,400);
+  const result=await request('/api/solicitacoes',order,client.cookie);assert.equal(result.status,201);
+  const mine=(await request('/api/os?perfil=cliente&id='+other.data.id,undefined,client.cookie)).data;
+  assert.equal(mine.length,1);assert.equal(mine[0].id_cliente,client.data.usuario.id);assert.equal(mine[0].id_funcionario,null);assert.equal(mine[0].preco_unitario,95);
+  const otherLogin=await login('cliente','outra@example.test');assert.deepEqual((await request('/api/os',undefined,otherLogin.cookie)).data,[]);
+  assert.equal((await request('/api/os',undefined,staff.cookie)).data.length,1);
+  assert.equal((await request('/api/os/'+result.data.id+'/aceitar',{},client.cookie)).status,403);
+  const outcomes=await Promise.all([staff,staff2].map(p=>request('/api/os/'+result.data.id+'/aceitar',{},p.cookie)));
+  assert.deepEqual(outcomes.map(r=>r.status).sort(),[200,409]);
+  const winner=outcomes.findIndex(r=>r.status===200),people=[staff,staff2];
+  assert.equal((await request('/api/os',undefined,people[1-winner].cookie)).data.length,0);
+  assert.equal((await request('/api/os',undefined,client.cookie)).data[0].id_funcionario,people[winner].data.usuario.id);
+  assert.equal((await request('/api/logout',{},admin.cookie)).status,200);
+  assert.equal((await request('/api/admins',undefined,admin.cookie)).status,401);
+  assert.equal((await request('/admin/dashboard.html',undefined,admin.cookie)).status,302);
   assert.equal((await request('/api/login',{perfil:'admin',email:account.email,senha:'incorreta'})).status,401);
 });

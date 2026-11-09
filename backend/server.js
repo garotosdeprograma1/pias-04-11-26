@@ -2,9 +2,11 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 var db = require('./db');
+var auth = require('./auth');
 
 var PORTA = 5000;
 var HOST = 'localhost';
+const loginAttempts=new Map();
 
 // ---------------------------------------------------------------
 // Auxiliares
@@ -43,7 +45,7 @@ function cadastrarConta(req, res, perfil) {
     db.get('SELECT id FROM '+perfil+" WHERE LOWER(TRIM(email)) = ? OR REPLACE(REPLACE(cpf,'.',''),'-','') = ?",[novo.email,novo.cpf],function(erro,existente){
       if(erro) return responderJson(res,500,{erro:'Não foi possível verificar o cadastro.'});
       if(existente) return responderJson(res,409,{erro:'Já existe uma conta com este e-mail ou CPF neste perfil.'});
-      var campos='nome,cpf,email,telefone,senha', valores=[novo.nome,novo.cpf,novo.email,novo.telefone,novo.senha];
+      var campos='nome,cpf,email,telefone,senha', valores=[novo.nome,novo.cpf,novo.email,novo.telefone,auth.hash(novo.senha)];
       if(perfil==='funcionario'){campos+=',especialidade';valores.push(novo.especialidade.trim());}
       db.run('INSERT INTO '+perfil+' ('+campos+') VALUES ('+valores.map(function(){return '?';}).join(',')+')',valores,function(erro){
         if(erro) return responderJson(res,erro.code==='SQLITE_CONSTRAINT'?409:500,{erro:erro.code==='SQLITE_CONSTRAINT'?'E-mail ou CPF já cadastrado.':'Não foi possível cadastrar a conta.'});
@@ -73,9 +75,9 @@ function servirArquivo(res, caminhoRelativo) {
     caminhoRelativo = caminhoRelativo + '.html';
   }
 
-  var caminho = path.join(__dirname, '../frontend', caminhoRelativo);
+  var caminho = path.join(path.resolve(__dirname, '../frontend'), caminhoRelativo);
 
-  if (!fs.existsSync(caminho)) {
+  if (!caminho.startsWith(path.resolve(__dirname,'../frontend') + path.sep) || !fs.existsSync(caminho) || !fs.statSync(caminho).isFile()) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('Arquivo nao encontrado: ' + caminhoRelativo);
   }
@@ -89,8 +91,29 @@ function servirArquivo(res, caminhoRelativo) {
 // Servidor
 // ---------------------------------------------------------------
 
-var servidor = http.createServer(function (req, res) {
-  var caminho = req.url.split('?')[0];
+var servidor = http.createServer(async function (req, res) {
+  try { await db.ready; } catch { return responderJson(res,503,{erro:'Banco de dados indisponível.'}); }
+  let caminho;
+  try { caminho = path.posix.normalize(decodeURIComponent(new URL(req.url, 'http://localhost').pathname)); }
+  catch { return responderJson(res,400,{erro:'Endereço inválido.'}); }
+  if(caminho.includes('\\'))return responderJson(res,400,{erro:'Endereço inválido.'});
+  res.setHeader('Cache-Control','no-store');
+  res.setHeader('X-Content-Type-Options','nosniff');
+  const session = auth.read(req);
+  if (req.method !== 'GET' && req.headers.origin && req.headers.origin !== 'http://' + req.headers.host && req.headers.origin !== 'https://' + req.headers.host) return responderJson(res,403,{erro:'Origem não permitida.'});
+  if (caminho === '/api/session' && req.method === 'GET') return responderJson(res,session?200:401,session?{usuario:session.usuario,perfil:session.perfil}:{erro:'Entre novamente para continuar.'});
+  if (caminho === '/api/logout' && req.method === 'POST') { auth.clear(req,res); return responderJson(res,200,{ok:true}); }
+  if (caminho.toLowerCase() === '/admin' || caminho.toLowerCase().startsWith('/admin/')) {
+    if (!session || session.perfil !== 'admin') { res.writeHead(302,{Location:'/admin-login.html'});return res.end(); }
+  }
+  const adminOnly = caminho === '/api/admins' ||
+    (['/api/clientes','/api/funcionarios'].includes(caminho) && req.method === 'GET') ||
+    (caminho.startsWith('/api/') && req.method === 'DELETE') ||
+    (caminho === '/api/servicos' && req.method !== 'GET') ||
+    (caminho === '/api/os' && req.method === 'POST');
+  if (adminOnly && (!session || session.perfil !== 'admin')) return responderJson(res,session?403:401,{erro:'Acesso exclusivo da administração.'});
+  if ((caminho === '/api/os' || caminho.startsWith('/api/os/') || caminho === '/api/solicitacoes') && !session) return responderJson(res,401,{erro:'Entre novamente para continuar.'});
+
 
   // Informações públicas sem dados de contato ou documentos dos usuários.
   if (req.method === 'GET' && caminho === '/api/profissionais') {
@@ -110,13 +133,20 @@ var servidor = http.createServer(function (req, res) {
 
   // ---- autenticar cliente ou funcionario no SQLite ----
   if (req.method === 'POST' && caminho === '/api/login') {
-    var textoLogin = '';
+    const ip=req.socket.remoteAddress;
+    const now=Date.now();
+    for(const [key,item] of loginAttempts)if(item.until<now)loginAttempts.delete(key);
+    const attempt=loginAttempts.get(ip)||{count:0,until:now+15*60*1000};
+    if(attempt.count>=30)return responderJson(res,429,{erro:'Muitas tentativas. Aguarde 15 minutos.'});
+    attempt.count++;loginAttempts.set(ip,attempt);
+    var textoLogin = '', tamanhoLogin = 0;
 
     req.on('data', function (pedaco) {
-      textoLogin += pedaco;
+      tamanhoLogin += pedaco.length; if(tamanhoLogin <= 16384) textoLogin += pedaco;
     });
 
     req.on('end', function () {
+      if(tamanhoLogin > 16384) return responderJson(res,413,{erro:'Dados muito longos.'});
       var credenciais;
       try {
         credenciais = JSON.parse(textoLogin);
@@ -127,25 +157,29 @@ var servidor = http.createServer(function (req, res) {
       if (!credenciais ||
           !['cliente','funcionario','admin'].includes(credenciais.perfil) ||
           typeof credenciais.email !== 'string' || !credenciais.email.trim() ||
-          typeof credenciais.senha !== 'string' || !credenciais.senha) {
+          typeof credenciais.senha !== 'string' || !credenciais.senha || credenciais.senha.length>128 || credenciais.email.length>254) {
         return responderJson(res, 400, { erro: 'Perfil, e-mail e senha sao obrigatorios.' });
       }
 
       // A tabela vem apenas dos perfis permitidos; valores usam parâmetros.
       var tabelaLogin = credenciais.perfil;
-      var camposLogin = 'id, nome, email, telefone' +
+      var camposLogin = 'id, nome, email, telefone, senha' +
                         (tabelaLogin === 'funcionario' ? ', especialidade' : '');
       var sqlLogin = 'SELECT ' + camposLogin + ' FROM ' + tabelaLogin +
-                    ' WHERE LOWER(TRIM(email)) = ? AND senha = ? LIMIT 1';
-      var valoresLogin = [credenciais.email.trim().toLowerCase(), credenciais.senha];
+                    ' WHERE LOWER(TRIM(email)) = ? LIMIT 1';
+      var valoresLogin = [credenciais.email.trim().toLowerCase()];
 
       db.get(sqlLogin, valoresLogin, function (erro, usuario) {
         if (erro) {
           return responderJson(res, 500, { erro: 'Nao foi possivel verificar o acesso. Tente novamente.' });
         }
-        if (!usuario) {
+        if (!usuario || credenciais.senha.length>128 || !auth.verify(credenciais.senha,usuario.senha)) {
           return responderJson(res, 401, { erro: 'E-mail ou senha invalidos para este perfil.' });
         }
+        if (!usuario.senha.startsWith('scrypt$')) db.run('UPDATE '+tabelaLogin+' SET senha=? WHERE id=?',[auth.hash(credenciais.senha),usuario.id]);
+        loginAttempts.delete(ip);
+        delete usuario.senha;
+        auth.start(req,res,usuario,credenciais.perfil);
         responderJson(res, 200, { usuario: usuario, perfil: credenciais.perfil });
       });
     });
@@ -309,32 +343,43 @@ var servidor = http.createServer(function (req, res) {
 
   // Solicitações do catálogo: o preço vem do banco, nunca do navegador.
   if (req.method === 'POST' && caminho === '/api/solicitacoes') {
+    if(session.perfil !== 'cliente')return responderJson(res,403,{erro:'Somente clientes podem solicitar serviços.'});
     let body = '', size = 0;
     req.on('data', chunk => { size += chunk.length; if (size <= 16384) body += chunk; });
     req.on('end', () => {
       if (size > 16384) return responderJson(res, 413, {erro:'Solicitação muito longa.'});
       let order;
       try { order = JSON.parse(body); } catch { return responderJson(res,400,{erro:'Dados inválidos.'}); }
-      if (!order || !['id_cliente','id_funcionario','id_servico'].every(key => Number.isSafeInteger(order[key]) && order[key]>0) ||
+      if (!order || !Number.isSafeInteger(order.id_servico) || order.id_servico<1 ||
           typeof order.data !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(order.data) ||
           !['local','descricao'].every(key => typeof order[key]==='string' && order[key].trim().length>=3 && order[key].length<=1000)) {
-        return responderJson(res,400,{erro:'Informe serviço, profissional, data, endereço e descrição válidos.'});
+        return responderJson(res,400,{erro:'Informe serviço, data, endereço e descrição válidos.'});
       }
       const date = new Date(order.data+'T12:00:00Z');
       const today = new Date().toLocaleDateString('en-CA',{timeZone:'America/Sao_Paulo'});
       if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0,10)!==order.data || order.data<today) return responderJson(res,400,{erro:'Escolha uma data válida a partir de hoje.'});
-      db.get('SELECT servico.preco_base FROM servico, cliente, funcionario WHERE servico.id=? AND cliente.id=? AND funcionario.id=?',
-        [order.id_servico,order.id_cliente,order.id_funcionario], (error,row) => {
+      db.get('SELECT preco_base FROM servico WHERE id=?',
+        [order.id_servico], (error,row) => {
           if (error) return responderJson(res,500,{erro:'Não foi possível consultar os cadastros.'});
-          if (!row) return responderJson(res,404,{erro:'Serviço, cliente ou profissional não encontrado. Atualize a página.'});
+          if (!row) return responderJson(res,404,{erro:'Serviço não encontrado. Atualize a página.'});
           db.run('INSERT INTO os (id_cliente,id_servico,id_funcionario,preco_unitario,data,local,descricao) VALUES (?,?,?,?,?,?,?)',
-            [order.id_cliente,order.id_servico,order.id_funcionario,row.preco_base,order.data,order.local.trim(),order.descricao.trim()], function(error) {
+            [session.usuario.id,order.id_servico,null,row.preco_base,order.data,order.local.trim(),order.descricao.trim()], function(error) {
               if(error) return responderJson(res,500,{erro:'Não foi possível registrar o pedido.'});
               responderJson(res,201,{id:this.lastID,preco_unitario:row.preco_base});
             });
         });
     });
     return;
+  }
+
+  if(req.method === 'POST' && /^\/api\/os\/\d+\/aceitar$/.test(caminho)) {
+    if(session.perfil !== 'funcionario')return responderJson(res,403,{erro:'Somente profissionais podem aceitar pedidos.'});
+    const id=Number(caminho.split('/')[3]);
+    db.run('UPDATE os SET id_funcionario=? WHERE id=? AND id_funcionario IS NULL', [session.usuario.id,id], function(error) {
+      if(error)return responderJson(res,500,{erro:'Não foi possível aceitar o pedido.'});
+      if(!this.changes)return responderJson(res,409,{erro:'Este pedido já foi aceito ou não está mais disponível. Atualize a lista.'});
+      responderJson(res,200,{id,id_funcionario:session.usuario.id});
+    });return;
   }
 
   // ---- listar ----
@@ -351,18 +396,15 @@ var servidor = http.createServer(function (req, res) {
       'FROM os ' +
       'INNER JOIN cliente ON os.id_cliente = cliente.id ' +
       'INNER JOIN servico ON os.id_servico = servico.id ' +
-      'INNER JOIN funcionario ON os.id_funcionario = funcionario.id ';
+      'LEFT JOIN funcionario ON os.id_funcionario = funcionario.id ';
 
-    var filtrosOs = new URL(req.url, 'http://localhost').searchParams;
     var parametrosOs = [];
-    if (filtrosOs.has('perfil') || filtrosOs.has('id')) {
-      var perfilOs = filtrosOs.get('perfil');
-      var pessoaOs = Number(filtrosOs.get('id'));
-      if (!['cliente', 'funcionario'].includes(perfilOs) || !Number.isSafeInteger(pessoaOs) || pessoaOs < 1) {
-        return responderJson(res, 400, { erro: 'Filtro de conta inválido.' });
-      }
-      sqlListaOs += perfilOs === 'cliente' ? 'WHERE os.id_cliente = ? ' : 'WHERE os.id_funcionario = ? ';
-      parametrosOs.push(pessoaOs);
+    if (session.perfil === 'cliente') {
+      sqlListaOs += 'WHERE os.id_cliente = ? ';
+      parametrosOs.push(session.usuario.id);
+    } else if (session.perfil === 'funcionario') {
+      sqlListaOs += 'WHERE os.id_funcionario = ? OR os.id_funcionario IS NULL ';
+      parametrosOs.push(session.usuario.id);
     }
     sqlListaOs += 'ORDER BY os.id DESC';
 

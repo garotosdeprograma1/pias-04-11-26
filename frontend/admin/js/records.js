@@ -16,7 +16,7 @@
       rows = services.map(service => [service.nome_servico, service.descricao || 'Não informado', D.money(service.preco_base)]);
     } else {
       headers = ['Pedido', 'Cliente', 'Funcionário', 'Serviço', 'Valor registrado', 'Data', 'Local'];
-      rows = orders.map(o => ['#'+o.id,o.cliente,o.funcionario,o.servico,D.money(o.preco_unitario),D.date(o.data),o.local]);
+      rows = orders.map(o => ['#'+o.id,o.cliente,o.funcionario || 'Aguardando aceite',o.servico,D.money(o.preco_unitario),D.date(o.data),o.local]);
     }
     rows = rows.filter(row => row.some(value => String(value).toLocaleLowerCase('pt-BR').includes(query)));
     target.innerHTML = D.table(headers,rows,mode === 'usuarios' ? 'Nenhuma conta encontrada.' : mode === 'servicos' ? 'Nenhum serviço encontrado. Cadastre o primeiro serviço no formulário.' : 'Nenhum pedido encontrado.');

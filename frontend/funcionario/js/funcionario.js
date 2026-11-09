@@ -365,9 +365,10 @@
       const btn = $("#confirmLogout"); if (!btn) return;
       btn.addEventListener("click", () => {
         btn.disabled = true;
-        try { localStorage.removeItem("dafix_session"); } catch { /* armazenamento indisponível */ }
-        try { sessionStorage.removeItem("dafix_session"); } catch { /* armazenamento indisponível */ }
-        window.location.replace("../index.html");
+        window.DafixAccount.logout().catch(error => {
+          btn.disabled = false;
+          showToast({title:'Não foi possível sair',message:error.message,type:'error'});
+        });
       });
     }
 

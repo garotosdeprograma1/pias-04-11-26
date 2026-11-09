@@ -52,7 +52,7 @@ db.serialize(function () {
       id             INTEGER PRIMARY KEY AUTOINCREMENT,
       id_cliente     INTEGER NOT NULL,
       id_servico     INTEGER NOT NULL,
-      id_funcionario INTEGER NOT NULL,
+      id_funcionario INTEGER,
       preco_unitario REAL NOT NULL,
       data           TEXT NOT NULL,
       local          TEXT NOT NULL,
@@ -65,4 +65,27 @@ db.serialize(function () {
   `);
 });
 
+// Migração preserva pedidos antigos e permite solicitações ainda sem profissional.
+db.ready = new Promise((resolve, reject) => {
+  db.all('PRAGMA table_info(os)', [], (error, columns) => {
+    if (error) return reject(error);
+    if (!columns.find(c => c.name === 'id_funcionario' && c.notnull)) return resolve();
+    db.exec(`BEGIN IMMEDIATE;
+      CREATE TABLE os_pending (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_cliente INTEGER NOT NULL REFERENCES cliente(id) ON DELETE CASCADE,
+        id_servico INTEGER NOT NULL REFERENCES servico(id),
+        id_funcionario INTEGER REFERENCES funcionario(id),
+        preco_unitario REAL NOT NULL, data TEXT NOT NULL,
+        local TEXT NOT NULL, descricao TEXT NOT NULL
+      );
+      INSERT INTO os_pending SELECT * FROM os;
+      DROP TABLE os;
+      ALTER TABLE os_pending RENAME TO os;
+      COMMIT;`, error => {
+        if (error) return db.exec('ROLLBACK', () => reject(error));
+        resolve();
+      });
+  });
+});
 module.exports = db;

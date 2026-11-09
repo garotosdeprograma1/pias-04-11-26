@@ -627,9 +627,7 @@
        $$('.nav__item[data-view]').forEach((btn) => btn.addEventListener('click', () => Navigation.go(btn.dataset.view)));
        $$('[data-action="logout"]').forEach((btn) => btn.addEventListener('click', (event) => {
          event.preventDefault();
-         try { localStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
-         try { sessionStorage.removeItem('dafix_session'); } catch { /* armazenamento indisponível */ }
-         window.location.replace('../index.html');
+         window.DafixAccount.logout().catch(error => alert(error.message));
        }));
        $('#menu-btn').addEventListener('click', Navigation.openSidebar);
        window.addEventListener('resize', () => { if (window.innerWidth > 1024) Navigation.closeSidebar(); });
@@ -1018,7 +1016,7 @@
      render() {
        const D = window.DafixData;
        $('#orders-empty').hidden = true;
-       $('#orders-list').innerHTML = D.table(['Pedido','Serviço','Funcionário','Data','Local','Valor registrado'], state.orders.map(o=>['#'+o.id,o.servico,o.funcionario,D.date(o.data),o.local,D.money(o.preco_unitario)]), 'Nenhum pedido cadastrado para esta conta.');
+       $('#orders-list').innerHTML = D.table(['Pedido','Serviço','Funcionário','Data','Local','Valor registrado'], state.orders.map(o=>['#'+o.id,o.servico,o.funcionario || 'Aguardando aceite',D.date(o.data),o.local,D.money(o.preco_unitario)]), 'Nenhum pedido cadastrado para esta conta.');
      },
      expand() { Navigation.go('orders'); },
      init() { this.render(); }
@@ -1195,6 +1193,7 @@
 
      Language.init();
      Language.rerenderAll();
+     window.addEventListener('focus',loadRegisteredData);
      loadRegisteredData();
    });
 

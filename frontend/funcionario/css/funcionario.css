@@ -919,3 +919,5 @@ ul, ol { list-style: none; }
 
 /* Recorte circular remove os cantos pretos do arquivo original da marca. */
 img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}
+
+.available-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.available-order{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-bottom:1px solid var(--border)}.available-order>div{min-width:0;overflow-wrap:anywhere}.available-order p{margin:6px 0;color:var(--text-muted)}.available-order .btn{flex-shrink:0}.available-order:last-child{border-bottom:0}@media(max-width:600px){.available-order{align-items:flex-start;flex-direction:column}.available-order .btn{width:100%}}
