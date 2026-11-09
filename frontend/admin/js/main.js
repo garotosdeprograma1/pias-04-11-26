@@ -10,5 +10,5 @@
   document.getElementById('closeMenu').addEventListener('click',()=>{close();button.focus()});overlay.addEventListener('click',close);
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&menu.classList.contains('open')){close();button.focus()}});
   window.addEventListener('resize',()=>{if(innerWidth>900)close()});
-  const session=window.DafixAccount.readSession(),link=document.getElementById('account-link');if(session){link.href=session.perfil==='funcionario'?'/funcionario/funcionario-dashboard.html':'/cliente/index.html';link.hidden=false;}
+  const session=window.DafixAccount.readSession(),link=document.getElementById('account-link');if(session){link.href=({admin:'/admin/dashboard.html',funcionario:'/funcionario/funcionario-dashboard.html',cliente:'/cliente/index.html'})[session.perfil];link.hidden=false;}
 })();

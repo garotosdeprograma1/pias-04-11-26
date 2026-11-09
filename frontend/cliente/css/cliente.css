@@ -782,3 +782,6 @@ ul, ol { list-style: none; }
 }
 
 @media (min-width: 1025px) { .topbar .topbar__menu, .sidebar-overlay { display: none; } }
+
+/* Recorte circular remove os cantos pretos do arquivo original da marca. */
+img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}

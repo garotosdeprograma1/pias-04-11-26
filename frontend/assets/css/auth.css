@@ -1601,3 +1601,6 @@ body.show-dev-shortcuts .dev-shortcut {
 .admin-access{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:620px;margin:24px auto 40px;padding:22px 24px;border:1px solid var(--border-light);border-radius:10px;background:var(--surface);color:var(--text-main);width:calc(100% - 32px);box-sizing:border-box}.admin-access>div>span{font-size:10px;letter-spacing:.12em}.admin-access p{margin:6px 0 0;font-size:13px}.admin-entry{color:inherit;text-decoration:none;border-bottom:1px solid currentColor;padding:8px 0;font-size:14px;display:inline-flex;gap:16px;white-space:nowrap}.admin-entry:focus-visible{outline:2px solid currentColor;outline-offset:5px}@media(max-width:480px){.admin-access{align-items:flex-start;flex-direction:column;padding:20px}.admin-entry{white-space:normal}}
 
 .card .admin-access{width:100%;margin:28px 0 0;padding:20px 0 0;border:0;border-top:1px solid var(--border-light);border-radius:0;max-width:none}.card .admin-access p{font-size:12px}.card .admin-entry{font-size:13px;gap:10px}
+
+/* Recorte circular remove os cantos pretos do arquivo original da marca. */
+img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}

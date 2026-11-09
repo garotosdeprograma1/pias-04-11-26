@@ -10,7 +10,7 @@
     const role = document.getElementById('record-role').value;
     if (mode === 'usuarios') {
       headers = ['Nome', 'E-mail', 'Telefone', 'Perfil', 'Especialidade'];
-      rows = users.filter(u => !role || u.perfil === role).map(u => [u.nome,u.email,u.telefone,u.perfil === 'cliente' ? 'Cliente' : 'Funcionário',u.especialidade || 'Não informado']);
+      rows = users.filter(u => !role || u.perfil === role).map(u => [u.nome,u.email,u.telefone,({cliente:'Cliente',funcionario:'Funcionário',admin:'Administrador'})[u.perfil],u.especialidade || 'Não informado']);
     } else if (mode === 'servicos') {
       headers = ['Serviço', 'Descrição', 'Preço base'];
       rows = services.map(service => [service.nome_servico, service.descricao || 'Não informado', D.money(service.preco_base)]);
@@ -29,10 +29,10 @@
     document.getElementById('record-search').disabled=true;document.getElementById('record-role').disabled=true;document.getElementById('record-export').disabled=true;
     target.innerHTML = D.empty('Carregando registros…');
     try {
-      const [clients,staff,catalog,registered] = await Promise.all([
-        D.list('/api/clientes'),D.list('/api/funcionarios'),D.list('/api/servicos'),D.orders()
+      const [clients,staff,catalog,registered,admins] = await Promise.all([
+        D.list('/api/clientes'),D.list('/api/funcionarios'),D.list('/api/servicos'),D.orders(),D.list('/api/admins')
       ]);
-      users = clients.map(u=>({...u,perfil:'cliente'})).concat(staff.map(u=>({...u,perfil:'funcionario'})));
+      users = clients.map(u=>({...u,perfil:'cliente'})).concat(staff.map(u=>({...u,perfil:'funcionario'})),admins.map(u=>({...u,perfil:'admin'})));
       services = catalog; orders = registered;
       document.getElementById('record-summary').innerHTML = [
         ['Clientes cadastrados',clients.length],['Funcionários cadastrados',staff.length],
@@ -52,5 +52,6 @@
   document.getElementById('record-role').addEventListener('change',render);
   document.getElementById('record-reload').addEventListener('click',load);
   document.getElementById('record-export').addEventListener('click',()=>D.csv('dafix-'+mode+'.csv',headers,rows));
+  document.addEventListener('dafix:person-created',load);
   load();
 })();

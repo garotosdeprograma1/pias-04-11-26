@@ -125,14 +125,14 @@ var servidor = http.createServer(function (req, res) {
       }
 
       if (!credenciais ||
-          (credenciais.perfil !== 'cliente' && credenciais.perfil !== 'funcionario') ||
+          !['cliente','funcionario','admin'].includes(credenciais.perfil) ||
           typeof credenciais.email !== 'string' || !credenciais.email.trim() ||
           typeof credenciais.senha !== 'string' || !credenciais.senha) {
         return responderJson(res, 400, { erro: 'Perfil, e-mail e senha sao obrigatorios.' });
       }
 
-      // A tabela vem apenas dos dois perfis permitidos; valores usam parametros.
-      var tabelaLogin = credenciais.perfil === 'cliente' ? 'cliente' : 'funcionario';
+      // A tabela vem apenas dos perfis permitidos; valores usam parâmetros.
+      var tabelaLogin = credenciais.perfil;
       var camposLogin = 'id, nome, email, telefone' +
                         (tabelaLogin === 'funcionario' ? ', especialidade' : '');
       var sqlLogin = 'SELECT ' + camposLogin + ' FROM ' + tabelaLogin +
@@ -152,6 +152,15 @@ var servidor = http.createServer(function (req, res) {
 
     return;
   }
+
+  // Contas administrativas usam o mesmo cadastro validado dos demais perfis.
+  if (req.method === 'GET' && caminho === '/api/admins') {
+    db.all('SELECT id, nome, email, telefone FROM admin ORDER BY id DESC', [], function(erro, linhas) {
+      responderJson(res, erro ? 500 : 200, erro ? {erro:'Não foi possível carregar administradores.'} : linhas);
+    });
+    return;
+  }
+  if (req.method === 'POST' && caminho === '/api/admins') { cadastrarConta(req,res,'admin'); return; }
 
   // =================================================================
   // API: cliente

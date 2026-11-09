@@ -526,3 +526,6 @@ ul,ol{list-style:none}
 [data-theme="dark"] #theme-toggle .icon-sun{display:block;}
 [data-theme="dark"] #theme-toggle .icon-moon{display:none;}
 .home-board__services svg{width:14px;height:14px;flex-shrink:0;}
+
+/* Recorte circular remove os cantos pretos do arquivo original da marca. */
+img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}

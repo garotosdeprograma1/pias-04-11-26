@@ -4,6 +4,7 @@
 
   const SESSION_KEY = 'dafix_session';
   const routes = {
+    admin: '/admin/dashboard.html',
     cliente: '/cliente/index.html',
     funcionario: '/funcionario/funcionario-dashboard.html',
   };

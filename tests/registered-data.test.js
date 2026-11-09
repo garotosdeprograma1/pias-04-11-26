@@ -86,3 +86,22 @@ test('an empty database stays empty and registered records are returned without 
   assert.equal((await request('/api/os?perfil=cliente&id='+first.data.id)).data.length,2);
   assert.equal((await request('/api/servicos',{nome_servico:'Inválido',preco_base:-1})).status,400);
 });
+
+test('administrators persist, reject duplicates and authenticate without exposing passwords', async () => {
+  const account = {nome:'Admin de teste',email:'admin@example.test',cpf:'52998224725',telefone:'11999998888',senha:'SenhaTeste123'};
+  assert.deepEqual((await request('/api/admins')).data, []);
+  assert.equal((await request('/api/admins',{...account,cpf:'00000000000'})).status,400);
+  const created = await request('/api/admins',account);
+  assert.equal(created.status,201);
+  assert.equal((await request('/api/admins',account)).status,409);
+  const list = (await request('/api/admins')).data;
+  assert.equal(list.length,1);
+  assert.equal(list[0].nome,account.nome);
+  assert.equal('senha' in list[0],false);
+  const login = await request('/api/login',{perfil:'admin',email:account.email,senha:account.senha});
+  assert.equal(login.status,200);
+  assert.equal(login.data.perfil,'admin');
+  assert.equal(login.data.usuario.id,created.data.id);
+  assert.equal('senha' in login.data.usuario,false);
+  assert.equal((await request('/api/login',{perfil:'admin',email:account.email,senha:'incorreta'})).status,401);
+});

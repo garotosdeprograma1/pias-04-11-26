@@ -9,6 +9,12 @@ db.serialize(function () {
   // Faz o SQLite validar as chaves estrangeiras.
   db.run('PRAGMA foreign_keys = ON');
 
+  db.run(`CREATE TABLE IF NOT EXISTS admin (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL, cpf TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE, telefone TEXT NOT NULL, senha TEXT NOT NULL
+  )`);
+
   db.run(`
     CREATE TABLE IF NOT EXISTS cliente (
       id       INTEGER PRIMARY KEY AUTOINCREMENT,

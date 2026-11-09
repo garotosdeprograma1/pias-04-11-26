@@ -780,3 +780,6 @@ ul,ol{list-style:none}
 .inst-hero .stat-label, .inst-hero .data-empty { color: #dce7de; }
 /* Match the search field to the active theme, including typed text. */
 .search-bar { background: var(--surface); }
+
+/* Recorte circular remove os cantos pretos do arquivo original da marca. */
+img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}
