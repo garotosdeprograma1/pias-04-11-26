@@ -4,7 +4,11 @@ Plataforma de serviços residenciais com áreas pública, do cliente, do funcion
 
 ## Executar localmente
 
-Requisitos: Node.js 24 e npm. Na pasta do projeto:
+Requisitos: Node.js 24 e npm.
+
+**No Windows:** extraia o projeto e dê dois cliques em `iniciar.bat`, na raiz. Ele instala as dependências quando necessário, inicia o servidor e abre o navegador. Mantenha a janela aberta; pressione Ctrl+C para encerrar. A primeira instalação precisa de internet.
+
+Para iniciar pelo terminal, na pasta do projeto:
 
 ```bash
 npm ci --prefix backend
