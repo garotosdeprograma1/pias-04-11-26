@@ -78,8 +78,15 @@ O painel e as APIs administrativas exigem uma sessão de administrador validada 
 Para configurar o primeiro acesso no seu servidor:
 
 1. Cadastre sua conta de cliente com seus dados reais pela página de cadastro.
-2. No terminal, na raiz do projeto, execute `node backend/criar-admin.js seu-email@exemplo.com`, usando o e-mail da conta que acabou de cadastrar.
-3. Entre na administração com esse e-mail e a mesma senha.
+2. Abra o terminal na raiz do projeto e execute:
+
+   ```bash
+   node backend/criar-admin.js seu-email@exemplo.com
+   ```
+
+   Substitua `seu-email@exemplo.com` pelo e-mail da conta de cliente que acabou de cadastrar.
+
+3. Com o servidor em execução, abra **http://localhost:5000/admin-login.html** e entre com esse e-mail e a mesma senha.
 
 Esse comando só pode ser executado por quem tem acesso aos arquivos e ao terminal do servidor. Não existe senha padrão. Novos administradores podem ser cadastrados por um administrador conectado em **Pessoas**.
 
