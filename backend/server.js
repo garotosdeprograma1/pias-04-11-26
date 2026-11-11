@@ -4,8 +4,8 @@ var path = require('path');
 var db = require('./db');
 var auth = require('./auth');
 
-var PORTA = 5000;
-var HOST = 'localhost';
+var PORTA = Number(process.env.PORT) || 5000;
+var HOST = process.env.PORT ? '0.0.0.0' : 'localhost';
 const loginAttempts=new Map();
 
 // ---------------------------------------------------------------
