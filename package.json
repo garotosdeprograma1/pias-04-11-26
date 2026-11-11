@@ -1,0 +1,10 @@
+{
+  "name": "dafix",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": "24" },
+  "scripts": {
+    "build": "npm ci --prefix backend",
+    "start": "node backend/server.js"
+  }
+}
