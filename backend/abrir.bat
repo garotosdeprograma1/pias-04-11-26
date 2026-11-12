@@ -8,46 +8,35 @@ echo ==================================================
 echo.
 
 REM --------------------------------------------------
-REM  1) Instala o sqlite3
+REM  1) Instala dependencias do projeto e o sqlite3
 REM --------------------------------------------------
-echo [1/5] Instalando o sqlite3...
-call npm install sqlite3
+echo [1/3] Instalando dependencias e o sqlite3...
+if exist package.json (
+    call npm install
+    if errorlevel 1 goto erro
+)
+call npm install sqlite3 --foreground-scripts
 if errorlevel 1 goto erro
 echo.
 
 REM --------------------------------------------------
-REM  2) Aprova os scripts do sqlite3
+REM  2) Inicializa o banco (db.js)
 REM --------------------------------------------------
-echo [2/5] Aprovando scripts do sqlite3...
-call npm install-scripts approve sqlite3
-if errorlevel 1 goto erro
-echo.
-
-REM --------------------------------------------------
-REM  3) Reconstroi o binario nativo
-REM --------------------------------------------------
-echo [3/5] Reconstruindo o sqlite3 (baixando/compilando binario)...
-call npm rebuild sqlite3 --foreground-scripts
-if errorlevel 1 goto erro
-echo.
-
-REM --------------------------------------------------
-REM  4) Inicializa o banco (db.js) - deve terminar
-REM --------------------------------------------------
-echo [4/5] Inicializando banco de dados (db.js)...
+echo [2/3] Inicializando banco de dados (db.js)...
 node db.js
 if errorlevel 1 goto erro
 echo.
 
 REM --------------------------------------------------
-REM  5) Sobe o servidor (server.js) - fica em execucao
+REM  3) Sobe o servidor (server.js)
 REM --------------------------------------------------
-echo [5/5] Iniciando servidor (server.js)...
+echo [3/3] Iniciando servidor (server.js)...
 echo --------------------------------------------------
 echo  Pressione CTRL+C para encerrar o servidor.
 echo --------------------------------------------------
 echo.
 node server.js
+if errorlevel 1 goto erro
 
 goto fim
 
@@ -55,7 +44,7 @@ goto fim
 echo.
 echo ==================================================
 echo  [ERRO] Falha na etapa anterior.
-echo  Verifique as mensagens acima.
+echo  Verifique as mensagens de erro acima.
 echo ==================================================
 pause
 exit /b 1
