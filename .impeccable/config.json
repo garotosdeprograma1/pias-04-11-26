@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          "frontend/admin-login.html"
+        ],
+        "createdAt": "2026-11-12T14:35:21.960Z",
+        "reason": "agent decided: #f3f2ed is the project's pre-existing brand background (frontend/cliente/css/cliente.css --bg), kept so the admin login matches the client and employee areas"
+      }
+    ]
+  }
+}
