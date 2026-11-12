@@ -28,6 +28,12 @@ test('pending-order migration preserves existing assignments and allows unassign
     await new Promise((resolve,reject)=>db.run("INSERT INTO os(id_cliente,id_servico,id_funcionario,preco_unitario,data,local,descricao) VALUES(1,3,NULL,95,'2099-11-10','Endereço','Descrição')",error=>error?reject(error):resolve()));
     assert.equal((await all('SELECT * FROM os WHERE id>7'))[0].id_funcionario,null);
     assert.deepEqual(await all('PRAGMA foreign_key_check'),[]);
+    assert.equal((await all('SELECT criado_em,ativo FROM cliente'))[0].criado_em,null);
+    assert.equal((await all('SELECT criado_em,ativo FROM cliente'))[0].ativo,1);
+    await new Promise((resolve,reject)=>db.run("INSERT INTO auditoria(acao,modulo,descricao,resultado) VALUES('teste','teste','teste','sucesso')",e=>e?reject(e):resolve()));
+    for(const sql of ["UPDATE auditoria SET descricao='alterado'","DELETE FROM auditoria"]){
+      await assert.rejects(new Promise((resolve,reject)=>db.run(sql,e=>e?reject(e):resolve())),/imutável/);
+    }
   } finally {
     await new Promise(resolve=>db.close(resolve));fs.rmSync(directory,{recursive:true,force:true});
   }

@@ -20,8 +20,8 @@ before(async () => {
   fs.symlinkSync(path.join(backend, 'node_modules'), path.join(directory, 'node_modules'));
   const source = fs.readFileSync(path.join(backend, 'server.js'), 'utf8')
     .replaceAll("'../frontend'",JSON.stringify(path.resolve(__dirname,'../frontend')))
-    .replace('var PORTA = 5000;', 'var PORTA = 0;')
-    .replace("var HOST = 'localhost';", "var HOST = '127.0.0.1';")
+    .replace("var PORTA = Number(process.env.PORT) || 5000;", 'var PORTA = 0;')
+    .replace("var HOST = process.env.PORT ? '0.0.0.0' : 'localhost';", "var HOST = '127.0.0.1';")
     .replace("console.log('  Pronto! Gravando em banco.db (SQLite).');", "console.log('TEST_PORT=' + servidor.address().port);");
   fs.writeFileSync(path.join(directory, 'server.js'), source);
   child = spawn(process.execPath, [path.join(directory, 'server.js')], { stdio: ['ignore', 'pipe', 'pipe'] });
@@ -85,6 +85,39 @@ test('server authorization, private orders and atomic professional acceptance', 
   const winner=outcomes.findIndex(r=>r.status===200),people=[staff,staff2];
   assert.equal((await request('/api/os',undefined,people[1-winner].cookie)).data.length,0);
   assert.equal((await request('/api/os',undefined,client.cookie)).data[0].id_funcionario,people[winner].data.usuario.id);
+  // Administração: CRUD real, revogação de sessão/permissão, auditoria e relatórios.
+  async function mutate(url,method,body,cookie=admin.cookie){const r=await fetch(origin+url,{method,headers:{Cookie:cookie,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,data:await r.json()};}
+  for(const path of ['/api/admin/logs','/api/admin/estatisticas','/api/clientes/'+other.data.id]) {
+    assert.equal((await request(path,undefined,staff.cookie)).status,403);
+    assert.equal((await request(path)).status,401);
+  }
+  const employeePath='/api/funcionarios/'+staff.data.usuario.id;
+  assert.equal((await mutate(employeePath,'PATCH',{nome:'Nome alterado',admissao:'2026-11-01',permissoes:[]})).status,200);
+  assert.equal((await request('/api/os',undefined,staff.cookie)).status,403);
+  assert.equal((await mutate(employeePath,'PATCH',{permissoes:['admin']})).status,400);
+  assert.equal((await mutate(employeePath,'PATCH',{senha:'forbidden'})).status,400);
+  assert.equal((await mutate(employeePath,'PATCH',{ativo:0})).status,200);
+  assert.equal((await request('/api/session',undefined,staff.cookie)).status,401);
+  assert.equal((await login('funcionario','profissional@example.test')).status,401);
+  assert.equal((await mutate(employeePath,'PATCH',{ativo:1,permissoes:['pedidos.ler','pedidos.aceitar']})).status,200);
+  const clientPath='/api/clientes/'+client.data.usuario.id;
+  assert.equal((await mutate(clientPath,'DELETE')).status,409); // Preserva ordens existentes.
+  const otherPath='/api/clientes/'+other.data.id;
+  assert.equal((await mutate(otherPath,'PATCH',{nome:'Cliente atualizado',email:'editado@example.test',telefone:'11988887777'})).status,200);
+  assert.equal((await request(otherPath,undefined,admin.cookie)).data.pessoa.nome,'Cliente atualizado');
+  assert.equal((await mutate(otherPath,'PATCH',{ativo:0},staff2.cookie)).status,403);
+  assert.equal((await mutate(otherPath,'DELETE')).status,200);
+  assert.equal((await request(otherPath,undefined,admin.cookie)).status,404);
+  const extra=await request('/api/funcionarios',{...account,email:'extra@example.test',cpf:'12345678909',especialidade:'Reparos'},admin.cookie);assert.equal(extra.status,201);
+  assert.equal((await mutate('/api/funcionarios/'+extra.data.id,'DELETE')).status,200);
+  const metrics=(await request('/api/admin/estatisticas',undefined,admin.cookie)).data;
+  assert.equal(metrics.clientes,1);assert.equal(metrics.funcionarios,2);assert.equal(metrics.total,4);assert.equal(metrics.sem_data,0);
+  const logData=(await request('/api/admin/logs?evento=permissoes.alteradas',undefined,admin.cookie)).data;
+  assert(logData.total>=2);assert(logData.registros.every(r=>r.acao==='permissoes.alteradas'));
+  assert(!JSON.stringify(logData).includes(account.senha));assert(!JSON.stringify(logData).includes(admin.cookie));
+  const fullLogs=(await request('/api/admin/logs',undefined,admin.cookie)).data;assert(fullLogs.total>25);assert.equal(fullLogs.registros.length,25);
+  assert.equal((await request('/api/admin/logs?inicio=2026-12-01&fim=2026-01-01',undefined,admin.cookie)).status,400);
+  for(const page of ['dashboard','usuarios','servicos','logs','atividades','relatorios','permissoes','configuracoes'])assert.equal((await request('/admin/'+page+'.html',undefined,admin.cookie)).status,200);
   assert.equal((await request('/api/logout',{},admin.cookie)).status,200);
   assert.equal((await request('/api/admins',undefined,admin.cookie)).status,401);
   assert.equal((await request('/admin/dashboard.html',undefined,admin.cookie)).status,302);

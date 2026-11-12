@@ -43,6 +43,10 @@
             <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
             <span class="nav__text" data-i18n="nav.services">Serviços</span>
           </button>
+          <button class="nav__item" data-view="payments" data-testid="nav-payments">
+            <span class="nav__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 9h20M6 15h4"/></svg></span>
+            <span class="nav__text" data-i18n="nav.payments">Pagamentos</span>
+          </button>
           <a href="/admin-login.html" class="nav__item"><span class="nav__text">Administração</span></a>
           <a href="../index.html" class="nav__item nav__item--logout" data-action="logout" data-testid="sidebar-logout">
             <span class="nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M14 8l4 4-4 4M8 12h10"/></svg></span>
@@ -297,6 +301,7 @@
             <div>
               <p data-i18n="orders.subtitle">Acompanhe e gerencie todos os seus pedidos em um só lugar.</p>
             </div>
+            <button type="button" class="btn btn--ghost" id="client-orders-refresh">Atualizar pedidos</button>
           </div>
 
           <div class="orders-list" id="orders-list" data-testid="orders-list"></div>
@@ -305,6 +310,13 @@
             <h3 data-i18n="orders.emptyTitle">Nada por aqui</h3>
             <p data-i18n="orders.empty">Nenhum pedido encontrado para este filtro.</p>
           </div>
+        </section>
+
+        <section class="view" id="view-payments">
+          <div class="page-header payment-heading"><div><h2>Formas de pagamento</h2><p>Cadastre suas preferências para testar o pagamento dos pedidos.</p></div><button type="button" class="btn btn--primary" id="payment-method-open">Adicionar forma de pagamento</button></div>
+          <p class="demo-notice">Ambiente demonstrativo: nenhum valor será cobrado. Use somente dados de teste nos cartões. Não há transferência Pix nem processamento bancário.</p>
+          <p id="payment-method-message" role="status" aria-live="polite"></p>
+          <div id="payment-method-list" class="payment-method-list"></div>
         </section>
 
         <!-- ===================== VIEW: SERVIÇOS ===================== -->
@@ -351,6 +363,34 @@
       </footer>
     </div>
   </div>
+
+  <dialog id="payment-method-dialog" class="request-dialog flow-dialog" aria-labelledby="payment-method-title">
+    <div class="data-tools"><h2 id="payment-method-title">Adicionar forma de pagamento</h2><button type="button" data-flow-close="payment-method-dialog">Fechar</button></div>
+    <form id="payment-method-form" class="record-form" autocomplete="off">
+      <p class="demo-notice">Cadastro demonstrativo. Nenhuma cobrança será feita. O número e o código de segurança são descartados e nunca enviados ao servidor.</p>
+      <label>Forma de pagamento<select name="tipo" required><option value="credito">Cartão de crédito</option><option value="debito">Cartão de débito</option><option value="pix">Pix</option><option value="dinheiro">Dinheiro</option></select></label>
+      <label>Apelido (opcional)<input name="apelido" maxlength="60" placeholder="Ex.: cartão de teste"></label>
+      <fieldset id="payment-card-fields"><legend>Cartão de teste</legend>
+        <label>Nome no cartão<input name="titular" maxlength="100" minlength="3" autocomplete="off" required></label>
+        <label>Número do cartão de teste<input name="numero" inputmode="numeric" maxlength="23" autocomplete="off" placeholder="4242 4242 4242 4242" required></label>
+        <small>Exemplo para testar: 4242 4242 4242 4242.</small>
+        <div class="payment-field-grid"><label>Validade<input name="validade" type="month" required></label><label>Código de segurança de teste<input name="cvv" type="password" inputmode="numeric" pattern="[0-9]{3,4}" maxlength="4" autocomplete="off" placeholder="123" required></label></div>
+        <label>Bandeira<select name="bandeira"><option value="visa">Visa</option><option value="mastercard">Mastercard</option><option value="elo">Elo</option><option value="amex">American Express</option><option value="outro">Outra</option></select></label>
+      </fieldset>
+      <p id="payment-method-help" hidden>Esta opção será usada apenas para simulação. Para pagar por Pix, o pagador não precisa cadastrar uma chave.</p>
+      <p id="payment-form-message" role="status" aria-live="polite"></p>
+      <button type="submit" class="btn btn--primary">Salvar forma de pagamento</button>
+    </form>
+  </dialog>
+  <dialog id="order-payment-dialog" class="request-dialog flow-dialog" aria-labelledby="order-payment-title">
+    <div class="data-tools"><h2 id="order-payment-title">Simular pagamento</h2><button type="button" data-flow-close="order-payment-dialog">Fechar</button></div>
+    <form id="order-payment-form" class="record-form"><p id="order-payment-summary"></p><p class="demo-notice">Simulação — sem cobrança. Nenhum dinheiro será movimentado.</p><label>Forma de pagamento<select name="metodo_id" id="order-payment-method" required></select></label><p id="order-payment-help"></p><p id="order-payment-message" role="status" aria-live="polite"></p><div class="payment-actions"><button type="button" id="order-payment-add" class="btn btn--ghost">Cadastrar outra forma</button><button type="submit" class="btn btn--primary">Confirmar pagamento simulado</button></div></form>
+  </dialog>
+  <dialog id="rating-dialog" class="request-dialog flow-dialog" aria-labelledby="rating-dialog-title">
+    <div class="data-tools"><h2 id="rating-dialog-title">Avaliar e confirmar conclusão</h2><button type="button" data-flow-close="rating-dialog">Fechar</button></div>
+    <form id="rating-form" class="record-form"><p id="rating-service"></p><p>O profissional marcou este serviço como feito. Ao enviar sua avaliação, você também confirma a conclusão do atendimento.</p><fieldset class="rating-options"><legend>Como foi o serviço?</legend><label><input type="radio" name="nota" value="1" required>1 ★</label><label><input type="radio" name="nota" value="2">2 ★</label><label><input type="radio" name="nota" value="3">3 ★</label><label><input type="radio" name="nota" value="4">4 ★</label><label><input type="radio" name="nota" value="5">5 ★</label></fieldset><label>Comentário (opcional)<textarea name="comentario" maxlength="1000" rows="4" placeholder="Conte como foi o atendimento."></textarea></label><p id="rating-message" role="status" aria-live="polite"></p><button type="submit" class="btn btn--primary">Enviar avaliação e concluir</button></form>
+  </dialog>
+  <dialog id="payment-remove-dialog" class="request-dialog flow-dialog" aria-labelledby="payment-remove-title"><h2 id="payment-remove-title">Remover forma de pagamento?</h2><p id="payment-remove-summary"></p><p>Os registros de pagamentos simulados anteriores serão preservados.</p><p id="payment-remove-message" role="status"></p><div class="payment-actions"><button type="button" class="btn btn--ghost" data-flow-close="payment-remove-dialog">Cancelar</button><button type="button" class="btn btn--primary" id="payment-remove-confirm">Confirmar remoção</button></div></dialog>
 
   <!-- ===================== MODAL: AVALIAÇÃO ===================== -->
 

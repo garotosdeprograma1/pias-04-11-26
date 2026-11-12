@@ -93,3 +93,116 @@ Esse comando só pode ser executado por quem tem acesso aos arquivos e ao termin
 As sessões usam cookies HttpOnly, expiram em 12 horas e são invalidadas ao sair. Reiniciar o servidor exige novo login. As senhas novas são armazenadas com scrypt; senhas antigas são convertidas no próximo login válido. Para publicação fora do computador local, sirva o site por HTTPS.
 
 A atualização do banco preserva os pedidos existentes e permite pedidos sem profissional até o aceite. Faça uma cópia de segurança de `backend/banco.db` antes de atualizar uma instalação com dados reais.
+
+## Gestão administrativa ampliada
+
+O painel existente usa as mesmas tecnologias e URLs. A navegação inclui Dashboard,
+Funcionários, Clientes, Pessoas, Catálogo, Logs do Sistema, Atividades, Relatórios,
+Permissões e Configurações. Funcionários e clientes continuam em suas áreas próprias.
+
+- Pessoas: cadastro, busca, filtros por perfil/status/especialidade/data, ordenação,
+  paginação, CSV, perfil individual em diálogo com pedidos e atividades, edição,
+  ativação/desativação e exclusão confirmada. CPF permanece como identificador não
+  editável. Contas com pedidos vinculados não podem ser excluídas; devem ser desativadas.
+- Funcionários: especialidade existente funciona como cargo; admissão é opcional.
+  Permissões disponíveis são consultar pedidos/agenda, aceitar pedidos, concluir
+  serviços e cadastrar serviços no catálogo. Nenhuma dessas permissões abre
+  APIs administrativas. Mudanças e desativações afetam a próxima requisição de sessões
+  já abertas. Administradores mantêm acesso integral; não há hierarquia entre admins.
+- Dashboard e relatórios: totais reais, ativos/inativos, evolução mensal, distribuição
+  por especialidade/status, operações e atividades recentes. Relatórios filtram datas
+  dos novos cadastros e operações; totais/status/cargos representam o estado atual.
+  Pedidos mantêm busca, paginação, valor registrado e CSV, sem representar pagamentos.
+- Auditoria: gravação no backend de respostas a operações da API (inclusive falhas de
+  login, login e logout) e acessos às páginas administrativas. Guarda ator, ação,
+  módulo, resultado, horário UTC, IP da conexão e identificação da rota/registro.
+  Não grava corpos de requisição, senhas, tokens ou cookies. Há filtros, detalhes,
+  paginação de 25 registros e CSV da página consultada. Atividades oferecem leitura
+  simplificada dos mesmos registros, sem gravar cópias do evento.
+- Configurações: dados da conta, informações de sessão e preferência funcional de
+  tema já existente, salva neste navegador.
+
+### Banco e compatibilidade
+
+`db.ready` aplica a migração administrativa em transação, sem semear dados:
+
+- `cliente`, `funcionario`, `admin`: `ativo` (padrão 1), `criado_em`, `atualizado_em`.
+- `funcionario`: `admissao` e `permissoes` (JSON com operações permitidas).
+- Nova tabela `auditoria`, índice de data e triggers que impedem UPDATE/DELETE.
+- Triggers de cadastro preenchem a data de novos registros. Datas de registros antigos
+  ficam nulas: não é possível reconstruir a evolução histórica anterior à migração.
+
+O banco versionado não foi alterado durante o desenvolvimento. Faça backup de
+`backend/banco.db` antes de iniciar esta versão numa instalação com dados reais.
+A migração será aplicada na inicialização; não é necessário apagar ou recriar o banco.
+Logs começam a existir após esta atualização; não há recuperação de eventos passados.
+A proteção de imutabilidade aplica-se à aplicação e às operações SQL normais, não ao
+proprietário do arquivo SQLite. Erro ao persistir auditoria retorna HTTP 503; como
+uma operação de negócio pode já ter sido gravada, consulte seu estado antes de repetir.
+Sessões continuam em memória e são encerradas quando o servidor reinicia.
+
+### Validação desta atualização
+
+`node --test tests/*.test.js` cobre migração com dados antigos, integridade referencial,
+imutabilidade dos logs, CRUD de pessoas, recusa de exclusão com pedidos, revogação de
+sessões e permissões, isolamento entre perfis, relatórios e filtros/paginação de logs,
+além dos testes anteriores de contas e pedidos. Os bancos dos testes são temporários.
+As oito telas também foram verificadas com Chromium/Playwright em larguras de 1440 e
+390 pixels, incluindo menu móvel e operações dos formulários, sem usar o banco real.
+
+Limites atuais: perfil individual abre em diálogo; histórico de atividades do perfil
+mostra até 100 registros recentes. A listagem de pessoas pagina no navegador; volumes
+muito grandes poderão exigir paginação no banco. Não há configuração de credenciais,
+recuperação de senha, processamento de pagamentos ou verificação de conflitos de agenda.
+
+
+## Serviços, conclusão e pagamentos demonstrativos
+
+Em **Funcionário → Gestão de Serviços**, **Cadastrar serviço** publica nome, descrição
+opcional e preço base no catálogo existente. O backend registra o profissional autor;
+o administrador continua gerenciando o catálogo. A permissão `servicos.cadastrar`
+pode ser desativada em Administração → Permissões.
+
+O fluxo de atendimento é:
+
+1. O cliente solicita um serviço do catálogo, informando data e endereço.
+2. Um funcionário aceita o pedido. Apenas o responsável, com `pedidos.concluir`, pode
+   usar **Concluir serviço** e confirmar que o atendimento foi realizado.
+3. O pedido fica aguardando avaliação. Em **Cliente → Pedidos**, **Atualizar pedidos**
+   busca a situação atual; **Avaliar e confirmar conclusão** envia uma nota de 1 a 5
+   e comentário opcional, confirmando também a conclusão pelo cliente.
+4. A avaliação aparece no pedido e no painel do funcionário. Cada pedido permite uma
+   conclusão do funcionário e uma avaliação do cliente; envios concorrentes/repetidos
+   são bloqueados no banco. A simulação de pagamento é independente da avaliação.
+
+Em **Cliente → Pagamentos**, podem ser cadastradas preferências de crédito, débito,
+Pix e dinheiro. Cartões são de demonstração: o formulário valida número e CVV
+localmente e limpa ambos antes de enviar a requisição ou ao fechar. O servidor aceita
+somente tipo, apelido e, para cartões, titular, bandeira, últimos quatro dígitos e
+validade; rejeita campos adicionais, número completo, CVV e tokens. Não há gateway,
+transação bancária, chave de Pix do pagador ou QR Code transferível. Use dados de teste.
+
+Em um pedido, **Simular pagamento** usa uma preferência da própria conta e registra
+**Simulado — sem cobrança**. O valor vem do pedido no banco. Há uma simulação por
+pedido. Remover uma preferência a desativa, preservando o histórico de pedidos que
+já a utilizaram. O funcionário vê somente a situação/tipo de simulação, sem os dados
+do cartão. Os eventos de cadastro, conclusão, avaliação e simulação entram na auditoria.
+
+A migração `servicos_pagamentos_v1` é transacional e preserva os dados existentes:
+
+- Nova tabela `metodo_pagamento` para metadados demonstrativos, com vínculo ao cliente.
+- Nova tabela `schema_migracoes` controla a execução única da atualização.
+- `servico.criado_por_funcionario` identifica quem cadastrou o serviço.
+- `os`: `concluido_funcionario_em`, `confirmado_cliente_em`, `avaliacao_nota`,
+  `avaliacao_comentario`, `pagamento_metodo_id` e `pagamento_simulado_em`.
+- Funcionários novos recebem os quatro acessos. Na atualização de contas antigas,
+  quem podia aceitar recebe o acesso de concluir; quem tinha algum acesso recebe
+  o cadastro de serviços. Contas sem permissões permanecem sem acesso. Reiniciar
+  o servidor não restaura permissões revogadas posteriormente pelo administrador.
+
+`tests/service-lifecycle.test.js` verifica autorização, isolamento entre contas,
+validação, concorrência, ausência de credenciais nos registros, remoção preservando
+histórico e reaplicação da migração. O fluxo completo também foi verificado em Chromium
+com API e SQLite reais de teste, nas larguras 1440 e 390 px, incluindo cadastro de
+serviços, solicitação, todas as formas de pagamento, simulações de cartão/Pix,
+aceite, conclusão, avaliação, atualização e remoção de formas de pagamento.

@@ -1,4 +1,8 @@
 (() => {
+  document.querySelectorAll('.sidebar nav a').forEach(link=>{
+    const url=new URL(link.href),selected=url.pathname===location.pathname && url.search===location.search;
+    link.classList.toggle('active',selected);if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+  });
   const root=document.documentElement,themeButton=document.querySelector('.theme-btn');
   function applyTheme(theme){root.dataset.theme=theme;themeButton.setAttribute('aria-label',theme==='dark'?'Ativar tema claro':'Ativar tema escuro');themeButton.title=themeButton.getAttribute('aria-label');}
   let saved='light';try{saved=localStorage.getItem('dafix_theme')||'light';}catch{}

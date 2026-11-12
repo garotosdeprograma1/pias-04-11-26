@@ -38,6 +38,8 @@
        'nav.label': 'Menu',
        'nav.account': 'Minha Conta',
        'nav.orders': 'Pedidos',
+       'nav.payments': 'Pagamentos',
+       'title.payments': 'Pagamentos',
        'nav.services': 'Serviços',
        'nav.logout': 'Sair da conta',
        'sidebar.plan': 'Cliente',
@@ -243,6 +245,8 @@
        'nav.label': 'Menu',
        'nav.account': 'My Account',
        'nav.orders': 'Orders',
+       'nav.payments': 'Payments',
+       'title.payments': 'Payments',
        'nav.services': 'Services',
        'nav.logout': 'Sign out',
        'sidebar.plan': 'Client',
@@ -1014,12 +1018,23 @@
       ============================================================ */
    const Orders = {
      render() {
-       const D = window.DafixData;
-       $('#orders-empty').hidden = true;
-       $('#orders-list').innerHTML = D.table(['Pedido','Serviço','Funcionário','Data','Local','Valor registrado'], state.orders.map(o=>['#'+o.id,o.servico,o.funcionario || 'Aguardando aceite',D.date(o.data),o.local,D.money(o.preco_unitario)]), 'Nenhum pedido cadastrado para esta conta.');
+       const D=window.DafixData;
+       $('#orders-empty').hidden=true;
+       $('#orders-list').innerHTML=state.orders.length?state.orders.map(o=>{
+         const status=o.confirmado_cliente_em?'Concluído e avaliado':o.concluido_funcionario_em?'Feito pelo profissional · aguardando sua avaliação':o.id_funcionario?'Em atendimento':'Aguardando aceite';
+         return `<article class="client-order-card"><div class="payment-heading"><div><span class="client-order-number">Pedido #${o.id}</span><h3>${D.escape(o.servico)}</h3></div><span class="chip ${o.confirmado_cliente_em?'chip--green':''}">${status}</span></div><dl class="client-order-details"><div><dt>Profissional</dt><dd>${D.escape(o.funcionario||'Aguardando aceite')}</dd></div><div><dt>Data desejada</dt><dd>${D.date(o.data)}</dd></div><div><dt>Endereço</dt><dd>${D.escape(o.local)}</dd></div><div><dt>Valor registrado</dt><dd>${D.money(o.preco_unitario)}</dd></div></dl><p>${D.escape(o.descricao||'')}</p><p class="order-payment-state">${o.pagamento_simulado_em?'Simulado — sem cobrança · '+D.escape(Payments.typeName(o.pagamento_tipo))+(o.pagamento_ultimos4?' · final '+D.escape(o.pagamento_ultimos4):''):'Pagamento: simulação ainda não registrada'}</p>${o.avaliacao_nota?`<div class="order-review"><strong>Sua avaliação: ${o.avaliacao_nota}/5 ★</strong><p>${D.escape(o.avaliacao_comentario||'Sem comentário.')}</p><small>Conclusão confirmada em ${fmtDate(o.confirmado_cliente_em,true)}</small></div>`:''}<div class="payment-actions">${o.pagamento_simulado_em?'':`<button type="button" class="btn btn--ghost" data-pay-order="${o.id}">Simular pagamento</button>`}${o.confirmado_cliente_em?'':`<button type="button" class="btn btn--primary" data-rate-order="${o.id}" ${o.concluido_funcionario_em?'':'disabled'}>Avaliar e confirmar conclusão</button>`}</div>${!o.concluido_funcionario_em?'<small>A avaliação será liberada quando o profissional marcar o serviço como feito.</small>':''}</article>`;
+       }).join(''):D.empty('Nenhum pedido cadastrado para esta conta.');
      },
      expand() { Navigation.go('orders'); },
-     init() { this.render(); }
+     init() {
+       $('#client-orders-refresh').onclick=async event=>{event.target.disabled=true;try{await loadRegisteredData();}finally{event.target.disabled=false;}};
+       $('#orders-list').addEventListener('click',event=>{
+         const pay=event.target.closest('[data-pay-order]'),rate=event.target.closest('[data-rate-order]');
+         if(pay)Payments.openOrder(Number(pay.dataset.payOrder));
+         if(rate)Rating.open(Number(rate.dataset.rateOrder));
+       });
+       this.render();
+     }
    };
 
    const Services = {
@@ -1119,7 +1134,123 @@
    const Reports = {
      render() { $('#reports-list').replaceChildren(); $('#reports-empty').hidden=false; },
    };
-   const Rating = { openForPending() { Toast.show('Nenhuma avaliação disponível.'); } };
+   const Payments = {
+     methods: [], pending: false, orderId:null, removeId:null,
+     typeName(type) { return ({credito:'Cartão de crédito',debito:'Cartão de débito',pix:'Pix',dinheiro:'Dinheiro'})[type] || 'Forma de pagamento'; },
+     label(method) { return Payments.typeName(method.tipo)+(method.ultimos4?' · final '+method.ultimos4:'')+(method.apelido?' · '+method.apelido:''); },
+     async load() {
+       const target=$('#payment-method-list');
+       target.innerHTML=window.DafixData.empty('Carregando formas de pagamento…');
+       try { Payments.methods=await window.DafixData.list('/api/pagamentos/metodos'); Payments.render(); }
+       catch(error) { Payments.methods=[];target.innerHTML=window.DafixData.empty(error.message)+'<button type="button" class="btn btn--ghost" id="payment-retry">Tentar novamente</button>';$('#payment-retry').onclick=Payments.load; }
+     },
+     render() {
+       const D=window.DafixData;
+       $('#payment-method-list').innerHTML=Payments.methods.length?Payments.methods.map(m=>`<article class="payment-method-card"><div><span class="chip">Demonstrativo</span><h3>${D.escape(Payments.label(m))}</h3>${m.ultimos4?`<p>${D.escape(m.titular)} · ${D.escape(m.bandeira)} · validade ${D.escape(m.validade)}</p>`:'<p>Disponível apenas para simulação, sem movimentar dinheiro.</p>'}</div><button type="button" class="btn btn--ghost" data-remove-method="${m.id}">Remover</button></article>`).join(''):D.empty('Nenhuma forma de pagamento cadastrada. Adicione cartão de teste, Pix ou dinheiro.');
+     },
+     cardFields() {
+       const form=$('#payment-method-form'),card=['credito','debito'].includes(form.elements.tipo.value);
+       $('#payment-card-fields').hidden=!card;$('#payment-card-fields').disabled=!card;
+       $('#payment-method-help').hidden=card;
+       $('#payment-method-help').textContent=form.elements.tipo.value==='pix'?'Pix demonstrativo: você não precisa informar uma chave para pagar. Nenhum código transferível ou QR Code bancário será gerado.':'Dinheiro demonstrativo: registra apenas sua preferência. Não confirma recebimento de dinheiro.';
+       if(!card){form.elements.numero.value='';form.elements.cvv.value='';}
+     },
+     openMethod() {
+       const form=$('#payment-method-form');form.reset();$('#payment-form-message').textContent='';form.elements.validade.min=new Date().toISOString().slice(0,7);Payments.cardFields();$('#payment-method-dialog').showModal();
+     },
+     validCard(number) {
+       if(!/^[\d\s-]+$/.test(number))return false;
+       const digits=number.replace(/\D/g,'');if(!/^\d{13,19}$/.test(digits)||/^(\d)\1+$/.test(digits))return false;
+       let total=0,double=false;for(let i=digits.length-1;i>=0;i--){let n=Number(digits[i]);if(double){n*=2;if(n>9)n-=9;}total+=n;double=!double;}return total%10===0;
+     },
+     async save(event) {
+       event.preventDefault();if(Payments.pending)return;
+       const form=event.target,fields=form.elements,card=['credito','debito'].includes(fields.tipo.value),message=$('#payment-form-message');
+       if(!form.reportValidity())return;
+       if(card&&!Payments.validCard(fields.numero.value)){message.textContent='Informe um número de cartão de teste válido. Exemplo: 4242 4242 4242 4242.';return;}
+       // Whitelist explícita: número completo e CVV nunca entram no corpo da requisição.
+       const body={tipo:fields.tipo.value,apelido:fields.apelido.value.trim()};
+       if(card)Object.assign(body,{titular:fields.titular.value.trim(),bandeira:fields.bandeira.value,ultimos4:fields.numero.value.replace(/\D/g,'').slice(-4),validade:fields.validade.value});
+       fields.numero.value='';fields.cvv.value='';
+       Payments.pending=true;const submit=form.querySelector('[type=submit]');submit.disabled=true;message.textContent='Salvando preferência demonstrativa…';
+       try {
+         await window.DafixData.request('/api/pagamentos/metodos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+         $('#payment-method-dialog').close();await Payments.load();$('#payment-method-message').textContent='Forma de pagamento demonstrativa cadastrada.';
+       } catch(error) { message.textContent=error.message+' Se necessário, preencha novamente os dados de teste.'; }
+       finally {Payments.pending=false;submit.disabled=false;}
+     },
+     async openOrder(id) {
+       if(Payments.pending)return;
+       const order=state.orders.find(o=>o.id===id);if(!order||order.pagamento_simulado_em)return;
+       Payments.orderId=id;$('#order-payment-summary').textContent='Pedido #'+id+' · '+order.servico+' · '+window.DafixData.money(order.preco_unitario);
+       $('#order-payment-message').textContent='Carregando suas formas de pagamento…';$('#order-payment-method').replaceChildren();$('#order-payment-form [type=submit]').disabled=true;$('#order-payment-help').textContent='';$('#order-payment-dialog').showModal();
+       try {
+         Payments.methods=await window.DafixData.list('/api/pagamentos/metodos');
+         $('#order-payment-method').innerHTML=Payments.methods.map(m=>`<option value="${m.id}">${window.DafixData.escape(Payments.label(m))}</option>`).join('');
+         $('#order-payment-form [type=submit]').disabled=!Payments.methods.length;
+         $('#order-payment-message').textContent=Payments.methods.length?'':'Cadastre uma forma de pagamento para continuar.';
+         Payments.paymentHelp();
+       } catch(error) {$('#order-payment-message').textContent=error.message;}
+     },
+     paymentHelp() {
+       const method=Payments.methods.find(m=>m.id===Number($('#order-payment-method').value));
+       $('#order-payment-help').textContent=!method?'':method.tipo==='pix'?'Pix de demonstração: confirme abaixo para registrar a simulação. Não será gerado um código bancário.':method.tipo==='dinheiro'?'A confirmação registra uma simulação; não comprova recebimento de dinheiro.':'O cartão cadastrado é uma preferência demonstrativa. Nenhuma transação será enviada a um banco.';
+     },
+     async pay(event) {
+       event.preventDefault();if(Payments.pending||!event.target.reportValidity())return;
+       const method=Payments.methods.find(m=>m.id===Number($('#order-payment-method').value));if(!method)return;
+       Payments.pending=true;const submit=event.target.querySelector('[type=submit]');submit.disabled=true;$('#order-payment-message').textContent='Registrando simulação…';
+       try {
+         await window.DafixData.request('/api/os/'+Payments.orderId+'/pagamento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({metodo_id:method.id})});
+         $('#order-payment-dialog').close();await loadRegisteredData();Toast.show('Pagamento simulado registrado. Nenhum valor foi cobrado.','success');
+       } catch(error){$('#order-payment-message').textContent=error.message;}
+       finally {Payments.pending=false;submit.disabled=false;}
+     },
+     init() {
+       $('#payment-method-open').onclick=Payments.openMethod;
+       $('#payment-method-form').onsubmit=Payments.save;$('#payment-method-form').elements.tipo.onchange=Payments.cardFields;
+       $$('[data-flow-close]').forEach(button=>button.onclick=()=>{if(!Payments.pending&&!Rating.pending)$('#'+button.dataset.flowClose).close();});
+       $$('.flow-dialog').forEach(dialog=>dialog.addEventListener('cancel',event=>{if(Payments.pending||Rating.pending)event.preventDefault();}));
+       $('#payment-method-dialog').addEventListener('close',()=>$('#payment-method-form').reset());
+       $('#payment-method-list').onclick=event=>{
+         const button=event.target.closest('[data-remove-method]');if(!button||Payments.pending)return;
+         Payments.removeId=Number(button.dataset.removeMethod);const method=Payments.methods.find(m=>m.id===Payments.removeId);if(!method)return;
+         $('#payment-remove-summary').textContent=Payments.label(method);$('#payment-remove-message').textContent='';$('#payment-remove-dialog').showModal();
+       };
+       $('#payment-remove-confirm').onclick=async event=>{
+         if(Payments.pending)return;Payments.pending=true;event.target.disabled=true;
+         try {await window.DafixData.request('/api/pagamentos/metodos/'+Payments.removeId,{method:'DELETE'});$('#payment-remove-dialog').close();await Payments.load();$('#payment-method-message').textContent='Forma de pagamento removida.';}
+         catch(error){$('#payment-remove-message').textContent=error.message;}
+         finally{Payments.pending=false;event.target.disabled=false;}
+       };
+       $('#order-payment-form').onsubmit=Payments.pay;$('#order-payment-method').onchange=Payments.paymentHelp;
+       $('#order-payment-add').onclick=()=>{if(Payments.pending)return;$('#order-payment-dialog').close();Navigation.go('payments');Payments.openMethod();};
+       $('[data-view="payments"]').addEventListener('click',Payments.load);
+     }
+   };
+   const Rating = {
+     pending:false,orderId:null,
+     open(id) {
+       const order=state.orders.find(o=>o.id===id);if(!order||!order.concluido_funcionario_em||order.confirmado_cliente_em)return;
+       Rating.orderId=id;$('#rating-form').reset();$('#rating-message').textContent='';$('#rating-service').textContent='Pedido #'+id+' · '+order.servico;$('#rating-dialog').showModal();
+     },
+     openForPending() {
+       const order=state.orders.find(o=>o.concluido_funcionario_em&&!o.confirmado_cliente_em);
+       if(order)Rating.open(order.id);else Toast.show('Nenhum serviço aguardando sua avaliação.');
+     },
+     init() {
+       $('#rating-form').onsubmit=async event=>{
+         event.preventDefault();if(Rating.pending||!event.target.reportValidity())return;
+         const form=event.target,submit=form.querySelector('[type=submit]');Rating.pending=true;submit.disabled=true;$('#rating-message').textContent='Salvando avaliação e confirmação…';
+         try {
+           await window.DafixData.request('/api/os/'+Rating.orderId+'/avaliar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nota:Number(new FormData(form).get('nota')),comentario:form.elements.comentario.value.trim()})});
+           $('#rating-dialog').close();await loadRegisteredData();Toast.show('Avaliação enviada e conclusão confirmada.','success');
+         } catch(error) {$('#rating-message').textContent=error.message;}
+         finally{Rating.pending=false;submit.disabled=false;}
+       };
+     }
+   };
+
 
    const Toast = {
      show(message, type = 'info') {
@@ -1186,6 +1317,8 @@
      NotifPanel.init();
      Profile.init();
      Photo.init();
+     Payments.init();
+     Rating.init();
      Orders.init();
      Services.init();
      document.addEventListener('dafix:order-created', async event => { await loadRegisteredData(); Navigation.go('orders'); Toast.show('Pedido #'+event.detail.id+' registrado.', 'success'); });
@@ -1195,6 +1328,7 @@
      Language.rerenderAll();
      window.addEventListener('focus',loadRegisteredData);
      loadRegisteredData();
+     Payments.load();
    });
 
    async function loadRegisteredData() {

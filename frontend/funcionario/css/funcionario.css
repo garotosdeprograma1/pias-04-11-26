@@ -921,3 +921,13 @@ ul, ol { list-style: none; }
 img[src="/assets/images/logo.png"]{border:0;border-radius:50%;clip-path:circle(49% at 50% 50%);box-shadow:none;}
 
 .available-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.available-order{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-bottom:1px solid var(--border)}.available-order>div{min-width:0;overflow-wrap:anywhere}.available-order p{margin:6px 0;color:var(--text-muted)}.available-order .btn{flex-shrink:0}.available-order:last-child{border-bottom:0}@media(max-width:600px){.available-order{align-items:flex-start;flex-direction:column}.available-order .btn{width:100%}}
+
+/* Cadastro e conclusão usam diálogos acessíveis com a identidade da área profissional. */
+.employee-dialog{width:min(540px,calc(100vw - 32px));max-height:90dvh;overflow:auto;border:1px solid var(--border);border-radius:20px;padding:28px;background:var(--surface,#fff);color:var(--text);box-shadow:0 20px 60px rgb(0 0 0 / 20%)}
+.employee-dialog::backdrop{background:rgb(10 25 17 / 55%)}
+.employee-dialog h2{margin:0 0 16px}.employee-dialog p{margin:12px 0;overflow-wrap:anywhere}
+.employee-dialog__actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:20px}
+.employee-service-form{display:grid;gap:16px}.employee-service-form label{display:grid;gap:8px;font-weight:600}.employee-service-form input,.employee-service-form textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg,#fff);color:var(--text);font:inherit}.employee-service-form textarea{resize:vertical}
+.employee-catalog-actions{margin:0 0 20px}.employee-catalog-actions>p{flex:1 1 240px}.employee-catalog-actions>[role=status]{flex-basis:100%;margin:0}
+#registeredOrders td{max-width:300px;white-space:normal;overflow-wrap:anywhere}#registeredOrders .btn{white-space:normal;min-width:135px}
+@media(max-width:600px){.employee-dialog{padding:20px}.employee-dialog__actions .btn{flex:1 1 140px}}
