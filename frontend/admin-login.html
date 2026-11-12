@@ -1,3 +1,57 @@
-<!doctype html><html lang="pt-BR" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acesso administrativo · Dafix</title><link rel="stylesheet" href="/cliente/css/cliente.css"><link rel="stylesheet" href="/assets/css/admin-access.css"><link rel="stylesheet" href="/assets/css/motion.css"></head><body>
-<main class="access-card"><a href="/index.html" class="access-brand"><img src="/assets/images/logo.png" width="44" height="44" alt="Dafix"> Dafix</a><h1>Administração</h1><p>Entre com sua conta de administrador.</p>
-<form id="admin-login-form"><label>E-mail<input type="email" name="email" autocomplete="username" required></label><label>Senha<input type="password" name="senha" autocomplete="current-password" required maxlength="128"></label><p id="login-message" role="status"></p><button class="btn btn--primary" type="submit">Entrar na administração</button></form><a class="access-back" href="/index.html">Voltar ao acesso de clientes e profissionais</a></main><script src="/assets/js/account-session.js"></script><script src="/assets/js/admin-access.js"></script></body></html>
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#203b30">
+  <title>Acesso administrativo · DaFix</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('dafix_theme')==='dark'?'dark':'light';}catch{}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/admin-access.css">
+</head>
+<body>
+<div class="access">
+  <aside class="access__brand">
+    <a href="/index.html" class="access__logo"><img src="/assets/images/logo.png" width="44" height="44" alt=""><span>DaFix</span></a>
+    <div>
+      <p class="access__eyebrow">Espaço de gestão</p>
+      <h2>Pessoas, catálogo e pedidos em um só lugar.</h2>
+      <ul>
+        <li>Cadastre e acompanhe clientes e funcionários</li>
+        <li>Publique os serviços oferecidos</li>
+        <li>Consulte relatórios e a auditoria do sistema</li>
+      </ul>
+    </div>
+    <p class="access__note">Acesso restrito a administradores.</p>
+  </aside>
+
+  <main class="access__panel">
+    <div class="access__card">
+      <a href="/index.html" class="access__logo access__logo--mobile"><img src="/assets/images/logo.png" width="40" height="40" alt=""><span>DaFix</span></a>
+      <h1>Administração</h1>
+      <p class="access__lead">Entre com sua conta de administrador.</p>
+      <form id="admin-login-form" novalidate>
+        <label class="access__field">
+          <span>E-mail</span>
+          <input type="email" name="email" autocomplete="username" required maxlength="254" placeholder="voce@exemplo.com">
+        </label>
+        <label class="access__field">
+          <span>Senha</span>
+          <span class="access__password">
+            <input type="password" name="senha" autocomplete="current-password" required maxlength="128">
+            <button type="button" id="toggle-password" aria-pressed="false">Mostrar</button>
+          </span>
+        </label>
+        <p id="login-message" class="access__message" role="alert"></p>
+        <button class="access__submit" type="submit">Entrar na administração</button>
+      </form>
+      <a class="access__back" href="/index.html">← Voltar ao acesso de clientes e profissionais</a>
+    </div>
+  </main>
+</div>
+<script src="/assets/js/account-session.js"></script>
+<script src="/assets/js/admin-access.js"></script>
+</body>
+</html>

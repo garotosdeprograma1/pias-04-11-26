@@ -1,7 +1,8 @@
 var sqlite3 = require('sqlite3');
 var path = require('path');
 
-var caminho = path.join(__dirname, 'banco.db');
+// DB_PATH permite gravar em um volume persistente na hospedagem.
+var caminho = process.env.DB_PATH || path.join(__dirname, 'banco.db');
 var db = new sqlite3.Database(caminho);
 
 db.serialize(function () {

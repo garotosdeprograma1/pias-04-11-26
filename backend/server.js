@@ -95,7 +95,7 @@ function servirArquivo(res, caminhoRelativo) {
 
   if (!caminho.startsWith(path.resolve(__dirname,'../frontend') + path.sep) || !fs.existsSync(caminho) || !fs.statSync(caminho).isFile()) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    return res.end('Arquivo nao encontrado: ' + caminhoRelativo);
+    return res.end('Arquivo não encontrado: ' + caminhoRelativo);
   }
 
   var tipo = TIPOS[path.extname(caminho)] || 'text/plain; charset=utf-8';
@@ -116,6 +116,8 @@ var servidor = http.createServer(async function (req, res) {
   if(caminho.includes('\\'))return responderJson(res,400,{erro:'Endereço inválido.'});
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
+  res.setHeader('X-Frame-Options','DENY');
+  res.setHeader('Referrer-Policy','same-origin');
   let session = auth.read(req);
   if (req.method !== 'GET' && caminho.startsWith('/api/')) res.audit={path:caminho,method:req.method,session,ip:req.socket.remoteAddress};
   if(session) {
@@ -131,11 +133,13 @@ var servidor = http.createServer(async function (req, res) {
   if (caminho === '/api/logout' && req.method === 'POST') { auth.clear(req,res); return responderJson(res,200,{ok:true}); }
   if (caminho.toLowerCase() === '/admin' || caminho.toLowerCase().startsWith('/admin/')) {
     if (!session || session.perfil !== 'admin') { res.writeHead(302,{Location:'/admin-login.html'});return res.end(); }
+    if(/^\/admin\/?$/i.test(caminho)) { res.writeHead(302,{Location:'/admin/dashboard.html'});return res.end(); }
     if(caminho.endsWith('.html')) await sqlRun('INSERT INTO auditoria (ator_id,ator_tipo,ator_nome,acao,modulo,descricao,resultado,ip) VALUES (?,?,?,?,?,?,?,?)',[session.usuario.id,'admin',session.usuario.nome,'acesso','administracao','GET '+caminho,'sucesso',req.socket.remoteAddress]);
   }
   const adminOnly = caminho === '/api/admins' ||
     caminho.startsWith('/api/admin/') ||
-    (/^\/api\/(clientes|funcionarios)\//.test(caminho)) ||
+    (/^\/api\/(clientes|funcionarios|admins)\//.test(caminho)) ||
+    (/^\/api\/servicos\/[^/]+$/.test(caminho) && req.method !== 'GET') ||
     (['/api/clientes','/api/funcionarios'].includes(caminho) && req.method === 'GET') ||
     (caminho.startsWith('/api/') && req.method === 'DELETE' && !/^\/api\/pagamentos\/metodos\/\d+$/.test(caminho)) ||
     (caminho === '/api/servicos' && !['GET','POST'].includes(req.method)) ||
@@ -219,24 +223,29 @@ var servidor = http.createServer(async function (req, res) {
     } catch(error) {return responderJson(res,error.code?500:400,{erro:error.code?'Não foi possível atualizar o pedido.':'Dados inválidos ou muito longos.'});}
   }
 
-  if(caminho.startsWith('/api/admin/') || /^\/api\/(clientes|funcionarios)\/\d+$/.test(caminho)) {
+  if(caminho.startsWith('/api/admin/') || /^\/api\/(clientes|funcionarios|admins)\/\d+$/.test(caminho)) {
     try {
       const params=new URL(req.url,'http://localhost').searchParams;
       const from=params.get('inicio') || '',to=params.get('fim') || '';
       if((from && !/^\d{4}-\d{2}-\d{2}$/.test(from)) || (to && !/^\d{4}-\d{2}-\d{2}$/.test(to)) || (from && to && from>to))return responderJson(res,400,{erro:'Intervalo de datas inválido.'});
-      const match=caminho.match(/^\/api\/(clientes|funcionarios)\/(\d+)$/);
+      const match=caminho.match(/^\/api\/(clientes|funcionarios|admins)\/(\d+)$/);
       if(match) {
-        const table=match[1]==='clientes'?'cliente':'funcionario',id=Number(match[2]);
+        const table=({clientes:'cliente',funcionarios:'funcionario',admins:'admin'})[match[1]],id=Number(match[2]);
+        const self=table==='admin' && id===session.usuario.id;
         const [person]=await sqlAll('SELECT id,nome,email,cpf,telefone,ativo,criado_em,atualizado_em'+(table==='funcionario'?',especialidade,admissao,permissoes':'')+' FROM '+table+' WHERE id=?',[id]);
         if(!person)return responderJson(res,404,{erro:'Pessoa não encontrada.'});
         if(req.method==='GET') {
-          const orders=await sqlAll('SELECT os.*,servico.nome_servico FROM os JOIN servico ON servico.id=os.id_servico WHERE '+(table==='cliente'?'id_cliente':'id_funcionario')+'=? ORDER BY os.id DESC',[id]);
+          const orders=table==='admin'?[]:await sqlAll('SELECT os.*,servico.nome_servico FROM os JOIN servico ON servico.id=os.id_servico WHERE '+(table==='cliente'?'id_cliente':'id_funcionario')+'=? ORDER BY os.id DESC',[id]);
           const history=await sqlAll('SELECT * FROM auditoria WHERE (ator_tipo=? AND ator_id=?) OR descricao LIKE ? ORDER BY id DESC LIMIT 100',[table,id,'% '+caminho+' ·%']);
           return responderJson(res,200,{pessoa:person,pedidos:orders,historico:history});
         }
         if(req.method==='DELETE') {
-          const [linked]=await sqlAll('SELECT COUNT(*) total FROM os WHERE '+(table==='cliente'?'id_cliente':'id_funcionario')+'=?',[id]);
-          if(linked.total)return responderJson(res,409,{erro:'Há pedidos vinculados. Desative esta conta para preservar o histórico.'});
+          // Quem executa a ação permanece ativo: sempre resta ao menos um administrador.
+          if(self)return responderJson(res,409,{erro:'Você não pode excluir a própria conta.'});
+          if(table!=='admin') {
+            const [linked]=await sqlAll('SELECT COUNT(*) total FROM os WHERE '+(table==='cliente'?'id_cliente':'id_funcionario')+'=?',[id]);
+            if(linked.total)return responderJson(res,409,{erro:'Há pedidos vinculados. Desative esta conta para preservar o histórico.'});
+          }
           await sqlRun('DELETE FROM '+table+' WHERE id=?',[id]);
           return responderJson(res,200,{removido:id});
         }
@@ -245,7 +254,7 @@ var servidor = http.createServer(async function (req, res) {
           for(const key of Object.keys(body)) {
             if(!['nome','email','telefone','ativo',...(table==='funcionario'?['especialidade','admissao','permissoes']:[])].includes(key))return responderJson(res,400,{erro:'Campo não permitido: '+key});
             let value=body[key];
-            if(key==='ativo') { if(![0,1].includes(value))throw new Error('Status inválido.'); }
+            if(key==='ativo') { if(![0,1].includes(value))throw new Error('Status inválido.');if(self && value===0)return responderJson(res,409,{erro:'Você não pode desativar a própria conta.'}); }
             else if(key==='permissoes') {
               if(!Array.isArray(value) || value.some(p=>!['pedidos.ler','pedidos.aceitar','pedidos.concluir','servicos.cadastrar'].includes(p)))throw new Error('Permissões inválidas.');
               value=JSON.stringify([...new Set(value)]);res.audit.action='permissoes.alteradas';
@@ -270,12 +279,16 @@ var servidor = http.createServer(async function (req, res) {
         const monthly={};for(const p of filtered){const month=p.criado_em.slice(0,7);monthly[month]=(monthly[month]||0)+1;}
         const roles={};for(const p of people.filter(p=>p.perfil==='funcionario'))roles[p.especialidade]=(roles[p.especialidade]||0)+1;
         const activity=await sqlAll("SELECT modulo,resultado,COUNT(*) total FROM auditoria WHERE (?='' OR substr(criado_em,1,10)>=?) AND (?='' OR substr(criado_em,1,10)<=?) GROUP BY modulo,resultado",[from,from,to,to]);
-        const recent=await sqlAll('SELECT * FROM auditoria ORDER BY id DESC LIMIT 10');
+        const recent=await sqlAll("SELECT * FROM auditoria WHERE acao<>'acesso' ORDER BY id DESC LIMIT 10");
         return responderJson(res,200,{total:people.length,clientes:people.filter(p=>p.perfil==='cliente').length,funcionarios:people.filter(p=>p.perfil==='funcionario').length,administradores:people.filter(p=>p.perfil==='admin').length,clientes_ativos:people.filter(p=>p.perfil==='cliente'&&p.ativo).length,funcionarios_ativos:people.filter(p=>p.perfil==='funcionario'&&p.ativo).length,novos:filtered.length,sem_data:people.filter(p=>!p.criado_em).length,mensal:monthly,cargos:roles,atividades:activity,recentes:recent});
       }
       if(req.method==='GET' && caminho==='/api/admin/logs') {
         const where=[],args=[];
-        for(const [param,column] of [['usuario','ator_nome'],['evento','acao'],['modulo','modulo'],['resultado','resultado']])if(params.get(param)){where.push(column+' LIKE ?');args.push('%'+params.get(param).slice(0,150)+'%');}
+        // Usuário aceita trecho do nome; os demais filtros são exatos ("os" não deve trazer "servicos").
+        if(params.get('usuario')){where.push("ator_nome LIKE ? ESCAPE '\\'");args.push('%'+params.get('usuario').slice(0,150).replace(/[\\%_]/g,'\\$&')+'%');}
+        for(const [param,column] of [['evento','acao'],['modulo','modulo'],['resultado','resultado']])if(params.get(param)){where.push(column+'=?');args.push(params.get(param).slice(0,150));}
+        // A leitura de atividades dispensa as visitas às páginas do painel.
+        if(params.get('sem_acesso')==='1')where.push("acao<>'acesso'");
         if(from){where.push('substr(criado_em,1,10)>=?');args.push(from);}if(to){where.push('substr(criado_em,1,10)<=?');args.push(to);}
         const clause=where.length?' WHERE '+where.join(' AND '):'';
         const page=Math.max(1,Math.min(1000000,Math.floor(Number(params.get('pagina')))||1));
@@ -323,14 +336,14 @@ var servidor = http.createServer(async function (req, res) {
       try {
         credenciais = JSON.parse(textoLogin);
       } catch (erro) {
-        return responderJson(res, 400, { erro: 'Dados invalidos.' });
+        return responderJson(res, 400, { erro: 'Dados inválidos.' });
       }
 
       if (!credenciais ||
           !['cliente','funcionario','admin'].includes(credenciais.perfil) ||
           typeof credenciais.email !== 'string' || !credenciais.email.trim() ||
           typeof credenciais.senha !== 'string' || !credenciais.senha || credenciais.senha.length>128 || credenciais.email.length>254) {
-        return responderJson(res, 400, { erro: 'Perfil, e-mail e senha sao obrigatorios.' });
+        return responderJson(res, 400, { erro: 'Perfil, e-mail e senha são obrigatórios.' });
       }
 
       // A tabela vem apenas dos perfis permitidos; valores usam parâmetros.
@@ -343,10 +356,10 @@ var servidor = http.createServer(async function (req, res) {
 
       db.get(sqlLogin, valoresLogin, function (erro, usuario) {
         if (erro) {
-          return responderJson(res, 500, { erro: 'Nao foi possivel verificar o acesso. Tente novamente.' });
+          return responderJson(res, 500, { erro: 'Não foi possível verificar o acesso. Tente novamente.' });
         }
         if (!usuario || !usuario.ativo || credenciais.senha.length>128 || !auth.verify(credenciais.senha,usuario.senha)) {
-          return responderJson(res, 401, { erro: 'E-mail ou senha invalidos para este perfil.' });
+          return responderJson(res, 401, { erro: 'E-mail ou senha inválidos para este perfil.' });
         }
         if (!usuario.senha.startsWith('scrypt$')) db.run('UPDATE '+tabelaLogin+' SET senha=? WHERE id=?',[auth.hash(credenciais.senha),usuario.id]);
         loginAttempts.delete(ip);
@@ -376,7 +389,7 @@ var servidor = http.createServer(async function (req, res) {
   if (req.method === 'GET' && caminho === '/api/clientes') {
     db.all('SELECT id, nome, cpf, email, telefone, ativo, criado_em, atualizado_em FROM cliente ORDER BY id DESC', [], function (erro, linhas) {
       if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
+        return responderJson(res, 500, { erro: 'Não foi possível carregar os registros.' });
       }
       responderJson(res, 200, linhas);
     });
@@ -395,7 +408,7 @@ var servidor = http.createServer(async function (req, res) {
   if (req.method === 'GET' && caminho === '/api/funcionarios') {
     db.all('SELECT id, nome, cpf, email, telefone, especialidade, ativo, criado_em, atualizado_em, admissao, permissoes FROM funcionario ORDER BY id DESC', [], function (erro, linhas) {
       if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
+        return responderJson(res, 500, { erro: 'Não foi possível carregar os registros.' });
       }
       responderJson(res, 200, linhas);
     });
@@ -414,7 +427,7 @@ var servidor = http.createServer(async function (req, res) {
   if (req.method === 'GET' && caminho === '/api/servicos') {
     db.all('SELECT * FROM servico ORDER BY id DESC', [], function (erro, linhas) {
       if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
+        return responderJson(res, 500, { erro: 'Não foi possível carregar os registros.' });
       }
       responderJson(res, 200, linhas);
     });
@@ -439,22 +452,35 @@ var servidor = http.createServer(async function (req, res) {
     } catch(error) {return responderJson(res,error.code?500:400,{erro:error.code?'Não foi possível cadastrar o serviço.':'Dados inválidos ou muito longos.'});}
   }
 
-  // ---- excluir ----
-  if (req.method === 'DELETE' && caminho.indexOf('/api/servicos/') === 0) {
-    var idServ = caminho.split('/')[3];
-
-    db.run('DELETE FROM servico WHERE id = ?', [idServ], function (erro) {
-      if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
+  // ---- alterar e excluir (administração) ----
+  const serviceMatch=caminho.match(/^\/api\/servicos\/(\d+)$/);
+  if (serviceMatch && ['PATCH','DELETE'].includes(req.method)) {
+    const id=Number(serviceMatch[1]);
+    try {
+      if(req.method==='DELETE') {
+        // Pedidos guardam o serviço solicitado; o histórico não pode ficar órfão.
+        const [linked]=await sqlAll('SELECT COUNT(*) total FROM os WHERE id_servico=?',[id]);
+        if(linked.total)return responderJson(res,409,{erro:'Há '+linked.total+' pedido(s) vinculado(s) a este serviço. Ele não pode ser excluído.'});
+        const result=await sqlRun('DELETE FROM servico WHERE id=?',[id]);
+        if(!result.changes)return responderJson(res,404,{erro:'Serviço não encontrado.'});
+        res.audit.action='servico.excluido';
+        return responderJson(res,200,{removido:id});
       }
-      if (this.changes === 0) {
-        return responderJson(res, 404, { erro: 'Servico nao encontrado.' });
+      const data=await jsonBody(req),fields=[],values=[];
+      for(const key of Object.keys(data)) {
+        const value=data[key];
+        if(key==='nome_servico') { if(typeof value!=='string' || !value.trim() || value.length>150)throw new Error('Informe um nome de até 150 caracteres.');fields.push('nome_servico=?');values.push(value.trim()); }
+        else if(key==='descricao') { if(value!=null && (typeof value!=='string' || value.length>1000))throw new Error('A descrição aceita até 1000 caracteres.');fields.push('descricao=?');values.push(value?.trim() || ''); }
+        else if(key==='preco_base') { if(typeof value!=='number' || !Number.isFinite(value) || value<0 || value>10000000 || Math.abs(value*100-Math.round(value*100))>0.000001)throw new Error('Informe um preço válido com até duas casas decimais.');fields.push('preco_base=?');values.push(value); }
+        else return responderJson(res,400,{erro:'Campo não permitido: '+key});
       }
-      console.log('Servico excluido: id ' + idServ);
-      responderJson(res, 200, { removido: Number(idServ) });
-    });
-
-    return;
+      if(!fields.length)throw new Error('Nenhuma alteração informada.');
+      // Pedidos já registrados mantêm o valor da época da solicitação.
+      const result=await sqlRun('UPDATE servico SET '+fields.join(',')+' WHERE id=?',[...values,id]);
+      if(!result.changes)return responderJson(res,404,{erro:'Serviço não encontrado.'});
+      res.audit.action='servico.alterado';
+      return responderJson(res,200,{id,ok:true});
+    } catch(error) {return responderJson(res,error.code?500:400,{erro:error.code?'Não foi possível atualizar o serviço.':error instanceof SyntaxError?'Dados JSON inválidos.':error.message});}
   }
 
   // =================================================================
@@ -532,7 +558,7 @@ var servidor = http.createServer(async function (req, res) {
 
     db.all(sqlListaOs, parametrosOs, function (erro, linhas) {
       if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
+        return responderJson(res, 500, { erro: 'Não foi possível carregar os pedidos.' });
       }
       // A equipe consulta a situação da simulação, sem os identificadores do cartão.
       if(session.perfil==='funcionario')for(const row of linhas){delete row.pagamento_ultimos4;delete row.pagamento_metodo_id;}
@@ -541,71 +567,43 @@ var servidor = http.createServer(async function (req, res) {
     return;
   }
 
-  // ---- cadastrar ----
+  // ---- cadastrar (administração) ----
   if (req.method === 'POST' && caminho === '/api/os') {
-    var textoOs = '';
-
-    req.on('data', function (pedaco) {
-      textoOs += pedaco;
-    });
-
-    req.on('end', function () {
-      var novaOs;
-      try {
-        novaOs = JSON.parse(textoOs);
-      } catch (erro) {
-        return responderJson(res, 400, { erro: 'Dados invalidos.' });
+    try {
+      const novaOs=await jsonBody(req);
+      const ids=['id_cliente','id_servico','id_funcionario'];
+      if(!ids.every(k=>Number.isSafeInteger(novaOs[k]) && novaOs[k]>0) ||
+         typeof novaOs.preco_unitario!=='number' || !Number.isFinite(novaOs.preco_unitario) || novaOs.preco_unitario<0 || novaOs.preco_unitario>10000000 ||
+         typeof novaOs.data!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(novaOs.data) ||
+         !['local','descricao'].every(k=>typeof novaOs[k]==='string' && novaOs[k].trim().length>=3 && novaOs[k].length<=1000)) {
+        return responderJson(res, 400, { erro: 'id_cliente, id_servico, id_funcionario, preco_unitario, data, local e descricao são obrigatórios.' });
       }
-
-      if (!novaOs.id_cliente || !novaOs.id_servico || !novaOs.id_funcionario ||
-          novaOs.preco_unitario === undefined || !novaOs.data || !novaOs.local || !novaOs.descricao) {
-        return responderJson(res, 400, {
-          erro: 'id_cliente, id_servico, id_funcionario, preco_unitario, data, local e descricao sao obrigatorios.'
-        });
-      }
-
-      var sqlOs = 'INSERT INTO os (id_cliente, id_servico, id_funcionario, preco_unitario, data, local, descricao) ' +
-                  'VALUES (?, ?, ?, ?, ?, ?, ?)';
-      var valoresOs = [novaOs.id_cliente, novaOs.id_servico, novaOs.id_funcionario,
-                       novaOs.preco_unitario, novaOs.data, novaOs.local, novaOs.descricao];
-
-      db.run(sqlOs, valoresOs, function (erro) {
-        if (erro) {
-          return responderJson(res, 500, { erro: erro.message });
-        }
-        novaOs.id = this.lastID;
-        console.log('OS cadastrada: id ' + novaOs.id);
-        responderJson(res, 201, novaOs);
-      });
-    });
-
-    return;
+      const result=await sqlRun('INSERT INTO os (id_cliente, id_servico, id_funcionario, preco_unitario, data, local, descricao) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [novaOs.id_cliente,novaOs.id_servico,novaOs.id_funcionario,novaOs.preco_unitario,novaOs.data,novaOs.local.trim(),novaOs.descricao.trim()]);
+      return responderJson(res, 201, {id:result.id,id_cliente:novaOs.id_cliente,id_servico:novaOs.id_servico,id_funcionario:novaOs.id_funcionario,preco_unitario:novaOs.preco_unitario,data:novaOs.data,local:novaOs.local.trim(),descricao:novaOs.descricao.trim()});
+    } catch(error) {
+      if(error.code==='SQLITE_CONSTRAINT')return responderJson(res,409,{erro:'Cliente, serviço ou funcionário não encontrado.'});
+      return responderJson(res,error.code?500:400,{erro:error.code?'Não foi possível registrar o pedido.':'Dados inválidos ou muito longos.'});
+    }
   }
 
-  // ---- excluir ----
-  if (req.method === 'DELETE' && caminho.indexOf('/api/os/') === 0) {
-    var idOs = caminho.split('/')[3];
-
-    db.run('DELETE FROM os WHERE id = ?', [idOs], function (erro) {
-      if (erro) {
-        return responderJson(res, 500, { erro: erro.message });
-      }
-      if (this.changes === 0) {
-        return responderJson(res, 404, { erro: 'OS nao encontrada.' });
-      }
-      console.log('OS excluida: id ' + idOs);
-      responderJson(res, 200, { removido: Number(idOs) });
-    });
-
-    return;
+  // ---- excluir (administração) ----
+  if (req.method === 'DELETE' && /^\/api\/os\/\d+$/.test(caminho)) {
+    const idOs=Number(caminho.split('/')[3]);
+    try {
+      const result=await sqlRun('DELETE FROM os WHERE id = ?',[idOs]);
+      if(!result.changes)return responderJson(res, 404, { erro: 'Pedido não encontrado.' });
+      res.audit.action='pedido.excluido';
+      return responderJson(res, 200, { removido: idOs });
+    } catch { return responderJson(res, 500, { erro: 'Não foi possível excluir o pedido.' }); }
   }
 
   // ---- Arquivos da pasta frontend ----
-  if (req.method === 'GET') {
+  if (req.method === 'GET' && caminho !== '/api' && !caminho.startsWith('/api/')) {
     return servirArquivo(res, caminho === '/' ? '/' : caminho);
   }
 
-  responderJson(res, 404, { erro: 'Nao encontrado.' });
+  responderJson(res, 404, { erro: 'Não encontrado.' });
  } catch(error) { console.error('Erro interno:',error.code || error.name); if(!res.audit)res.audit={path:'/api/sistema',method:req.method,action:'erro_interno',session:auth.read(req),ip:req.socket.remoteAddress}; if(!res.headersSent)responderJson(res,500,{erro:'Erro interno. Tente novamente.'});else res.end(); }
 });
 

@@ -41,8 +41,11 @@ frontend/
   publico/                 Páginas públicas, css/ e js/
   suporte/                 Central de ajuda, css/ e js/
 tests/
-  account-session.test.js  Sessão, dados por conta e logout
-  registered-data.test.js  Cadastro, consultas e pedidos por conta
+  account-session.test.js   Sessão, dados por conta e logout
+  registered-data.test.js   Cadastro, consultas e pedidos por conta
+  db-migration.test.js      Migração de bancos antigos
+  service-lifecycle.test.js Conclusão, avaliação e pagamentos demonstrativos
+  admin-management.test.js  Catálogo, contas de administrador e auditoria
 ```
 
 Os arquivos específicos de cada área ficam junto das suas páginas, separados em `css/` e `js/`. Recursos usados por várias áreas ficam em `frontend/assets/`. Os endereços das páginas HTML foram preservados.
@@ -50,6 +53,12 @@ Os arquivos específicos de cada área ficam junto das suas páginas, separados 
 ## Dados
 
 `backend/db.js` cria as tabelas que ainda não existem, sem inserir registros de demonstração. O cadastro e a API gravam em `backend/banco.db`. Preserve esse arquivo para manter os dados cadastrados.
+
+Para gravar em outro local — por exemplo, um volume persistente na hospedagem, onde o disco da aplicação é recriado a cada publicação — defina a variável de ambiente `DB_PATH` com o caminho do arquivo:
+
+```bash
+DB_PATH=/data/banco.db node backend/server.js
+```
 
 As telas consultam os registros disponíveis e mostram mensagens quando não há dados ou quando a consulta falha. Funcionalidades sem integração configurada, como envio de e-mail, informam sua indisponibilidade.
 
@@ -67,7 +76,7 @@ Os testes usam as ferramentas nativas do Node.js. O teste da API cria um banco t
 
 ## Catálogo e solicitações
 
-Na tela de login ou no menu do cliente, use **Administração**. Em **Serviços**, cadastre o nome, a descrição e o preço base do serviço oferecido. As sugestões de nomes ajudam no preenchimento; nenhum serviço é inserido automaticamente.
+Na tela de login ou no menu do cliente, use **Administração**. Em **Catálogo de serviços**, cadastre o nome, a descrição (opcional) e o preço base do serviço oferecido; nenhum serviço é inserido automaticamente. Cada serviço pode ser editado ou excluído na própria lista. Alterar o preço não muda pedidos já registrados, e um serviço com pedidos vinculados não pode ser excluído, para preservar o histórico.
 
 Com pelo menos um serviço cadastrado, o cliente pode abrir **Serviços → Solicitar serviço** e informar data, endereço e descrição. O pedido fica **aguardando aceite**, sem escolher profissional. Em **Pedidos disponíveis**, os profissionais podem assumir o atendimento. O servidor permite apenas um aceite por pedido; depois disso ele aparece nos pedidos e na agenda do responsável. A data informada é uma preferência; o sistema não verifica conflitos de agenda nem processa pagamentos.
 
@@ -96,14 +105,26 @@ A atualização do banco preserva os pedidos existentes e permite pedidos sem pr
 
 ## Gestão administrativa ampliada
 
-O painel existente usa as mesmas tecnologias e URLs. A navegação inclui Dashboard,
-Funcionários, Clientes, Pessoas, Catálogo, Logs do Sistema, Atividades, Relatórios,
-Permissões e Configurações. Funcionários e clientes continuam em suas áreas próprias.
+O painel usa as mesmas tecnologias e URLs. A navegação é agrupada em Visão geral
+(Dashboard, Relatórios), Pessoas (Funcionários, Clientes, Todas as pessoas), Operação
+(Catálogo de serviços), Auditoria (Logs do sistema, Atividades) e Sistema (Permissões,
+Configurações). Funcionários e clientes continuam em suas áreas próprias.
+
+O visual segue a identidade das áreas de cliente e profissional (verde, terracota,
+DM Serif Display e Plus Jakarta Sans), com tema claro e escuro, e se adapta ao celular:
+o menu vira gaveta e as tabelas viram cartões. `frontend/admin/css/admin.css` concentra
+os estilos; `js/main.js` cuida da sessão, do tema, do menu e dos componentes comuns;
+`js/management.js` e `js/catalogo.js` montam as telas.
 
 - Pessoas: cadastro, busca, filtros por perfil/status/especialidade/data, ordenação,
   paginação, CSV, perfil individual em diálogo com pedidos e atividades, edição,
   ativação/desativação e exclusão confirmada. CPF permanece como identificador não
   editável. Contas com pedidos vinculados não podem ser excluídas; devem ser desativadas.
+  Contas de administrador também podem ser editadas, desativadas e excluídas por outro
+  administrador; ninguém desativa ou exclui a própria conta, de modo que sempre resta
+  ao menos um administrador ativo.
+- Permissões: uma linha por funcionário e uma chave para cada acesso; a alteração é
+  gravada na hora.
 - Funcionários: especialidade existente funciona como cargo; admissão é opcional.
   Permissões disponíveis são consultar pedidos/agenda, aceitar pedidos, concluir
   serviços e cadastrar serviços no catálogo. Nenhuma dessas permissões abre
@@ -116,9 +137,10 @@ Permissões e Configurações. Funcionários e clientes continuam em suas áreas
 - Auditoria: gravação no backend de respostas a operações da API (inclusive falhas de
   login, login e logout) e acessos às páginas administrativas. Guarda ator, ação,
   módulo, resultado, horário UTC, IP da conexão e identificação da rota/registro.
-  Não grava corpos de requisição, senhas, tokens ou cookies. Há filtros, detalhes,
-  paginação de 25 registros e CSV da página consultada. Atividades oferecem leitura
-  simplificada dos mesmos registros, sem gravar cópias do evento.
+  Não grava corpos de requisição, senhas, tokens ou cookies. Há filtros (usuário por
+  trecho do nome; evento, módulo e resultado exatos), detalhes, paginação de 25
+  registros e CSV da página consultada. Atividades oferecem leitura simplificada dos
+  mesmos registros, agrupada por dia e sem as aberturas de páginas do painel.
 - Configurações: dados da conta, informações de sessão e preferência funcional de
   tema já existente, salva neste navegador.
 
@@ -149,6 +171,9 @@ sessões e permissões, isolamento entre perfis, relatórios e filtros/paginaç�
 além dos testes anteriores de contas e pedidos. Os bancos dos testes são temporários.
 As oito telas também foram verificadas com Chromium/Playwright em larguras de 1440 e
 390 pixels, incluindo menu móvel e operações dos formulários, sem usar o banco real.
+
+`tests/admin-management.test.js` cobre edição e exclusão de serviços, gestão de contas
+de administrador, respostas a requisições malformadas e os filtros da auditoria.
 
 Limites atuais: perfil individual abre em diálogo; histórico de atividades do perfil
 mostra até 100 registros recentes. A listagem de pessoas pagina no navegador; volumes
